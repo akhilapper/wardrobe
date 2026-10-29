@@ -1,0 +1,1194 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wardrobe & Color Combinations Dashboard</title>
+    <style>
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        header {
+            background-color: #2c3e50;
+            color: white;
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        h1 { margin: 0; font-size: 2.2rem; }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            background-color: #34495e;
+            width: 100%;
+            overflow-x: auto;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            color: #ecf0f1;
+            padding: 15px 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        .tab-btn:hover { background-color: #2c3e50; }
+        .tab-btn.active {
+            background-color: #f4f7f6;
+            color: #2c3e50;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .view-section {
+            display: none;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+        }
+        .view-section.active { display: flex; }
+
+        .controls-container {
+            margin: 20px 0;
+            width: 90%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        .search-row { display: flex; gap: 20px; width: 100%; align-items: center; }
+        .input-wrapper { position: relative; flex-grow: 1; }
+        input[type="text"], select {
+            width: 100%; padding: 12px 20px; font-size: 1rem; border: 2px solid #bdc3c7;
+            border-radius: 12px; outline: none; transition: border-color 0.3s; box-sizing: border-box;
+        }
+        input[type="text"]:focus, select:focus { border-color: #3498db; }
+        
+        .color-picker-wrapper { display: flex; flex-direction: column; align-items: center; }
+        input[type="color"] {
+            -webkit-appearance: none; border: none; width: 60px; height: 60px; border-radius: 50%;
+            cursor: pointer; padding: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch { border: 4px solid #fff; border-radius: 50%; }
+        
+        .primary-btn {
+            padding: 12px 25px; font-size: 1.1rem; background-color: #3498db; color: white;
+            border: none; border-radius: 25px; cursor: pointer; font-weight: bold;
+            transition: all 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .primary-btn:hover { background-color: #2980b9; transform: translateY(-2px); }
+
+        .picker-btn {
+            padding: 8px 15px; background-color: #ecf0f1; border: 2px solid #bdc3c7;
+            border-radius: 15px; cursor: pointer; font-size: 0.9rem; font-weight: bold; color: #2c3e50;
+        }
+        .picker-btn.active { background-color: #f1c40f; border-color: #f39c12; color: #333; }
+        
+        .status-indicator { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; margin-left:10px; }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #3498db; border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .tick { color: #27ae60; font-weight: bold; font-size: 1.5rem; }
+
+        /* Autocomplete */
+        .autocomplete-items {
+            position: absolute; border: 1px solid #d4d4d4; z-index: 99; top: 100%; left: 0; right: 0;
+            background-color: #fff; border-radius: 0 0 15px 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .autocomplete-item-wrapper { padding: 10px 15px; cursor: pointer; border-bottom: 1px solid #d4d4d4; }
+        .autocomplete-item-wrapper:hover { background-color: #e9e9e9; }
+        .autocomplete-item-content { display: flex; align-items: center; gap: 15px; }
+        .autocomplete-swatch { width: 30px; height: 30px; border-radius: 6px; border: 1px solid #bdc3c7; }
+
+        /* Results & Grids */
+        #results, #closet-grid, #outfit-results, #lookbook-results, #shopping-results { width: 90%; max-width: 800px; margin-bottom: 50px; }
+        .category { margin-top: 40px; scroll-margin-top: 100px; width: 100%; }
+        .category h2 { border-bottom: 2px solid #3498db; padding-bottom: 10px; color: #2c3e50; display:flex; justify-content: space-between; align-items: baseline;}
+        
+        .combo-grid { display: flex; flex-direction: column; gap: 20px; margin-top: 20px; }
+        .combo-card, .closet-card, .outfit-card {
+            width: 100%; background: white; border-radius: 12px; padding: 20px; box-sizing: border-box;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .combo-card { cursor: pointer; }
+        .combo-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+        .combo-id { font-weight: bold; margin-bottom: 15px; color: #7f8c8d; font-size: 1.1rem; border-bottom: 1px solid #ecf0f1; padding-bottom: 8px; }
+
+        .palette-container { display: flex; border-radius: 8px; overflow: hidden; border: 1px solid #ecf0f1; background: #fafafa; }
+        .v-swatches { display: flex; flex-direction: column; width: 100px; flex-shrink: 0; }
+        .v-swatch { height: 75px; width: 100%; }
+        .v-labels { display: flex; flex-direction: column; flex: 1; }
+        .v-label { height: 75px; display: flex; align-items: center; padding-left: 20px; font-size: 1.1rem; font-weight: 500; border-bottom: 1px solid #ecf0f1; }
+        
+        /* Closet Styling */
+        .closet-grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; width: 100%; }
+        .closet-card { display: flex; flex-direction: column; align-items: center; padding: 15px; text-align: center; }
+        .closet-img { width: 120px; height: 120px; object-fit: contain; border-radius: 8px; margin-bottom: 15px; background: #ecf0f1; }
+        .closet-colors { display: flex; gap: 5px; margin-bottom: 10px; }
+        .c-dot { width: 25px; height: 25px; border-radius: 50%; border: 1px solid #bdc3c7; }
+        .tag-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; margin-top: 10px; }
+        .tag { font-size: 0.75rem; background: #e8f4f8; color: #2980b9; padding: 4px 8px; border-radius: 12px; font-weight: bold; }
+        
+        /* Shopping Card Styling */
+        .shopping-card {
+            display: flex; align-items: center; background: white; border-radius: 12px; padding: 20px; margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 6px solid #f1c40f; gap: 20px;
+        }
+        .shopping-swatch { width: 60px; height: 60px; border-radius: 10px; border: 1px solid #ecf0f1; flex-shrink:0;}
+        .shopping-details { flex: 1; }
+        .shopping-details h3 { margin: 0 0 5px 0; color: #2c3e50; }
+        .shopping-details p { margin: 0; color: #7f8c8d; font-size: 0.95rem; }
+        .unlock-badge { background: #27ae60; color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; }
+
+        /* Modals */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.75); align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
+        .modal.show { display: flex; opacity: 1; }
+        .modal-content { background-color: #fff; padding: 30px; border-radius: 16px; width: 90%; max-width: 650px; max-height: 90vh; overflow-y: auto; position: relative; transform: scale(0.9); transition: transform 0.3s; }
+        .modal.show .modal-content { transform: scale(1); }
+        .close-btn { position: absolute; top: 20px; right: 25px; font-size: 2.5rem; color: #bdc3c7; cursor: pointer; }
+        
+        .upload-area { border: 2px dashed #bdc3c7; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 20px; cursor: pointer; position: relative; }
+        canvas { max-width: 100%; max-height: 300px; border-radius: 8px; display: none; }
+        
+        .form-row { display: flex; gap: 15px; margin-bottom: 15px; width: 100%; }
+        .form-group { flex: 1; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #2c3e50; font-size:0.9rem;}
+        
+        .extracted-colors { display: flex; gap: 15px; margin-bottom: 20px; }
+        .extracted-color-box { display: flex; flex-direction: column; align-items: center; flex: 1; background: #f8f9fa; padding: 15px; border-radius: 10px; border: 1px solid #e9ecef; }
+        .color-preview { width: 50px; height: 50px; border-radius: 8px; border: 1px solid #bdc3c7; margin: 10px 0; background: #ecf0f1; }
+        
+        /* Outfit Generator */
+        .outfit-card { border-left: 6px solid #3498db; }
+        .outfit-items-row { display: flex; gap: 15px; overflow-x: auto; padding: 10px 0; }
+        .outfit-item { display: flex; flex-direction: column; align-items: center; width: 120px; flex-shrink: 0; background: #f8f9fa; padding: 10px; border-radius: 8px; border: 1px solid #e9ecef; }
+        .outfit-item img { width: 70px; height: 70px; object-fit: contain; margin-bottom: 8px; border-radius: 5px;}
+        .outfit-item.missing { background: #fff3cd; border-color: #ffe69c; border-style: dashed; justify-content: center;}
+        
+        /* Two mode toggle */
+        .toggle-container { display: flex; justify-content: center; margin-bottom: 20px; background: #ecf0f1; border-radius: 30px; padding: 5px; }
+        .toggle-btn { padding: 10px 20px; border: none; background: transparent; border-radius: 25px; cursor: pointer; font-weight: bold; color: #7f8c8d; transition: 0.3s; }
+        .toggle-btn.active { background: white; color: #2c3e50; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+
+        #scrollToTopBtn { opacity: 0; position: fixed; bottom: 30px; right: 30px; z-index: 99; background-color: #2c3e50; color: white; border: none; width: 50px; height: 50px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; }
+        #scrollToTopBtn.show { opacity: 1; }
+
+        :root {
+            color-scheme: light;
+            --ink: #17231d;
+            --muted: #748078;
+            --green: #17784c;
+            --green-dark: #105d3a;
+            --green-soft: #e8f4ec;
+            --canvas: #f5f6f2;
+            --surface: #ffffff;
+            --line: #e5e9e3;
+            --shadow: 0 8px 24px rgba(27, 44, 34, 0.06);
+        }
+
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            background: var(--canvas);
+            color: var(--ink);
+            font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            line-height: 1.5;
+        }
+        header {
+            padding: 18px max(24px, calc((100% - 1120px) / 2)) 0;
+            background: rgba(255, 255, 255, 0.96);
+            color: var(--ink);
+            text-align: left;
+            box-shadow: 0 1px 0 var(--line);
+            backdrop-filter: blur(14px);
+        }
+        .brand-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            max-width: 1120px;
+            margin: 0 auto 16px;
+        }
+        .brand-mark {
+            display: grid;
+            width: 40px;
+            height: 40px;
+            place-items: center;
+            border-radius: 12px;
+            background: var(--green);
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: 750;
+            letter-spacing: -0.06em;
+        }
+        header h1 { font-size: 1.1rem; letter-spacing: -0.035em; }
+        .brand-caption {
+            margin: 1px 0 0;
+            color: var(--muted);
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+        }
+        .tabs {
+            justify-content: flex-start;
+            width: 100%;
+            max-width: 1120px;
+            margin: 0 auto;
+            gap: 8px;
+            background: transparent;
+        }
+        .tab-btn {
+            padding: 12px 14px;
+            border-bottom: 2px solid transparent;
+            color: var(--muted);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .tab-btn:hover { background: var(--green-soft); color: var(--green-dark); }
+        .tab-btn.active {
+            border-radius: 0;
+            border-bottom-color: var(--green);
+            background: transparent;
+            color: var(--green-dark);
+        }
+        .view-section { padding: 40px 0 64px; }
+        .view-heading, .controls-container, #results, #closet-grid, #outfit-results,
+        #lookbook-results, #shopping-results {
+            width: min(1120px, calc(100% - 48px));
+            max-width: 1120px;
+        }
+        .view-heading { margin: 0 auto 28px; }
+        .view-heading h2 {
+            margin: 0;
+            font-size: clamp(1.7rem, 3vw, 2.35rem);
+            letter-spacing: -0.055em;
+            line-height: 1.15;
+        }
+        .view-heading p { margin: 8px 0 0; color: var(--muted); }
+        .controls-container {
+            align-items: stretch;
+            gap: 18px;
+            margin: 0 auto 30px;
+        }
+        .search-row { gap: 14px; }
+        input[type="text"], select {
+            min-height: 48px;
+            padding: 12px 15px;
+            border: 1px solid #dce2dc;
+            border-radius: 9px;
+            background: var(--surface);
+            color: var(--ink);
+            font: inherit;
+        }
+        input[type="text"]:focus, select:focus {
+            border-color: var(--green);
+            box-shadow: 0 0 0 3px rgba(23, 120, 76, 0.12);
+        }
+        .color-picker-wrapper { gap: 5px; }
+        input[type="color"] {
+            width: 48px;
+            height: 48px;
+            box-shadow: 0 0 0 1px var(--line);
+        }
+        .picker-label { color: var(--muted); font-size: 0.75rem; }
+        .primary-btn {
+            min-height: 46px;
+            padding: 11px 20px;
+            border-radius: 9px;
+            background: var(--green);
+            box-shadow: none;
+            font-size: 0.95rem;
+            font-weight: 650;
+        }
+        .primary-btn:hover { background: var(--green-dark); transform: translateY(-1px); }
+        .picker-btn {
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: var(--surface);
+            color: var(--ink);
+        }
+        .picker-btn.active { border-color: #d6a82a; background: #fff4cf; color: #604b13; }
+        .loader { border-color: var(--line); border-top-color: var(--green); }
+        .autocomplete-items {
+            border-color: var(--line);
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+        .autocomplete-item-wrapper { border-color: var(--line); }
+        .autocomplete-item-wrapper:hover { background: #f5f8f5; }
+        #results, #closet-grid, #outfit-results, #lookbook-results, #shopping-results {
+            margin: 0 auto 50px;
+        }
+        .category { margin-top: 36px; }
+        .category h2 {
+            padding-bottom: 12px;
+            border-bottom: 1px solid #dce2dc;
+            color: var(--ink);
+            font-size: 1.35rem;
+            letter-spacing: -0.03em;
+        }
+        .toc {
+            margin: 0 auto 24px;
+            padding: 18px 20px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: var(--surface);
+            box-shadow: var(--shadow);
+        }
+        .toc h3 { margin: 0 0 12px; font-size: 1rem; }
+        .toc-links { display: flex; flex-wrap: wrap; gap: 10px; }
+        .toc-links a {
+            padding: 7px 11px;
+            border-radius: 7px;
+            background: var(--green-soft);
+            color: var(--green-dark);
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .toc-links a:hover { background: #d7ecde; }
+        .combo-grid { gap: 14px; margin-top: 16px; }
+        .combo-card, .closet-card, .outfit-card, .shopping-card {
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            background: var(--surface);
+            box-shadow: var(--shadow);
+        }
+        .combo-card, .closet-card, .outfit-card { padding: 20px; }
+        .combo-card:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(27, 44, 34, 0.1); }
+        .combo-id {
+            border-color: var(--line);
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+        .palette-container { border-color: var(--line); border-radius: 10px; }
+        .v-label {
+            min-height: 75px;
+            border-color: var(--line);
+            color: var(--ink);
+            font-size: 1rem;
+        }
+        .hex-code { margin-left: auto; padding-right: 16px; color: var(--muted); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.85rem; }
+        .closet-grid-container { gap: 16px; }
+        .closet-card { padding: 20px; }
+        .closet-img { background: #f2f4f0; }
+        .tag { background: var(--green-soft); color: var(--green-dark); }
+        .shopping-card {
+            gap: 18px;
+            border-left: 3px solid var(--green);
+            box-shadow: var(--shadow);
+        }
+        .shopping-details h3, .form-group label { color: var(--ink); }
+        .shopping-details p { color: var(--muted); }
+        .unlock-badge { background: var(--green-soft); color: var(--green-dark); }
+        .modal { background: rgba(17, 29, 22, 0.48); backdrop-filter: blur(4px); }
+        .modal-content {
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            box-shadow: 0 24px 80px rgba(17, 29, 22, 0.2);
+        }
+        .close-btn { color: #929d95; }
+        .upload-area { border-color: #cbd6cc; background: #f8faf7; }
+        .upload-area:hover { border-color: var(--green); background: #f2f8f3; }
+        .extracted-color-box, .outfit-item {
+            border-color: var(--line);
+            border-radius: 10px;
+            background: #f8faf7;
+        }
+        .outfit-card { border-left: 3px solid var(--green); }
+        .outfit-item.missing { border-color: #ead9a6; background: #fff9e8; }
+        .toggle-container { background: #edf0ec; border-radius: 10px; }
+        .toggle-btn { border-radius: 7px; color: var(--muted); }
+        .toggle-btn.active { color: var(--green-dark); box-shadow: 0 1px 4px rgba(27, 44, 34, 0.12); }
+        #scrollToTopBtn {
+            border-radius: 12px;
+            background: var(--green);
+            box-shadow: 0 8px 20px rgba(23, 120, 76, 0.22);
+        }
+        #matched-indicator { color: var(--green-dark) !important; }
+        :focus-visible { outline: 3px solid rgba(23, 120, 76, 0.32); outline-offset: 2px; }
+
+        @media (max-width: 680px) {
+            header { padding: 14px 16px 0; }
+            .brand-row { margin-bottom: 10px; }
+            .tabs { gap: 2px; }
+            .tab-btn { padding: 11px 10px; font-size: 0.82rem; }
+            .view-section { padding-top: 30px; }
+            .view-heading, .controls-container, #results, #closet-grid, #outfit-results,
+            #lookbook-results, #shopping-results { width: calc(100% - 32px); }
+            .search-row { align-items: flex-end; gap: 10px; }
+            .form-row, .extracted-colors { gap: 10px; }
+            .shopping-card { align-items: flex-start; flex-wrap: wrap; padding: 16px; }
+            .shopping-details { min-width: calc(100% - 82px); }
+            .unlock-badge { margin-left: 78px; }
+            .v-swatches { width: 64px; }
+            .v-label { padding-left: 12px; font-size: 0.9rem; }
+            .hex-code { padding-right: 10px; font-size: 0.72rem; }
+            .modal-content { padding: 24px 18px; }
+        }
+        @media (max-width: 420px) {
+            .tab-btn { padding: 10px 8px; font-size: 0.76rem; }
+            .form-row, .extracted-colors { flex-direction: column; }
+            .search-row { flex-wrap: wrap; }
+            .input-wrapper { flex-basis: calc(100% - 70px); }
+            .view-heading h2 { font-size: 1.7rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand-row">
+            <span class="brand-mark" aria-hidden="true">W</span>
+            <div>
+                <h1>Wardrobe Studio</h1>
+                <p class="brand-caption">COLOR & OUTFIT PLANNING</p>
+            </div>
+        </div>
+        <nav class="tabs" aria-label="Main navigation">
+            <button class="tab-btn active" onclick="switchTab('dictionary')">Color Dictionary</button>
+            <button class="tab-btn" onclick="switchTab('closet')">My Closet</button>
+            <button class="tab-btn" onclick="switchTab('outfits')">Occasion Stylist</button>
+            <button class="tab-btn" onclick="switchTab('lookbook')">Lookbook (Situations)</button>
+            <button class="tab-btn" onclick="switchTab('shopping')">Shopping List</button>
+        </nav>
+    </header>
+
+    <!-- 1. DICTIONARY VIEW -->
+    <div id="dictionary-view" class="view-section active">
+        <div class="view-heading">
+            <h2>Find your next favorite combination.</h2>
+            <p>Explore color pairings and build a wardrobe that works together.</p>
+        </div>
+        <div class="controls-container">
+            <div class="search-row">
+                <div class="input-wrapper">
+                    <input type="text" id="colorInput" placeholder="Search a color..." autocomplete="off">
+                </div>
+                <div class="color-picker-wrapper">
+                    <input type="color" id="colorPicker" value="#f9c1ce">
+                    <label class="picker-label">Pick Color</label>
+                </div>
+            </div>
+            <button id="exploreBtn" class="primary-btn">Explore All 348 Palettes</button>
+        </div>
+        <div id="matched-indicator" style="color:#27ae60; font-weight:bold; margin-bottom:15px;"></div>
+        <div id="toc" class="toc" style="display:none;"></div>
+        <div id="results"></div>
+    </div>
+
+    <!-- 2. CLOSET VIEW -->
+    <div id="closet-view" class="view-section">
+        <div class="view-heading">
+            <h2>Your closet, at a glance.</h2>
+            <p>Keep track of the pieces you love and the colors you wear.</p>
+        </div>
+        <div class="controls-container">
+            <button class="primary-btn" onclick="openAddModal()">+ Add New Garment</button>
+        </div>
+        <div id="closet-grid" class="closet-grid-container"></div>
+    </div>
+
+    <!-- 3. OUTFIT / OCCASION STYLIST VIEW -->
+    <div id="outfits-view" class="view-section">
+        <div class="view-heading">
+            <h2>Build a look around your day.</h2>
+            <p>Choose an occasion or start with a piece from your closet.</p>
+        </div>
+        <div class="controls-container">
+            <div class="toggle-container">
+                <button class="toggle-btn active" id="mode-occasion" onclick="setOutfitMode('occasion')">By Occasion</button>
+                <button class="toggle-btn" id="mode-item" onclick="setOutfitMode('item')">By Item</button>
+            </div>
+            
+            <!-- Occasion Mode Controls -->
+            <div id="occasion-controls" style="width:100%; display:flex; gap:15px;">
+                <select id="occ-event">
+                    <option value="">-- Select Occasion --</option>
+                    <option value="Casual Hangout">Casual Hangout</option>
+                    <option value="Date">Date / Evening Out</option>
+                    <option value="Office / Business">Office / Business</option>
+                    <option value="Formal Event">Formal Event</option>
+                    <option value="Festive / Traditional">Festive / Traditional</option>
+                </select>
+                <select id="occ-weather">
+                    <option value="">-- Select Weather --</option>
+                    <option value="Hot / Sunny">Sunny & Hot</option>
+                    <option value="Mild / Breezy">Mild & Breezy</option>
+                    <option value="Cold / Winter">Cold / Winter</option>
+                </select>
+                <button class="primary-btn" style="flex-shrink:0;" onclick="generateByOccasion()">Style Me</button>
+            </div>
+
+            <!-- Item Mode Controls -->
+            <div id="item-controls" style="width:100%; display:none; gap:15px;">
+                <select id="outfit-source-select" style="flex-grow:1;">
+                    <option value="">-- Choose a garment --</option>
+                </select>
+                <button class="primary-btn" style="flex-shrink:0;" onclick="generateByItem()">Match Item</button>
+            </div>
+        </div>
+        <div id="outfit-results"></div>
+    </div>
+
+    <!-- 4. LOOKBOOK VIEW (New Feature 1) -->
+    <div id="lookbook-view" class="view-section">
+        <div class="controls-container" style="text-align:center;">
+            <h2>Curated Situations</h2>
+            <p style="color:#7f8c8d; margin-top:-10px;">Fully complete outfits built strictly from your closet</p>
+        </div>
+        <div id="lookbook-results"></div>
+    </div>
+
+    <!-- 5. SHOPPING LIST VIEW (New Feature 2) -->
+    <div id="shopping-view" class="view-section">
+        <div class="controls-container" style="text-align:center;">
+            <h2>Next Pieces to Buy</h2>
+            <p style="color:#7f8c8d; margin-top:-10px;">Items that unlock the most new combinations in your wardrobe.</p>
+        </div>
+        <div id="shopping-results"></div>
+    </div>
+
+
+    <!-- ADD GARMENT MODAL -->
+    <div id="addItemModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeAddModal()">&times;</span>
+            <h2 style="margin-top:0; color:#2c3e50;">Add Garment</h2>
+            
+            <div class="upload-area" id="uploadArea">
+                <p id="uploadText">Click to upload photo (or skip and manually assign colors below)</p>
+                <input type="file" id="imageUpload" accept="image/*" style="display:none;">
+                <canvas id="imageCanvas"></canvas>
+            </div>
+            
+            <div class="extracted-colors">
+                <div class="extracted-color-box">
+                    <label>Primary Color</label>
+                    <div style="display: flex; align-items: center; margin-top: 5px;">
+                        <button type="button" id="btnPickPrimary" class="picker-btn">Pick</button>
+                        <div id="statusPrimary" class="status-indicator"></div>
+                    </div>
+                    <div id="primaryColorPreview" class="color-preview"></div>
+                    <select id="primaryColorSelect" style="width: 100%;"></select>
+                </div>
+                <div class="extracted-color-box">
+                    <label>Secondary Color</label>
+                    <div style="display: flex; align-items: center; margin-top: 5px;">
+                        <button type="button" id="btnPickSecondary" class="picker-btn">Pick</button>
+                        <div id="statusSecondary" class="status-indicator"></div>
+                    </div>
+                    <div id="secondaryColorPreview" class="color-preview"></div>
+                    <select id="secondaryColorSelect" style="width: 100%;"><option value="">None</option></select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Item Name</label>
+                <input type="text" id="itemName" placeholder="e.g., Navy Pleated Trousers">
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="itemCatGroup" onchange="updateSubCategories()">
+                        <option value="Tops">Tops / Shirts</option>
+                        <option value="Bottoms">Bottoms / Pants</option>
+                        <option value="Outerwear">Outerwear / Jackets</option>
+                        <option value="Footwear">Footwear / Shoes</option>
+                        <option value="Accessories">Accessories</option>
+                        <option value="Indian Wear">Indian Wear</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Type</label>
+                    <select id="itemType"></select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Formality</label>
+                    <select id="itemFormality">
+                        <option value="Casual">Casual</option>
+                        <option value="Smart Casual">Smart Casual</option>
+                        <option value="Business Casual">Business Casual</option>
+                        <option value="Formal">Formal</option>
+                        <option value="Loungewear">Loungewear / Athleisure</option>
+                        <option value="Traditional">Festive / Traditional</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Fit / Silhouette</label>
+                    <select id="itemFit">
+                        <option value="Straight Fit">Straight Fit</option>
+                        <option value="High-Rise Straight">High-Rise Straight</option>
+                        <option value="Slim Fit">Slim Fit</option>
+                        <option value="Regular Fit">Regular Fit</option>
+                        <option value="Relaxed">Relaxed / Flowy</option>
+                        <option value="Oversized">Oversized</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button class="primary-btn" style="width:100%; max-width:100%;" onclick="saveGarment()">Save to Closet</button>
+        </div>
+    </div>
+
+    <!-- Detail Palette Modal (Dictionary) -->
+    <div id="paletteModal" class="modal">
+        <div class="modal-content" style="max-width:900px;">
+            <span class="close-btn" onclick="closePaletteModal()">&times;</span>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <button id="scrollToTopBtn" title="Go to top">&#8679;</button>
+
+    <script>
+        const colorsData = [{"name": "Hermosa Pink", "combinations": [176, 227, 273], "swatch": 0, "cmyk": [0, 30, 6, 0], "lab": [83.42717631799802, 22.136186770428026, 1.6381322957198563], "rgb": [249, 193, 206], "hex": "#f9c1ce"}, {"name": "Corinthian Pink", "combinations": [27, 43, 87, 97, 128, 169, 174, 206, 246, 254, 264, 342], "swatch": 0, "cmyk": [0, 35, 15, 0], "lab": [80.34637979705501, 25.369649805447466, 7.879377431906619], "rgb": [248, 182, 186], "hex": "#f8b6ba"}, {"name": "Cameo Pink", "combinations": [101, 105, 116, 120, 165, 231], "swatch": 0, "cmyk": [10, 32, 19, 0], "lab": [77.21675440604257, 17.198443579766547, 4.949416342412462], "rgb": [224, 179, 182], "hex": "#e0b3b6"}, {"name": "Fawn", "combinations": [18, 125, 308], "swatch": 0, "cmyk": [18, 31, 30, 0], "lab": [74.48996719310291, 11.194552529182886, 9.38521400778211], "rgb": [209, 176, 167], "hex": "#d1b0a7"}, {"name": "Light Brown Drab", "combinations": [35, 68, 185, 191, 223, 239, 244, 268, 285, 321], "swatch": 0, "cmyk": [8, 30, 20, 25], "lab": [64.1168841077287, 13.023346303501938, 5.3424124513618665], "rgb": [181, 147, 146], "hex": "#b59392"}, {"name": "Coral Red", "combinations": [92, 123, 320, 332], "swatch": 0, "cmyk": [0, 55, 40, 0], "lab": [70.28305485618371, 39.28793774319067, 23.190661478599225], "rgb": [245, 142, 132], "hex": "#f58e84"}, {"name": "Fresh Color", "combinations": [240], "swatch": 0, "cmyk": [0, 53, 45, 0], "lab": [70.96208133058671, 37.48249027237355, 27.29571984435799], "rgb": [246, 145, 126], "hex": "#f6917e"}, {"name": "Grenadine Pink", "combinations": [6, 21, 112, 166, 193, 201, 230, 300, 315, 341], "swatch": 0, "cmyk": [0, 62, 58, 0], "lab": [66.89402609292745, 43.82879377431905, 34.70038910505838], "rgb": [244, 128, 103], "hex": "#f48067"}, {"name": "Eosine Pink", "combinations": [34, 59, 90, 108, 134, 153, 197, 242, 248, 276, 287, 314, 327, 336], "swatch": 0, "cmyk": [0, 63, 23, 0], "lab": [67.25108720531014, 46.68482490272373, 10.29571984435799], "rgb": [243, 127, 148], "hex": "#f37f94"}, {"name": "Spinel Red", "combinations": [14, 147, 165, 184, 195, 224, 277], "swatch": 0, "cmyk": [0, 70, 21, 0], "lab": [64.53040360112917, 52.18677042801556, 8.291828793774329], "rgb": [242, 114, 145], "hex": "#f27291"}, {"name": "Old Rose", "combinations": [55, 162, 260, 265], "swatch": 0, "cmyk": [15, 70, 40, 0], "lab": [58.771648737315935, 42.1284046692607, 12.307392996108945], "rgb": [212, 109, 122], "hex": "#d46d7a"}, {"name": "Eugenia Red | A", "combinations": [284], "swatch": 0, "cmyk": [7, 76, 60, 0], "lab": [58.36575875486381, 50.754863813229576, 28.536964980544752], "rgb": [226, 98, 94], "hex": "#e2625e"}, {"name": "Eugenia Red | B", "combinations": [17, 77, 252, 262, 270, 280, 282, 325], "swatch": 0, "cmyk": [0, 80, 50, 10], "lab": [54.2748149843595, 54.696498054474716, 23.661478599221795], "rgb": [218, 82, 93], "hex": "#da525d"}, {"name": "Raw Sienna", "combinations": [3, 13, 33, 70, 86, 130, 131, 182, 243, 247, 252, 255, 268, 269, 279, 293, 298, 319, 327], "swatch": 0, "cmyk": [18, 58, 100, 12], "lab": [55.063706416418704, 25.548638132295707, 52.17120622568095], "rgb": [187, 113, 37], "hex": "#bb7125"}, {"name": "Vinaceous Tawny", "combinations": [40, 85, 244], "swatch": 0, "cmyk": [17, 72, 100, 6], "lab": [53.226520180056454, 38.17509727626458, 50.18677042801556], "rgb": [197, 97, 39], "hex": "#c56127"}, {"name": "Jasper Red", "combinations": [155, 194, 216, 219], "swatch": 0, "cmyk": [2, 83, 100, 0], "lab": [56.809338521400775, 58.41245136186771, 57.630350194552534], "rgb": [235, 83, 36], "hex": "#eb5324"}, {"name": "Spectrum Red", "combinations": [257, 266, 301, 322], "swatch": 0, "cmyk": [5, 100, 100, 0], "lab": [49.60708018616007, 70.9260700389105, 50.077821011673166], "rgb": [227, 31, 38], "hex": "#e31f26"}, {"name": "Red Orange", "combinations": [31, 164, 179, 241, 264], "swatch": 0, "cmyk": [9, 90, 100, 0], "lab": [51.8272678721294, 60.64202334630349, 50.88326848249028], "rgb": [221, 64, 39], "hex": "#dd4027"}, {"name": "Etruscan Red", "combinations": [25, 47, 97, 137, 152, 185, 275], "swatch": 0, "cmyk": [16, 80, 74, 6], "lab": [50.74845502403296, 45.88326848249028, 31.0544747081712], "rgb": [197, 83, 71], "hex": "#c55347"}, {"name": "Burnt Sienna", "combinations": [198, 242, 263, 285, 286, 297, 312, 333, 343], "swatch": 0, "cmyk": [22, 76, 100, 15], "lab": [46.43778133821622, 36.23346303501947, 43.7898832684825], "rgb": [174, 82, 36], "hex": "#ae5224"}, {"name": "Ochre Red", "combinations": [199, 283], "swatch": 0, "cmyk": [18, 73, 63, 20], "lab": [46.81773098344396, 35.73540856031127, 21.848249027237358], "rgb": [171, 84, 77], "hex": "#ab544d"}, {"name": "Scarlet", "combinations": [136, 308, 332], "swatch": 0, "cmyk": [10, 95, 72, 7], "lab": [46.54612039368276, 61.52529182879377, 28.902723735408557], "rgb": [203, 47, 67], "hex": "#cb2f43"}, {"name": "Carmine", "combinations": [39, 117, 122, 154, 225, 232, 307, 313], "swatch": 0, "cmyk": [0, 100, 75, 16], "lab": [44.29388876173037, 67.18677042801556, 33.71206225680933], "rgb": [204, 18, 54], "hex": "#cc1236"}, {"name": "Indian Lake", "combinations": [299, 331], "swatch": 0, "cmyk": [12, 89, 35, 9], "lab": [47.54253452353704, 57.21400778210116, 6.677042801556411], "rgb": [197, 60, 105], "hex": "#c53c69"}, {"name": "Rosolanc Purple", "combinations": [48, 144, 170, 204, 277, 346], "swatch": 0, "cmyk": [30, 90, 33, 0], "lab": [45.93881132219425, 52.365758754863805, -3.159533073929964], "rgb": [183, 63, 116], "hex": "#b73f74"}, {"name": "Pomegranite Purple", "combinations": [220, 271], "swatch": 0, "cmyk": [23, 100, 50, 6], "lab": [41.42519264515145, 60.96108949416342, 8.400778210116727], "rgb": [183, 31, 87], "hex": "#b71f57"}, {"name": "Hydrangea Red", "combinations": [142], "swatch": 0, "cmyk": [38, 90, 70, 0], "lab": [43.070115205615316, 44.35408560311285, 14.182879377431902], "rgb": [169, 65, 81], "hex": "#a94151"}, {"name": "Brick Red", "combinations": [37, 108, 246, 322, 328], "swatch": 0, "cmyk": [22, 84, 100, 18], "lab": [42.45975432974746, 41.50972762645915, 40.688715953307394], "rgb": [168, 66, 34], "hex": "#a84222"}, {"name": "Carmine Red", "combinations": [35, 51, 104, 130, 181, 200, 221, 228, 233, 237, 245, 338], "swatch": 0, "cmyk": [25, 95, 80, 16], "lab": [38.71366445410849, 50.22957198443581, 24.688715953307394], "rgb": [166, 44, 55], "hex": "#a62c37"}, {"name": "Pompeian Red", "combinations": [30, 71, 120, 212, 311, 324], "swatch": 0, "cmyk": [18, 97, 74, 19], "lab": [38.857099259937435, 54.805447470817114, 23.844357976653697], "rgb": [171, 36, 57], "hex": "#ab2439"}, {"name": "Red", "combinations": [251, 261], "swatch": 0, "cmyk": [30, 100, 70, 10], "lab": [37.86678873884184, 54.58754863813229, 15.369649805447466], "rgb": [167, 33, 68], "hex": "#a72144"}, {"name": "Brown", "combinations": [110, 121, 145, 161], "swatch": 0, "cmyk": [35, 74, 90, 35], "lab": [35.06981002517738, 23.47470817120623, 28.571984435797674], "rgb": [124, 66, 38], "hex": "#7c4226"}, {"name": "Hay's Russet", "combinations": [58, 82, 95, 152, 186, 231, 249, 304, 314, 336, 345], "swatch": 0, "cmyk": [37, 85, 87, 35], "lab": [31.235217822537575, 30.657587548638134, 23.509727626459153], "rgb": [121, 51, 39], "hex": "#793327"}, {"name": "Vandyke Red", "combinations": [16, 133, 147, 316, 335], "swatch": 0, "cmyk": [32, 95, 95, 33], "lab": [30.157930876630807, 40.59922178988327, 27.607003891050596], "rgb": [130, 36, 31], "hex": "#82241f"}, {"name": "Pansy Purple", "combinations": [157, 273], "swatch": 0, "cmyk": [34, 100, 60, 34], "lab": [27.605096513313494, 45.922178988326834, 6.089494163424121], "rgb": [125, 19, 58], "hex": "#7d133a"}, {"name": "Pale Burnt Lake", "combinations": [124, 171, 177, 205, 217, 258, 269, 283], "swatch": 0, "cmyk": [25, 90, 80, 40], "lab": [30.18234531166552, 39.03501945525292, 22.712062256809332], "rgb": [128, 38, 38], "hex": "#802626"}, {"name": "Violet Red", "combinations": [9], "swatch": 0, "cmyk": [75, 100, 50, 5], "lab": [27.77141985198749, 30.38521400778211, -17.743190661478593], "rgb": [100, 45, 94], "hex": "#642d5e"}, {"name": "Vistoris Lake", "combinations": [63, 91, 165, 226, 290, 337], "swatch": 0, "cmyk": [40, 71, 55, 40], "lab": [33.090714885175856, 20.29571984435799, 6.101167315175104], "rgb": [109, 65, 69], "hex": "#6d4145"}, {"name": "Sulpher Yellow", "combinations": [52, 72, 80, 104, 132, 135, 151, 208, 246, 254, 270, 294, 296, 310, 315, 320, 321, 326], "swatch": 1, "cmyk": [4, 4, 28, 0], "lab": [93.22499427786678, -1.7315175097276239, 21.64980544747081], "rgb": [245, 236, 194], "hex": "#f5ecc2"}, {"name": "Pale Lemon Yellow", "combinations": [3, 31, 60, 76, 99, 109, 111, 169, 185, 195, 203, 228, 241, 261, 272, 281, 290, 292, 336], "swatch": 1, "cmyk": [0, 4, 38, 0], "lab": [94.8577096208133, -0.14396887159533378, 34.08560311284046], "rgb": [255, 239, 174], "hex": "#ffefae"}, {"name": "Naples Yellow", "combinations": [14, 115, 166, 193, 303, 325], "swatch": 1, "cmyk": [2, 7, 44, 0], "lab": [91.7265583276112, 0.31906614785992815, 36.56809338521401], "rgb": [251, 230, 160], "hex": "#fbe6a0"}, {"name": "Ivory Buff", "combinations": [11, 50, 94, 102, 126, 178, 184, 190, 209, 214, 235, 243, 262, 266, 301, 343], "swatch": 1, "cmyk": [8, 15, 40, 0], "lab": [85.59700923170824, 3.377431906614788, 27.268482490272362], "rgb": [235, 211, 162], "hex": "#ebd3a2"}, {"name": "Seashell Pink", "combinations": [45, 84, 88, 113, 150, 176, 194, 276, 334], "swatch": 1, "cmyk": [0, 19, 23, 0], "lab": [88.12848096437018, 12.08949416342412, 17.268482490272362], "rgb": [253, 212, 189], "hex": "#fdd4bd"}, {"name": "Light Pinkish Cinnamon", "combinations": [317], "swatch": 1, "cmyk": [0, 25, 40, 0], "lab": [84.2069123369192, 15.630350194552534, 29.809338521400775], "rgb": [252, 199, 155], "hex": "#fcc79b"}, {"name": "Pinkish Cinnamon", "combinations": [78, 161, 175, 232, 258, 263, 292, 305, 310], "swatch": 1, "cmyk": [5, 32, 53, 0], "lab": [77.84695201037613, 17.229571984435808, 34.747081712062254], "rgb": [238, 180, 128], "hex": "#eeb480"}, {"name": "Cinnamon Buff", "combinations": [23, 127, 137, 180, 210, 234, 246, 323, 344], "swatch": 1, "cmyk": [0, 25, 57, 0], "lab": [83.52941176470588, 14.743190661478593, 43.665369649805456], "rgb": [253, 197, 126], "hex": "#fdc57e"}, {"name": "Cream Yellow", "combinations": [122, 192, 215, 226, 267, 278, 294, 295, 300, 302, 304, 311, 329, 342], "swatch": 1, "cmyk": [0, 28, 68, 0], "lab": [81.81277180132753, 16.46692607003891, 51.97665369649806], "rgb": [253, 191, 104], "hex": "#fdbf68"}, {"name": "Golden Yellow", "combinations": [26, 81, 132, 138, 140, 179, 206, 229, 309, 315], "swatch": 1, "cmyk": [2, 42, 74, 0], "lab": [73.85671778439001, 25.94163424124514, 51.1828793774319], "rgb": [243, 162, 87], "hex": "#f3a257"}, {"name": "Vinaceous Cinnamon", "combinations": [203, 205, 213, 256, 260, 279, 299], "swatch": 1, "cmyk": [4, 40, 42, 0], "lab": [74.98741130693523, 24.739299610894932, 24.813229571984436], "rgb": [238, 167, 140], "hex": "#eea78c"}, {"name": "Ochraceous Salmon", "combinations": [32, 71, 121, 186, 217, 220, 223, 238, 296, 339], "swatch": 1, "cmyk": [15, 38, 55, 0], "lab": [71.44731822690166, 16.459143968871587, 29.101167315175104], "rgb": [216, 163, 123], "hex": "#d8a37b"}, {"name": "Isabella Color", "combinations": [4, 12, 241, 292], "swatch": 1, "cmyk": [15, 28, 60, 10], "lab": [69.68337529564354, 7.070038910505843, 33.02334630350194], "rgb": [197, 165, 110], "hex": "#c5a56e"}, {"name": "Maple", "combinations": [282], "swatch": 1, "cmyk": [5, 26, 56, 20], "lab": [68.19409475852598, 9.591439688715951, 32.94941634241246], "rgb": [197, 159, 107], "hex": "#c59f6b"}, {"name": "Olive Buff", "combinations": [83, 175, 200, 330, 348], "swatch": 1, "cmyk": [16, 6, 42, 12], "lab": [78.04837109941252, -7.108949416342412, 23.657587548638134], "rgb": [193, 196, 148], "hex": "#c1c494"}, {"name": "Ecru", "combinations": [167, 249, 275, 279, 292, 302, 317, 327], "swatch": 1, "cmyk": [20, 25, 40, 6], "lab": [72.19043259327077, 4.2295719844358075, 16.731517509727638], "rgb": [194, 174, 147], "hex": "#c2ae93"}, {"name": "Yellow", "combinations": [22, 62, 68, 154, 240, 251, 295, 313], "swatch": 1, "cmyk": [0, 0, 100, 0], "lab": [94.96452277409018, -6.45525291828794, 95.57976653696497], "rgb": [255, 242, 0], "hex": "#fff200"}, {"name": "Lemon Yellow", "combinations": [45, 123, 138, 158, 168, 173, 189, 210, 253, 259, 289, 298, 306, 317, 333], "swatch": 1, "cmyk": [5, 0, 85, 0], "lab": [92.65583276112001, -9.389105058365757, 77.7626459143969], "rgb": [248, 237, 67], "hex": "#f8ed43"}, {"name": "Apricot Yellow", "combinations": [107, 129, 163, 198, 213, 247, 265, 284, 305, 319], "swatch": 1, "cmyk": [0, 10, 100, 0], "lab": [89.35072861829556, 1.9066147859922182, 89.45525291828793], "rgb": [255, 221, 0], "hex": "#ffdd00"}, {"name": "Pyrite Yellow", "combinations": [239, 250, 255, 287], "swatch": 1, "cmyk": [23, 25, 80, 0], "lab": [73.56221866178377, 0.4241245136186649, 49.8171206225681], "rgb": [202, 179, 86], "hex": "#cab356"}, {"name": "Olive Ocher", "combinations": [66, 148, 149, 156, 157, 249, 278], "swatch": 1, "cmyk": [18, 26, 90, 0], "lab": [74.87907225146868, 3.568093385214013, 61.805447470817114], "rgb": [214, 180, 62], "hex": "#d6b43e"}, {"name": "Yellow Ocher", "combinations": [42, 96, 118, 124, 126, 191, 222, 325], "swatch": 1, "cmyk": [12, 28, 88, 0], "lab": [76.19134813458457, 8.44357976653697, 62.7898832684825], "rgb": [226, 181, 64], "hex": "#e2b540"}, {"name": "Orange Yellow", "combinations": [114, 148, 153, 164, 170, 257, 286, 338], "swatch": 1, "cmyk": [0, 33, 100, 0], "lab": [78.49393453879605, 19.571984435797674, 78.21789883268482], "rgb": [252, 179, 21], "hex": "#fcb315"}, {"name": "Yellow Orange", "combinations": [2, 53, 89, 151, 171, 209, 222, 235, 267, 288, 297, 312, 319, 335], "swatch": 1, "cmyk": [0, 45, 100, 0], "lab": [72.95948729686427, 29.404669260700388, 72.94163424124514], "rgb": [249, 157, 27], "hex": "#f99d1b"}, {"name": "Apricot Orange", "combinations": [211, 253, 309, 328], "swatch": 1, "cmyk": [0, 55, 75, 0], "lab": [69.3736171511406, 37.688715953307394, 49.64980544747081], "rgb": [246, 140, 80], "hex": "#f68c50"}, {"name": "Orange", "combinations": [7, 46, 141, 144, 149, 256, 272], "swatch": 1, "cmyk": [0, 68, 100, 0], "lab": [63.79797055008774, 47.159533073929964, 64.715953307393], "rgb": [243, 116, 32], "hex": "#f37420"}, {"name": "Peach Red", "combinations": [115, 250, 274, 285, 298, 303, 326, 340], "swatch": 1, "cmyk": [0, 80, 90, 0], "lab": [59.09666590371557, 57.54863813229571, 54.35019455252919], "rgb": [241, 90, 48], "hex": "#f15a30"}, {"name": "English Red", "combinations": [1, 131, 190, 308, 339], "swatch": 1, "cmyk": [13, 73, 100, 0], "lab": [57.2152285038529, 43.29961089494162, 54.361867704280144], "rgb": [217, 102, 41], "hex": "#d96629"}, {"name": "Cinnamon Rufous", "combinations": [8, 10, 103, 158, 172, 204, 206], "swatch": 1, "cmyk": [20, 60, 82, 5], "lab": [57.233539330128934, 27.76653696498053, 40.22957198443581], "rgb": [194, 117, 68], "hex": "#c27544"}, {"name": "Orange Rufous", "combinations": [91, 102, 222], "swatch": 1, "cmyk": [18, 65, 100, 8], "lab": [54.56168459601739, 31.61089494163423, 51.245136186770424], "rgb": [193, 107, 39], "hex": "#c16b27"}, {"name": "Sulphine Yellow", "combinations": [36, 65, 142, 160, 252], "swatch": 1, "cmyk": [24, 32, 100, 4], "lab": [67.23887998779279, 4.346303501945528, 60.55252918287937], "rgb": [193, 159, 44], "hex": "#c19f2c"}, {"name": "Khaki", "combinations": [129, 146, 159, 236, 248], "swatch": 1, "cmyk": [24, 45, 100, 6], "lab": [61.01930266269932, 13.859922178988313, 55.05058365758754], "rgb": [188, 137, 43], "hex": "#bc892b"}, {"name": "Citron Yellow", "combinations": [40, 87, 145, 150, 153, 196, 305, 323], "swatch": 1, "cmyk": [35, 17, 95, 0], "lab": [72.4650949874113, -13.062256809338521, 58.17509727626458], "rgb": [178, 183, 62], "hex": "#b2b73e"}, {"name": "Citrine", "combinations": [59, 93, 132, 133, 262], "swatch": 1, "cmyk": [36, 32, 100, 0], "lab": [65.5588616769665, -2.579766536964982, 54.486381322957186], "rgb": [176, 159, 54], "hex": "#b09f36"}, {"name": "Buffy Citrine", "combinations": [100, 177, 233], "swatch": 1, "cmyk": [42, 40, 82, 8], "lab": [56.61860074769207, 0.0, 33.29961089494162], "rgb": [150, 135, 77], "hex": "#96874d"}, {"name": "Dark Citrine", "combinations": [10, 41, 274, 304], "swatch": 1, "cmyk": [38, 34, 67, 20], "lab": [54.71427481498436, -1.4046692607003877, 23.066147859922182], "rgb": [139, 131, 91], "hex": "#8b835b"}, {"name": "Light Grayish Olive", "combinations": [107, 184], "swatch": 1, "cmyk": [43, 36, 62, 19], "lab": [53.185320820935374, -2.276264591439684, 17.019455252918277], "rgb": [132, 128, 97], "hex": "#848061"}, {"name": "Krongbergs Green", "combinations": [29], "swatch": 1, "cmyk": [48, 35, 70, 12], "lab": [55.12474250400549, -6.1867704280155635, 21.509727626459153], "rgb": [132, 135, 94], "hex": "#84875e"}, {"name": "Olive", "combinations": [96, 201, 254, 258, 277, 310, 334], "swatch": 1, "cmyk": [48, 38, 100, 15], "lab": [52.213321126115815, -5.727626459143963, 41.486381322957186], "rgb": [131, 126, 49], "hex": "#837e31"}, {"name": "Orange Citrine", "combinations": [212, 342], "swatch": 1, "cmyk": [28, 48, 92, 24], "lab": [50.24185549706264, 11.517509727626447, 42.046692607003905], "rgb": [152, 111, 45], "hex": "#986f2d"}, {"name": "Sudan Brown", "combinations": [207, 214, 273], "swatch": 1, "cmyk": [25, 60, 65, 19], "lab": [49.8619058518349, 23.03112840466926, 22.451361867704293], "rgb": [163, 103, 82], "hex": "#a36752"}, {"name": "Olive Green", "combinations": [66, 243, 270, 297], "swatch": 1, "cmyk": [56, 40, 85, 22], "lab": [46.38590066376745, -8.494163424124508, 26.486381322957186], "rgb": [107, 113, 64], "hex": "#6b7140"}, {"name": "Light Brownish Olive", "combinations": [199, 318], "swatch": 1, "cmyk": [42, 46, 73, 24], "lab": [47.50743877317464, 3.747081712062254, 22.194552529182886], "rgb": [128, 110, 75], "hex": "#806e4b"}, {"name": "Deep Grayish Olive", "combinations": [146, 343], "swatch": 1, "cmyk": [50, 48, 78, 37], "lab": [38.605325398641945, -0.28404669260700643, 19.94163424124514], "rgb": [99, 90, 58], "hex": "#635a3a"}, {"name": "Pale Raw Umber", "combinations": [26, 73, 160, 234, 296], "swatch": 1, "cmyk": [46, 63, 87, 32], "lab": [37.065690089265274, 11.190661478599225, 24.957198443579756], "rgb": [113, 80, 47], "hex": "#71502f"}, {"name": "Sepia", "combinations": [24, 288], "swatch": 1, "cmyk": [48, 60, 100, 40], "lab": [33.82619974059663, 6.867704280155635, 30.23346303501947], "rgb": [100, 75, 30], "hex": "#644b1e"}, {"name": "Madder Brown", "combinations": [28, 79, 98, 173, 237, 275, 323], "swatch": 1, "cmyk": [36, 88, 100, 38], "lab": [29.08522163729305, 32.0, 29.280155642023345], "rgb": [118, 44, 25], "hex": "#762c19"}, {"name": "Mars Brown Tobacco", "combinations": [19], "swatch": 1, "cmyk": [39, 76, 100, 47], "lab": [28.032349126420996, 20.451361867704293, 29.836575875486375], "rgb": [101, 53, 20], "hex": "#653514"}, {"name": "Vandyke Brown", "combinations": [110, 113, 118, 182, 192, 328], "swatch": 1, "cmyk": [56, 71, 97, 52], "lab": [23.811703669794767, 8.49805447470817, 22.101167315175104], "rgb": [75, 51, 23], "hex": "#4b3317"}, {"name": "Turquoise Green", "combinations": [36, 74, 147, 163, 173, 202, 223, 230, 263, 272, 285, 293, 300, 305, 317, 346], "swatch": 2, "cmyk": [29, 0, 24, 0], "lab": [85.26283665217059, -16.891050583657588, 4.595330739299612], "rgb": [181, 222, 204], "hex": "#b5decc"}, {"name": "Glaucous Green", "combinations": [7, 150, 171, 207, 239, 260], "swatch": 2, "cmyk": [30, 9, 24, 0], "lab": [80.29755092698558, -10.237354085603116, 2.2996108949416225], "rgb": [180, 205, 194], "hex": "#b4cdc2"}, {"name": "Dark Greenish Glaucous", "combinations": [264, 311], "swatch": 2, "cmyk": [30, 15, 36, 0], "lab": [77.09010452429999, -7.5564202334630295, 11.369649805447466], "rgb": [183, 194, 169], "hex": "#b7c2a9"}, {"name": "Yellow Green", "combinations": [111, 141, 276, 326, 334], "swatch": 2, "cmyk": [35, 0, 72, 0], "lab": [80.60883497367819, -24.599221789883273, 43.91050583657588], "rgb": [175, 212, 114], "hex": "#afd472"}, {"name": "Light Green Yellow", "combinations": [61, 289, 291, 311, 346], "swatch": 2, "cmyk": [26, 5, 85, 0], "lab": [81.13527122911421, -15.863813229571988, 60.55642023346303], "rgb": [199, 209, 79], "hex": "#c7d14f"}, {"name": "Night Green", "combinations": [19, 32, 158, 326], "swatch": 2, "cmyk": [52, 0, 100, 0], "lab": [73.30739299610894, -36.03112840466926, 57.0272373540856], "rgb": [135, 197, 64], "hex": "#87c540"}, {"name": "Olive Yellow", "combinations": [124, 211, 265, 347], "swatch": 2, "cmyk": [40, 30, 80, 0], "lab": [65.48561837186236, -6.054474708171213, 37.836575875486375], "rgb": [166, 161, 89], "hex": "#a6a159"}, {"name": "Artemesia Green", "combinations": [293, 312], "swatch": 2, "cmyk": [57, 28, 39, 8], "lab": [58.101777676050965, -12.832684824902728, -2.891050583657588], "rgb": [112, 147, 144], "hex": "#709390"}, {"name": "Andover Green", "combinations": [244, 346], "swatch": 2, "cmyk": [60, 40, 50, 10], "lab": [51.212329289692526, -7.7626459143968845, 1.5369649805447523], "rgb": [109, 126, 119], "hex": "#6d7e77"}, {"name": "Rainette Green", "combinations": [73, 162, 188, 266, 301], "swatch": 2, "cmyk": [42, 20, 62, 10], "lab": [63.738460364690624, -12.525291828793769, 22.44747081712063], "rgb": [143, 160, 113], "hex": "#8fa071"}, {"name": "Chromium Green", "combinations": [105, 200, 219, 283], "swatch": 2, "cmyk": [50, 16, 58, 20], "lab": [57.87289234760052, -18.147859922178995, 14.992217898832678], "rgb": [113, 148, 112], "hex": "#719470"}, {"name": "Pistachio Green", "combinations": [127, 137], "swatch": 2, "cmyk": [64, 29, 56, 6], "lab": [55.82055390249485, -18.642023346303503, 5.688715953307394], "rgb": [100, 143, 123], "hex": "#648f7b"}, {"name": "Sea Green", "combinations": [17, 21, 58, 86, 133, 250, 260, 284, 291, 340, 347], "swatch": 2, "cmyk": [80, 0, 51, 0], "lab": [65.05226214999618, -48.90272373540856, 0.4591439688715866], "rgb": [0, 180, 155], "hex": "#00b49b"}, {"name": "Benzol Green", "combinations": [15, 54, 92, 122, 155, 247, 266, 267, 281, 304, 306], "swatch": 2, "cmyk": [100, 15, 55, 0], "lab": [53.56221866178378, -54.62645914396887, -8.307392996108945], "rgb": [0, 151, 141], "hex": "#00978d"}, {"name": "Light Porcelain Green", "combinations": [44, 193, 328], "swatch": 2, "cmyk": [86, 22, 50, 3], "lab": [53.29518577859159, -37.52140077821012, -6.832684824902728], "rgb": [0, 144, 138], "hex": "#00908a"}, {"name": "Green", "combinations": [198, 216, 293], "swatch": 2, "cmyk": [75, 21, 73, 0], "lab": [57.770656900892654, -34.50972762645914, 15.58754863813229], "rgb": [72, 155, 110], "hex": "#489b6e"}, {"name": "Dull Viridian Green", "combinations": [136, 256, 306, 316], "swatch": 2, "cmyk": [90, 20, 80, 0], "lab": [53.49965667200732, -49.00389105058366, 14.43968871595331], "rgb": [0, 148, 101], "hex": "#009465"}, {"name": "Oil Green", "combinations": [245, 299, 320], "swatch": 2, "cmyk": [53, 28, 100, 8], "lab": [57.639429312581065, -16.01167315175097, 43.76653696498053], "rgb": [129, 146, 56], "hex": "#819238"}, {"name": "Diamine Green", "combinations": [38, 146, 217, 242, 251, 313], "swatch": 2, "cmyk": [87, 32, 91, 18], "lab": [42.738994430457005, -35.661478599221795, 18.56031128404669], "rgb": [26, 116, 68], "hex": "#1a7444"}, {"name": "Cossack Green", "combinations": [5, 135, 262, 270, 278, 294, 319, 341, 348], "swatch": 2, "cmyk": [76, 32, 91, 18], "lab": [45.46425574120699, -27.202334630350194, 23.44747081712063], "rgb": [67, 119, 66], "hex": "#437742"}, {"name": "Lincoln Green", "combinations": [70, 121, 203, 210, 280, 290], "swatch": 2, "cmyk": [60, 48, 86, 37], "lab": [36.266117341878385, -5.906614785992218, 21.182879377431902], "rgb": [85, 88, 50], "hex": "#555832"}, {"name": "Blackish Olive", "combinations": [109, 318, 336], "swatch": 2, "cmyk": [56, 32, 63, 55], "lab": [33.261615930418856, -10.128404669260703, 9.688715953307394], "rgb": [66, 83, 62], "hex": "#42533e"}, {"name": "Deep Slate Olive", "combinations": [189, 229, 268, 303, 310, 321, 332, 341, 342, 348], "swatch": 2, "cmyk": [76, 60, 80, 62], "lab": [18.800640878919662, -7.669260700389103, 7.536964980544752], "rgb": [37, 49, 34], "hex": "#253122"}, {"name": "Nile Blue", "combinations": [25, 250, 268, 302, 306, 330, 345], "swatch": 3, "cmyk": [25, 0, 10, 0], "lab": [87.6752880140383, -13.252918287937746, -5.031128404669261], "rgb": [188, 228, 229], "hex": "#bce4e5"}, {"name": "Pale King's Blue", "combinations": [16, 49, 72, 75, 167, 196, 213, 234, 287], "swatch": 3, "cmyk": [33, 4, 7, 0], "lab": [82.21408407721064, -12.735408560311285, -12.883268482490266], "rgb": [167, 212, 228], "hex": "#a7d4e4"}, {"name": "Light Glaucous Blue", "combinations": [54, 93, 119, 152, 178, 204, 227, 320, 339, 341], "swatch": 3, "cmyk": [35, 10, 14, 0], "lab": [78.20859082932783, -10.568093385214013, -8.723735408560316], "rgb": [165, 200, 209], "hex": "#a5c8d1"}, {"name": "Salvia Blue", "combinations": [29, 129, 135, 139, 142, 188, 209, 212, 237, 272, 294, 321, 330], "swatch": 3, "cmyk": [41, 25, 10, 0], "lab": [69.4697489890898, -2.7587548638132233, -16.754863813229576], "rgb": [151, 172, 200], "hex": "#97acc8"}, {"name": "Cobalt Green", "combinations": [156, 188, 201, 202, 230, 271, 281, 282, 290, 291, 308, 333], "swatch": 3, "cmyk": [42, 0, 42, 0], "lab": [79.01274128328375, -25.56420233463035, 13.0], "rgb": [150, 209, 170], "hex": "#96d1aa"}, {"name": "Calamine BLue", "combinations": [20, 41, 65, 159, 176, 255, 261, 287, 291, 300], "swatch": 3, "cmyk": [50, 0, 20, 0], "lab": [77.09010452429999, -26.241245136186777, -10.373540856031127], "rgb": [120, 205, 208], "hex": "#78cdd0"}, {"name": "Venice Green", "combinations": [78, 128, 138, 189, 283, 345], "swatch": 3, "cmyk": [58, 0, 30, 0], "lab": [73.69954985885404, -31.731517509727624, -6.140077821011673], "rgb": [98, 198, 191], "hex": "#62c6bf"}, {"name": "Cerulian Blue", "combinations": [1, 63, 99, 125, 148, 227, 240, 264], "swatch": 3, "cmyk": [84, 26, 32, 0], "lab": [54.972152285038526, -30.186770428015564, -20.13618677042801], "rgb": [0, 147, 165], "hex": "#0093a5"}, {"name": "Peacock Blue", "combinations": [131, 286], "swatch": 3, "cmyk": [100, 19, 43, 0], "lab": [52.78553444724193, -48.91050583657588, -17.51750972762646], "rgb": [0, 147, 155], "hex": "#00939b"}, {"name": "Green Blue", "combinations": [12, 74, 79, 178, 208, 252, 259, 271, 330], "swatch": 3, "cmyk": [82, 24, 40, 3], "lab": [54.134431982909895, -31.268482490272376, -12.883268482490266], "rgb": [9, 145, 151], "hex": "#099197"}, {"name": "Olympic Blue", "combinations": [44, 67, 157, 194, 231, 274, 324], "swatch": 3, "cmyk": [69, 44, 10, 0], "lab": [53.090714885175856, -3.634241245136181, -30.739299610894946], "rgb": [90, 130, 179], "hex": "#5a82b3"}, {"name": "Blue", "combinations": [49, 51, 88, 143, 154, 186, 191, 215, 257, 267, 295, 333], "swatch": 3, "cmyk": [95, 54, 0, 0], "lab": [43.49431601434348, -8.832684824902728, -48.77042801556421], "rgb": [0, 110, 184], "hex": "#006eb8"}, {"name": "Antwarp Blue", "combinations": [85, 106, 114, 140, 163, 172, 208, 244, 258, 281, 299, 302, 334], "swatch": 3, "cmyk": [100, 40, 30, 10], "lab": [42.03250171663996, -29.124513618677042, -27.727626459143963], "rgb": [0, 113, 144], "hex": "#007190"}, {"name": "Helvetia Blue", "combinations": [39, 48, 161, 187, 218, 259, 312, 347], "swatch": 3, "cmyk": [100, 62, 19, 10], "lab": [35.309376668955515, -12.101167315175104, -36.37354085603113], "rgb": [0, 91, 141], "hex": "#005b8d"}, {"name": "Dark Medici Blue", "combinations": [160, 224, 241, 249], "swatch": 3, "cmyk": [70, 45, 45, 15], "lab": [45.117875944151976, -9.225680933852146, -6.856031128404666], "rgb": [84, 112, 118], "hex": "#547076"}, {"name": "Dusky Green", "combinations": [94, 219, 225, 278, 284, 318, 332, 338], "swatch": 3, "cmyk": [100, 30, 64, 50], "lab": [27.965209430075532, -36.268482490272376, -3.2801556420233453], "rgb": [0, 79, 70], "hex": "#004f46"}, {"name": "Deep Lyons Blue", "combinations": [22, 38, 101, 126, 179, 199, 236, 247, 314, 344], "swatch": 3, "cmyk": [100, 85, 15, 6], "lab": [28.532845044632637, 6.560311284046691, -42.68093385214007], "rgb": [28, 66, 134], "hex": "#1c4286"}, {"name": "Violet Blue", "combinations": [75, 83, 89, 98, 125, 233, 286, 289, 297, 309, 339], "swatch": 3, "cmyk": [85, 79, 38, 16], "lab": [30.14724956130312, 5.435797665369648, -22.377431906614788], "rgb": [64, 69, 106], "hex": "#40456a"}, {"name": "Vandar Poel's Blue", "combinations": [5, 77, 151, 167, 168, 309, 343], "swatch": 3, "cmyk": [100, 73, 43, 10], "lab": [30.77744716563668, -11.264591439688715, -24.521400778210122], "rgb": [6, 79, 110], "hex": "#064f6e"}, {"name": "Dark Tyrian Blue", "combinations": [2, 60, 67, 119, 141, 245, 279], "swatch": 3, "cmyk": [90, 66, 36, 50], "lab": [20.613412680247194, -5.836575875486375, -19.081712062256813], "rgb": [18, 53, 78], "hex": "#12354e"}, {"name": "Dull Violet Black", "combinations": [95, 106, 145, 265, 277, 289, 295, 331], "swatch": 3, "cmyk": [95, 106, 38, 50], "lab": [8.1025406271458, 19.431906614785987, -28.813229571984436], "rgb": [30, 14, 63], "hex": "#1e0e3f"}, {"name": "Deep Indigo", "combinations": [6, 28, 139, 155, 182, 211, 232], "swatch": 3, "cmyk": [100, 92, 52, 60], "lab": [5.818265049210345, 4.140077821011687, -21.785992217898837], "rgb": [5, 18, 48], "hex": "#051230"}, {"name": "Deep Slate Green", "combinations": [84, 149, 166, 271, 318, 325], "swatch": 3, "cmyk": [80, 50, 60, 70], "lab": [16.881055924315252, -12.143968871595334, -2.2295719844357933], "rgb": [17, 47, 44], "hex": "#112f2c"}, {"name": "Grayish Lavender - A", "combinations": [8, 15, 159, 177, 218, 248, 307], "swatch": 4, "cmyk": [28, 28, 0, 0], "lab": [73.42336156252384, 7.459143968871587, -19.35019455252919], "rgb": [181, 177, 216], "hex": "#b5b1d8"}, {"name": "Grayish Lavender - B", "combinations": [47, 56, 174, 187, 235, 327, 329, 338], "swatch": 4, "cmyk": [25, 33, 20, 0], "lab": [71.34508278019379, 10.046692607003905, -2.210116731517516], "rgb": [192, 169, 179], "hex": "#c0a9b3"}, {"name": "Laelia Pink", "combinations": [20, 254, 280, 337], "swatch": 4, "cmyk": [20, 48, 18, 0], "lab": [66.5186541542687, 24.307392996108945, -2.6614785992217946], "rgb": [202, 146, 168], "hex": "#ca92a8"}, {"name": "Lilac", "combinations": [143, 162, 282, 347], "swatch": 4, "cmyk": [28, 54, 8, 0], "lab": [61.530479896238646, 25.922178988326834, -14.252918287937746], "rgb": [185, 132, 175], "hex": "#b984af"}, {"name": "Eupatorium Purple", "combinations": [215, 315, 322], "swatch": 4, "cmyk": [25, 79, 12, 0], "lab": [52.24536507209888, 46.71206225680933, -11.723735408560316], "rgb": [191, 88, 146], "hex": "#bf5892"}, {"name": "Light Mauve", "combinations": [23, 80, 128, 134, 180, 274, 331], "swatch": 4, "cmyk": [43, 62, 5, 0], "lab": [53.6415655756466, 23.902723735408557, -23.976653696498047], "rgb": [154, 114, 170], "hex": "#9a72aa"}, {"name": "Aconite Violet", "combinations": [43, 64, 90, 187, 220, 257, 269, 301, 307, 324, 344], "swatch": 4, "cmyk": [39, 68, 5, 0], "lab": [52.66956588082704, 30.696498054474716, -22.369649805447466], "rgb": [163, 106, 165], "hex": "#a36aa5"}, {"name": "Dull Blue Violet", "combinations": [9, 100], "swatch": 4, "cmyk": [57, 60, 17, 0], "lab": [50.22201876859693, 13.377431906614788, -22.4591439688716], "rgb": [128, 113, 158], "hex": "#80719e"}, {"name": "Dark Soft Violet", "combinations": [64, 127, 197], "swatch": 4, "cmyk": [70, 68, 13, 0], "lab": [43.99633783474479, 12.346303501945528, -31.171206225680933], "rgb": [102, 98, 156], "hex": "#66629c"}, {"name": "Blue Violet", "combinations": [116, 175, 196, 322, 345], "swatch": 4, "cmyk": [72, 80, 0, 0], "lab": [39.12260624093995, 23.571984435797674, -41.91050583657588], "rgb": [100, 80, 161], "hex": "#6450a1"}, {"name": "Purple Drab", "combinations": [236], "swatch": 4, "cmyk": [38, 65, 49, 26], "lab": [41.87228198672465, 19.867704280155635, 5.560311284046691], "rgb": [132, 86, 91], "hex": "#84565b"}, {"name": "Deep Violet / Plumbeous", "combinations": [183, 192, 218], "swatch": 4, "cmyk": [61, 52, 43, 7], "lab": [48.02929732204166, 0.7937743190661593, -5.906614785992218], "rgb": [112, 114, 124], "hex": "#70727c"}, {"name": "Veronia Purple", "combinations": [13, 24, 168, 183], "swatch": 4, "cmyk": [42, 78, 46, 15], "lab": [40.982681010147246, 29.56031128404669, 0.12840466926070349], "rgb": [140, 76, 98], "hex": "#8c4c62"}, {"name": "Dark Slate Purple", "combinations": [225, 248], "swatch": 4, "cmyk": [64, 85, 60, 10], "lab": [34.306858930342564, 22.217898832684824, -3.5525291828793826], "rgb": [112, 67, 87], "hex": "#704357"}, {"name": "Taupe Brown", "combinations": [57, 123, 174, 224, 275, 280, 288], "swatch": 4, "cmyk": [30, 70, 35, 40], "lab": [36.17303730830854, 25.638132295719856, 0.06225680933852118], "rgb": [122, 68, 86], "hex": "#7a4456"}, {"name": "Violet Carmine", "combinations": [337], "swatch": 4, "cmyk": [64, 90, 70, 10], "lab": [32.303349355306324, 25.867704280155635, 0.8171206225680976], "rgb": [113, 59, 76], "hex": "#713b4c"}, {"name": "Violet", "combinations": [42, 56, 130, 156, 164, 181, 205, 214, 226, 316, 331, 335], "swatch": 4, "cmyk": [85, 90, 18, 0], "lab": [31.493095292591743, 20.665369649805456, -37.92607003891051], "rgb": [79, 64, 134], "hex": "#4f4086"}, {"name": "Red Violet", "combinations": [4, 37, 134, 136, 170, 172, 183, 316], "swatch": 4, "cmyk": [76, 100, 25, 15], "lab": [25.052262149996185, 33.105058365758765, -30.05836575875486], "rgb": [89, 37, 106], "hex": "#59256a"}, {"name": "Cotinga Purple", "combinations": [61, 181, 238, 253, 307, 329, 348], "swatch": 4, "cmyk": [66, 100, 42, 40], "lab": [18.403906309605553, 32.85992217898831, -15.762645914396884], "rgb": [80, 19, 69], "hex": "#501345"}, {"name": "Dusky Madder Violet", "combinations": [18, 50, 53, 82, 103, 314], "swatch": 4, "cmyk": [75, 100, 46, 30], "lab": [20.103761348897535, 28.64980544747081, -18.256809338521407], "rgb": [78, 29, 76], "hex": "#4e1d4c"}, {"name": "White", "combinations": [55], "swatch": 5, "cmyk": [0, 0, 0, 0], "lab": [100.0, 0.0, 0.0], "rgb": [255, 255, 255], "hex": "#ffffff"}, {"name": "Neutral Gray", "combinations": [34, 139, 180, 195, 197, 221, 228, 229, 273, 303, 324, 340], "swatch": 5, "cmyk": [29, 18, 20, 0], "lab": [76.74525062943465, -3.0311284046692606, -2.0311284046692606], "rgb": [182, 191, 193], "hex": "#b6bfc1"}, {"name": "Mineral Gray", "combinations": [11, 30], "swatch": 5, "cmyk": [33, 18, 25, 7], "lab": [70.75303273060197, -5.618677042801551, -0.0972762645914429], "rgb": [162, 176, 173], "hex": "#a2b0ad"}, {"name": "Warm Gray", "combinations": [69, 76, 81, 143, 169, 238, 259, 261], "swatch": 5, "cmyk": [37, 28, 36, 3], "lab": [66.74753948271916, -2.2451361867704236, 4.743190661478593], "rgb": [161, 163, 154], "hex": "#a1a39a"}, {"name": "Slate Color", "combinations": [27, 33, 57, 140, 202, 243, 245, 251, 253, 263, 296, 329, 335], "swatch": 5, "cmyk": [85, 70, 62, 30], "lab": [27.84771496147097, -5.3929961089494185, -6.9727626459144005], "rgb": [52, 69, 76], "hex": "#34454c"}, {"name": "Black", "combinations": [46, 52, 62, 69, 112, 117, 144, 190, 207, 216, 221, 242, 255, 256, 269, 276, 288, 298, 313, 323, 337, 340, 344], "swatch": 5, "cmyk": [20, 10, 15, 100], "lab": [5.62752727550164, -0.3968871595330796, -1.1245136186770424], "rgb": [17, 19, 20], "hex": "#111314"}];
+        const combinations = {"1": [{"name": "English Red", "hex": "#d96629"}, {"name": "Cerulian Blue", "hex": "#0093a5"}], "2": [{"name": "Yellow Orange", "hex": "#f99d1b"}, {"name": "Dark Tyrian Blue", "hex": "#12354e"}], "3": [{"name": "Raw Sienna", "hex": "#bb7125"}, {"name": "Pale Lemon Yellow", "hex": "#ffefae"}], "4": [{"name": "Isabella Color", "hex": "#c5a56e"}, {"name": "Red Violet", "hex": "#59256a"}], "5": [{"name": "Cossack Green", "hex": "#437742"}, {"name": "Vandar Poel's Blue", "hex": "#064f6e"}], "6": [{"name": "Grenadine Pink", "hex": "#f48067"}, {"name": "Deep Indigo", "hex": "#051230"}], "7": [{"name": "Orange", "hex": "#f37420"}, {"name": "Glaucous Green", "hex": "#b4cdc2"}], "8": [{"name": "Cinnamon Rufous", "hex": "#c27544"}, {"name": "Grayish Lavender - A", "hex": "#b5b1d8"}], "9": [{"name": "Violet Red", "hex": "#642d5e"}, {"name": "Dull Blue Violet", "hex": "#80719e"}], "10": [{"name": "Cinnamon Rufous", "hex": "#c27544"}, {"name": "Dark Citrine", "hex": "#8b835b"}], "11": [{"name": "Ivory Buff", "hex": "#ebd3a2"}, {"name": "Mineral Gray", "hex": "#a2b0ad"}], "12": [{"name": "Isabella Color", "hex": "#c5a56e"}, {"name": "Green Blue", "hex": "#099197"}], "13": [{"name": "Raw Sienna", "hex": "#bb7125"}, {"name": "Veronia Purple", "hex": "#8c4c62"}], "14": [{"name": "Spinel Red", "hex": "#f27291"}, {"name": "Naples Yellow", "hex": "#fbe6a0"}], "15": [{"name": "Benzol Green", "hex": "#00978d"}, {"name": "Grayish Lavender - A", "hex": "#b5b1d8"}], "16": [{"name": "Vandyke Red", "hex": "#82241f"}, {"name": "Pale King's Blue", "hex": "#a7d4e4"}], "17": [{"name": "Eugenia Red | B", "hex": "#da525d"}, {"name": "Sea Green", "hex": "#00b49b"}], "18": [{"name": "Fawn", "hex": "#d1b0a7"}, {"name": "Dusky Madder Violet", "hex": "#4e1d4c"}], "19": [{"name": "Mars Brown Tobacco", "hex": "#653514"}, {"name": "Night Green", "hex": "#87c540"}], "20": [{"name": "Calamine BLue", "hex": "#78cdd0"}, {"name": "Laelia Pink", "hex": "#ca92a8"}], "21": [{"name": "Grenadine Pink", "hex": "#f48067"}, {"name": "Sea Green", "hex": "#00b49b"}], "22": [{"name": "Yellow", "hex": "#fff200"}, {"name": "Deep Lyons Blue", "hex": "#1c4286"}], "23": [{"name": "Cinnamon Buff", "hex": "#fdc57e"}, {"name": "Light Mauve", "hex": "#9a72aa"}], "24": [{"name": "Sepia", "hex": "#644b1e"}, {"name": "Veronia Purple", "hex": "#8c4c62"}], "25": [{"name": "Etruscan Red", "hex": "#c55347"}, {"name": "Nile Blue", "hex": "#bce4e5"}], "26": [{"name": "Golden Yellow", "hex": "#f3a257"}, {"name": "Pale Raw Umber", "hex": "#71502f"}], "27": [{"name": "Corinthian Pink", "hex": "#f8b6ba"}, {"name": "Slate Color", "hex": "#34454c"}], "28": [{"name": "Madder Brown", "hex": "#762c19"}, {"name": "Deep Indigo", "hex": "#051230"}], "29": [{"name": "Krongbergs Green", "hex": "#84875e"}, {"name": "Salvia Blue", "hex": "#97acc8"}], "30": [{"name": "Pompeian Red", "hex": "#ab2439"}, {"name": "Mineral Gray", "hex": "#a2b0ad"}], "31": [{"name": "Red Orange", "hex": "#dd4027"}, {"name": "Pale Lemon Yellow", "hex": "#ffefae"}], "32": [{"name": "Ochraceous Salmon", "hex": "#d8a37b"}, {"name": "Night Green", "hex": "#87c540"}], "33": [{"name": "Raw Sienna", "hex": "#bb7125"}, {"name": "Slate Color", "hex": "#34454c"}], "34": [{"name": "Eosine Pink", "hex": "#f37f94"}, {"name": "Neutral Gray", "hex": "#b6bfc1"}], "35": [{"name": "Light Brown Drab", "hex": "#b59392"}, {"name": "Carmine Red", "hex": "#a62c37"}], "36": [{"name": "Sulphine Yellow", "hex": "#c19f2c"}, {"name": "Turquoise Green", "hex": "#b5decc"}], "37": [{"name": "Brick Red", "hex": "#a84222"}, {"name": "Red Violet", "hex": "#59256a"}], "38": [{"name": "Diamine Green", "hex": "#1a7444"}, {"name": "Deep Lyons Blue", "hex": "#1c4286"}], "39": [{"name": "Carmine", "hex": "#cc1236"}, {"name": "Helvetia Blue", "hex": "#005b8d"}], "40": [{"name": "Vinaceous Tawny", "hex": "#c56127"}, {"name": "Citron Yellow", "hex": "#b2b73e"}], "41": [{"name": "Dark Citrine", "hex": "#8b835b"}, {"name": "Calamine BLue", "hex": "#78cdd0"}], "42": [{"name": "Yellow Ocher", "hex": "#e2b540"}, {"name": "Violet", "hex": "#4f4086"}], "43": [{"name": "Corinthian Pink", "hex": "#f8b6ba"}, {"name": "Aconite Violet", "hex": "#a36aa5"}], "44": [{"name": "Light Porcelain Green", "hex": "#00908a"}, {"name": "Olympic Blue", "hex": "#5a82b3"}], "45": [{"name": "Seashell Pink", "hex": "#fdd4bd"}, {"name": "Lemon Yellow", "hex": "#f8ed43"}], "46": [{"name": "Orange", "hex": "#f37420"}, {"name": "Black", "hex": "#111314"}], "47": [{"name": "Etruscan Red", "hex": "#c55347"}, {"name": "Grayish Lavender - B", "hex": "#c0a9b3"}], "48": [{"name": "Rosolanc Purple", "hex": "#b73f74"}, {"name": "Helvetia Blue", "hex": "#005b8d"}], "49": [{"name": "Pale King's Blue", "hex": "#a7d4e4"}, {"name": "Blue", "hex": "#006eb8"}], "50": [{"name": "Ivory Buff", "hex": "#ebd3a2"}, {"name": "Dusky Madder Violet", "hex": "#4e1d4c"}], "51": [{"name": "Carmine Red", "hex": "#a62c37"}, {"name": "Blue", "hex": "#006eb8"}], "52": [{"name": "Sulpher Yellow", "hex": "#f5ecc2"}, {"name": "Black", "hex": "#111314"}], "53": [{"name": "Yellow Orange", "hex": "#f99d1b"}, {"name": "Dusky Madder Violet", "hex": "#4e1d4c"}], "54": [{"name": "Benzol Green", "hex": "#00978d"}, {"name": "Light Glaucous Blue", "hex": "#a5c8d1"}], "55": [{"name": "Old Rose", "hex": "#d46d7a"}, {"name": "White", "hex": "#ffffff"}], "56": [{"name": "Grayish Lavender - B", "hex": "#c0a9b3"}, {"name": "Violet", "hex": "#4f4086"}], "57": [{"name": "Taupe Brown", "hex": "#7a4456"}, {"name": "Slate Color", "hex": "#34454c"}], "58": [{"name": "Hay's Russet", "hex": "#793327"}, {"name": "Sea Green", "hex": "#00b49b"}], "59": [{"name": "Eosine Pink", "hex": "#f37f94"}, {"name": "Citrine", "hex": "#b09f36"}], "60": [{"name": "Pale Lemon Yellow", "hex": "#ffefae"}, {"name": "Dark Tyrian Blue", "hex": "#12354e"}], "61": [{"name": "Light Green Yellow", "hex": "#c7d14f"}, {"name": "Cotinga Purple", "hex": "#501345"}], "62": [{"name": "Yellow", "hex": "#fff200"}, {"name": "Black", "hex": "#111314"}], "63": [{"name": "Vistoris Lake", "hex": "#6d4145"}, {"name": "Cerulian Blue", "hex": "#0093a5"}], "64": [{"name": "Aconite Violet", "hex": "#a36aa5"}, {"name": "Dark Soft Violet", "hex": "#66629c"}], "65": [{"name": "Sulphine Yellow", "hex": "#c19f2c"}, {"name": "Calamine BLue", "hex": "#78cdd0"}], "66": [{"name": "Olive Ocher", "hex": "#d6b43e"}, {"name": "Olive Green", "hex": "#6b7140"}], "67": [{"name": "Olympic Blue", "hex": "#5a82b3"}, {"name": "Dark Tyrian Blue", "hex": "#12354e"}], "68": [{"name": "Light Brown Drab", "hex": "#b59392"}, {"name": "Yellow", "hex": "#fff200"}], "69": [{"name": "Warm Gray", "hex": "#a1a39a"}, {"name": "Black", "hex": "#111314"}], "70": [{"name": "Raw Sienna", "hex": "#bb7125"}, {"name": "Lincoln Green", "hex": "#555832"}], "71": [{"name": "Pompeian Red", "hex": "#ab2439"}, {"name": "Ochraceous Salmon", "hex": "#d8a37b"}], "72": [{"name": "Sulpher Yellow", "hex": "#f5ecc2"}, {"name": "Pale King's Blue", "hex": "#a7d4e4"}], "73": [{"name": "Pale Raw Umber", "hex": "#71502f"}, {"name": "Rainette Green", "hex": "#8fa071"}], "74": [{"name": "Turquoise Green", "hex": "#b5decc"}, {"name": "Green Blue", "hex": "#099197"}], "75": [{"name": "Pale King's Blue", "hex": "#a7d4e4"}, {"name": "Violet Blue", "hex": "#40456a"}], "76": [{"name": "Pale Lemon Yellow", "hex": "#ffefae"}, {"name": "Warm Gray", "hex": "#a1a39a"}], "77": [{"name": "Eugenia Red | B", "hex": "#da525d"}, {"name": "Vandar Poel's Blue", "hex": "#064f6e"}], "78": [{"name": "Pinkish Cinnamon", "hex": "#eeb480"}, {"name": "Venice Green", "hex": "#62c6bf"}], "79": [{"name": "Madder Brown", "hex": "#762c19"}, {"name": "Green Blue", "hex": "#099197"}], "80": [{"name": "Sulpher Yellow", "hex": "#f5ecc2"}, {"name": "Light Mauve", "hex": "#9a72aa"}], "81": [{"name": "Golden Yellow", "hex": "#f3a257"}, {"name": "Warm Gray", "hex": "#a1a39a"}], "82": [{"name": "Hay's Russet", "hex": "#793327"}, {"name": "Dusky Madder Violet", "hex": "#4e1d4c"}], "83": [{"name": "Olive Buff", "hex": "#c1c494"}, {"name": "Violet Blue", "hex": "#40456a"}], "84": [{"name": "Seashell Pink", "hex": "#fdd4bd"}, {"name": "Deep Slate Green", "hex": "#112f2c"}], "85": [{"name": "Vinaceous Tawny", "hex": "#c56127"}, {"name": "Antwarp Blue", "hex": "#007190"}], "86": [{"name": "Raw Sienna", "hex": "#bb7125"}, {"name": "Sea Green", "hex": "#00b49b"}], "87": [{"name": "Corinthian Pink", "hex": "#f8b6ba"}, {"name": "Citron Yellow", "hex": "#b2b73e"}], "88": [{"name": "Seashell Pink", "hex": "#fdd4bd"}, {"name": "Blue", "hex": "#006eb8"}], "89": [{"name": "Yellow Orange", "hex": "#f99d1b"}, {"name": "Violet Blue", "hex": "#40456a"}], "90": [{"name": "Eosine Pink", "hex": "#f37f94"}, {"name": "Aconite Violet", "hex": "#a36aa5"}], "91": [{"name": "Vistoris Lake", "hex": "#6d4145"}, {"name": "Orange Rufous", "hex": "#c16b27"}], "92": [{"name": "Coral Red", "hex": "#f58e84"}, {"name": "Benzol Green", "hex": "#00978d"}], "93": [{"name": "Citrine", "hex": "#b09f36"}, {"name": "Light Glaucous Blue", "hex": "#a5c8d1"}], "94": [{"name": "Ivory Buff", "hex": "#ebd3a2"}, {"name": "Dusky Green", "hex": "#004f46"}], "95": [{"name": "Hay's Russet", "hex": "#793327"}, {"name": "Dull Violet Black", "hex": "#1e0e3f"}], "96": [{"name": "Yellow Ocher", "hex": "#e2b540"}, {"name": "Olive", "hex": "#837e31"}], "97": [{"name": "Corinthian Pink", "hex": "#f8b6ba"}, {"name": "Etruscan Red", "hex": "#c55347"}], "98": [{"name": "Madder Brown", "hex": "#762c19"}, {"name": "Violet Blue", "hex": "#40456a"}], "99": [{"name": "Pale Lemon Yellow", "hex": "#ffefae"}, {"name": "Cerulian Blue", "hex": "#0093a5"}], "100": [{"name": "Buffy Citrine", "hex": "#96874d"}, {"name": "Dull Blue Violet", "hex": "#80719e"}], "101": [{"name": "Cameo Pink", "hex": "#e0b3b6"}, {"name": "Deep Lyons Blue", "hex": "#1c4286"}], "102": [{"name": "Ivory Buff", "hex": "#ebd3a2"}, {"name": "Orange Rufous", "hex": "#c16b27"}], "103": [{"name": "Cinnamon Rufous", "hex": "#c27544"}, {"name": "Dusky Madder Violet", "hex": "#4e1d4c"}], "104": [{"name": "Carmine Red", "hex": "#a62c37"}, {"name": "Sulpher Yellow", "hex": "#f5ecc2"}], "105": [{"name": "Cameo Pink", "hex": "#e0b3b6"}, {"name": "Chromium Green", "hex": "#719470"}], "106": [{"name": "Antwarp Blue", "hex": "#007190"}, {"name": "Dull Violet Black", "hex": "#1e0e3f"}], "107": [{"name": "Apricot Yellow", "hex": "#ffdd00"}, {"name": "Light Grayish Olive", "hex": "#848061"}], "108": [{"name": "Eosine Pink", "hex": "#f37f94"}, {"name": "Brick Red", "hex": "#a84222"}], "109": [{"name": "Pale Lemon Yellow", "hex": "#ffefae"}, {"name": "Blackish Olive", "hex": "#42533e"}], "110": [{"name": "Brown", "hex": "#7c4226"}, {"name": "Vandyke Brown", "hex": "#4b3317"}], "111": [{"name": "Pale Lemon Yellow", "hex": "#ffefae"}, {"name": "Yellow Green", "hex": "#afd472"}], "112": [{"name": "Grenadine Pink", "hex": "#f48067"}, {"name": "Black", "hex": "#111314"}], "113": [{"name": "Seashell Pink", "hex": "#fdd4bd"}, {"name": "Vandyke Brown", "hex": "#4b3317"}], "114": [{"name": "Orange Yellow", "hex": "#fcb315"}, {"name": "Antwarp Blue", "hex": "#007190"}], "115": [{"name": "Naples Yellow", "hex": "#fbe6a0"}, {"name": "Peach Red", "hex": "#f15a30"}], "116": [{"name": "Cameo Pink", "hex": "#e0b3b6"}, {"name": "Blue Violet", "hex": "#6450a1"}], "117": [{"name": "Carmine", "hex": "#cc1236"}, {"name": "Black", "hex": "#111314"}], "118": [{"name": "Yellow Ocher", "hex": "#e2b540"}, {"name": "Vandyke Brown", "hex": "#4b3317"}], "119": [{"name": "Light Glaucous Blue", "hex": "#a5c8d1"}, {"name": "Dark Tyrian Blue", "hex": "#12354e"}], "120": [{"name": "Cameo Pink", "hex": "#e0b3b6"}, {"name": "Pompeian Red", "hex": "#ab2439"}], "121": [{"name": "Brown", "hex": "#7c4226"}, {"name": "Ochraceous Salmon", "hex": "#d8a37b"}, {"name": "Lincoln Green", "hex": "#555832"}], "122": [{"name": "Carmine", "hex": "#cc1236"}, {"name": "Cream Yellow", "hex": "#fdbf68"}, {"name": "Benzol Green", "hex": "#00978d"}], "123": [{"name": "Coral Red", "hex": "#f58e84"}, {"name": "Lemon Yellow", "hex": "#f8ed43"}, {"name": "Taupe Brown", "hex": "#7a4456"}], "124": [{"name": "Pale Burnt Lake", "hex": "#802626"}, {"name": "Yellow Ocher", "hex": "#e2b540"}, {"name": "Olive Yellow", "hex": "#a6a159"}], "125": [{"name": "Fawn", "hex": "#d1b0a7"}, {"name": "Cerulian Blue", "hex": "#0093a5"}, {"name": "Violet Blue", "hex": "#40456a"}], "126": [{"name": "Ivory Buff", "hex": "#ebd3a2"}, {"name": "Yellow Ocher", "hex": "#e2b540"}, {"name": "Deep Lyons Blue", "hex": "#1c4286"}], "127": [{"name": "Cinnamon Buff", "hex": "#fdc57e"}, {"name": "Pistachio Green", "hex": "#648f7b"}, {"name": "Dark Soft Violet", "hex": "#66629c"}], "128": [{"name": "Corinthian Pink", "hex": "#f8b6ba"}, {"name": "Venice Green", "hex": "#62c6bf"}, {"name": "Light Mauve", "hex": "#9a72aa"}], "129": [{"name": "Apricot Yellow", "hex": "#ffdd00"}, {"name": "Khaki", "hex": "#bc892b"}, {"name": "Salvia Blue", "hex": "#97acc8"}], "130": [{"name": "Raw Sienna", "hex": "#bb7125"}, {"name": "Carmine Red", "hex": "#a62c37"}, {"name": "Violet", "hex": "#4f4086"}], "131": [{"name": "Raw Sienna", "hex": "#bb7125"}, {"name": "English Red", "hex": "#d96629"}, {"name": "Peacock Blue", "hex": "#00939b"}], "132": [{"name": "Sulpher Yellow", "hex": "#f5ecc2"}, {"name": "Golden Yellow", "hex": "#f3a257"}, {"name": "Citrine", "hex": "#b09f36"}], "133": [{"name": "Vandyke Red", "hex": "#82241f"}, {"name": "Citrine", "hex": "#b09f36"}, {"name": "Sea Green", "hex": "#00b49b"}], "134": [{"name": "Eosine Pink", "hex": "#f37f94"}, {"name": "Light Mauve", "hex": "#9a72aa"}, {"name": "Red Violet", "hex": "#59256a"}], "135": [{"name": "Sulpher Yellow", "hex": "#f5ecc2"}, {"name": "Cossack Green", "hex": "#437742"}, {"name": "Salvia Blue", "hex": "#97acc8"}], "136": [{"name": "Scarlet", "hex": "#cb2f43"}, {"name": "Dull Viridian Green", "hex": "#009465"}, {"name": "Red Violet", "hex": "#59256a"}], "137": [{"name": "Etruscan Red", "hex": "#c55347"}, {"name": "Cinnamon Buff", "hex": "#fdc57e"}, {"name": "Pistachio Green", "hex": "#648f7b"}], "138": [{"name": "Golden Yellow", "hex": "#f3a257"}, {"name": "Lemon Yellow", "hex": "#f8ed43"}, {"name": "Venice Green", "hex": "#62c6bf"}], "139": [{"name": "Salvia Blue", "hex": "#97acc8"}, {"name": "Deep Indigo", "hex": "#051230"}, {"name": "Neutral Gray", "hex": "#b6bfc1"}], "140": [{"name": "Golden Yellow", "hex": "#f3a257"}, {"name": "Antwarp Blue", "hex": "#007190"}, {"name": "Slate Color", "hex": "#34454c"}], "141": [{"name": "Orange", "hex": "#f37420"}, {"name": "Yellow Green", "hex": "#afd472"}, {"name": "Dark Tyrian Blue", "hex": "#12354e"}], "142": [{"name": "Hydrangea Red", "hex": "#a94151"}, {"name": "Sulphine Yellow", "hex": "#c19f2c"}, {"name": "Salvia Blue", "hex": "#97acc8"}], "143": [{"name": "Blue", "hex": "#006eb8"}, {"name": "Lilac", "hex": "#b984af"}, {"name": "Warm Gray", "hex": "#a1a39a"}], "144": [{"name": "Rosolanc Purple", "hex": "#b73f74"}, {"name": "Orange", "hex": "#f37420"}, {"name": "Black", "hex": "#111314"}], "145": [{"name": "Brown", "hex": "#7c4226"}, {"name": "Citron Yellow", "hex": "#b2b73e"}, {"name": "Dull Violet Black", "hex": "#1e0e3f"}], "146": [{"name": "Khaki", "hex": "#bc892b"}, {"name": "Deep Grayish Olive", "hex": "#635a3a"}, {"name": "Diamine Green", "hex": "#1a7444"}], "147": [{"name": "Spinel Red", "hex": "#f27291"}, {"name": "Vandyke Red", "hex": "#82241f"}, {"name": "Turquoise Green", "hex": "#b5decc"}], "148": [{"name": "Olive Ocher", "hex": "#d6b43e"}, {"name": "Orange Yellow", "hex": "#fcb315"}, {"name": "Cerulian Blue", "hex": "#0093a5"}], "149": [{"name": "Olive Ocher", "hex": "#d6b43e"}, {"name": "Orange", "hex": "#f37420"}, {"name": "Deep Slate Green", "hex": "#112f2c"}], "150": [{"name": "Seashell Pink", "hex": "#fdd4bd"}, {"name": "Citron Yellow", "hex": "#b2b73e"}, {"name": "Glaucous Green", "hex": "#b4cdc2"}], "151": [{"name": "Sulpher Yellow", "hex": "#f5ecc2"}, {"name": "Yellow Orange", "hex": "#f99d1b"}, {"name": "Vandar Poel's Blue", "hex": "#064f6e"}], "152": [{"name": "Etruscan Red", "hex": "#c55347"}, {"name": "Hay's Russet", "hex": "#793327"}, {"name": "Light Glaucous Blue", "hex": "#a5c8d1"}], "153": [{"name": "Eosine Pink", "hex": "#f37f94"}, {"name": "Orange Yellow", "hex": "#fcb315"}, {"name": "Citron Yellow", "hex": "#b2b73e"}], "154": [{"name": "Carmine", "hex": "#cc1236"}, {"name": "Yellow", "hex": "#fff200"}, {"name": "Blue", "hex": "#006eb8"}], "155": [{"name": "Jasper Red", "hex": "#eb5324"}, {"name": "Benzol Green", "hex": "#00978d"}, {"name": "Deep Indigo", "hex": "#051230"}], "156": [{"name": "Olive Ocher", "hex": "#d6b43e"}, {"name": "Cobalt Green", "hex": "#96d1aa"}, {"name": "Violet", "hex": "#4f4086"}], "157": [{"name": "Pansy Purple", "hex": "#7d133a"}, {"name": "Olive Ocher", "hex": "#d6b43e"}, {"name": "Olympic Blue", "hex": "#5a82b3"}], "158": [{"name": "Lemon Yellow", "hex": "#f8ed43"}, {"name": "Cinnamon Rufous", "hex": "#c27544"}, {"name": "Night Green", "hex": "#87c540"}], "159": [{"name": "Khaki", "hex": "#bc892b"}, {"name": "Calamine BLue", "hex": "#78cdd0"}, {"name": "Grayish Lavender - A", "hex": "#b5b1d8"}], "160": [{"name": "Sulphine Yellow", "hex": "#c19f2c"}, {"name": "Pale Raw Umber", "hex": "#71502f"}, {"name": "Dark Medici Blue", "hex": "#547076"}], "161": [{"name": "Brown", "hex": "#7c4226"}, {"name": "Pinkish Cinnamon", "hex": "#eeb480"}, {"name": "Helvetia Blue", "hex": "#005b8d"}], "162": [{"name": "Old Rose", "hex": "#d46d7a"}, {"name": "Rainette Green", "hex": "#8fa071"}, {"name": "Lilac", "hex": "#b984af"}], "163": [{"name": "Apricot Yellow", "hex": "#ffdd00"}, {"name": "Turquoise Green", "hex": "#b5decc"}, {"name": "Antwarp Blue", "hex": "#007190"}], "164": [{"name": "Red Orange", "hex": "#dd4027"}, {"name": "Orange Yellow", "hex": "#fcb315"}, {"name": "Violet", "hex": "#4f4086"}], "165": [{"name": "Cameo Pink", "hex": "#e0b3b6"}, {"name": "Spinel Red", "hex": "#f27291"}, {"name": "Vistoris Lake", "hex": "#6d4145"}], "166": [{"name": "Grenadine Pink", "hex": "#f48067"}, {"name": "Naples Yellow", "hex": "#fbe6a0"}, {"name": "Deep Slate Green", "hex": "#112f2c"}], "167": [{"name": "Ecru", "hex": "#c2ae93"}, {"name": "Pale King's Blue", "hex": "#a7d4e4"}, {"name": "Vandar Poel's Blue", "hex": "#064f6e"}], "168": [{"name": "Lemon Yellow", "hex": "#f8ed43"}, {"name": "Vandar Poel's Blue", "hex": "#064f6e"}, {"name": "Veronia Purple", "hex": "#8c4c62"}], "169": [{"name": "Corinthian Pink", "hex": "#f8b6ba"}, {"name": "Pale Lemon Yellow", "hex": "#ffefae"}, {"name": "Warm Gray", "hex": "#a1a39a"}], "170": [{"name": "Rosolanc Purple", "hex": "#b73f74"}, {"name": "Orange Yellow", "hex": "#fcb315"}, {"name": "Red Violet", "hex": "#59256a"}], "171": [{"name": "Pale Burnt Lake", "hex": "#802626"}, {"name": "Yellow Orange", "hex": "#f99d1b"}, {"name": "Glaucous Green", "hex": "#b4cdc2"}], "172": [{"name": "Cinnamon Rufous", "hex": "#c27544"}, {"name": "Antwarp Blue", "hex": "#007190"}, {"name": "Red Violet", "hex": "#59256a"}], "173": [{"name": "Lemon Yellow", "hex": "#f8ed43"}, {"name": "Madder Brown", "hex": "#762c19"}, {"name": "Turquoise Green", "hex": "#b5decc"}], "174": [{"name": "Corinthian Pink", "hex": "#f8b6ba"}, {"name": "Grayish Lavender - B", "hex": "#c0a9b3"}, {"name": "Taupe Brown", "hex": "#7a4456"}], "175": [{"name": "Pinkish Cinnamon", "hex": "#eeb480"}, {"name": "Olive Buff", "hex": "#c1c494"}, {"name": "Blue Violet", "hex": "#6450a1"}], "176": [{"name": "Hermosa Pink", "hex": "#f9c1ce"}, {"name": "Seashell Pink", "hex": "#fdd4bd"}, {"name": "Calamine BLue", "hex": "#78cdd0"}], "177": [{"name": "Pale Burnt Lake", "hex": "#802626"}, {"name": "Buffy Citrine", "hex": "#96874d"}, {"name": "Grayish Lavender - A", "hex": "#b5b1d8"}], "178": [{"name": "Ivory Buff", "hex": "#ebd3a2"}, {"name": "Light Glaucous Blue", "hex": "#a5c8d1"}, {"name": "Green Blue", "hex": "#099197"}], "179": [{"name": "Red Orange", "hex": "#dd4027"}, {"name": "Golden Yellow", "hex": "#f3a257"}, {"name": "Deep Lyons Blue", "hex": "#1c4286"}], "180": [{"name": "Cinnamon Buff", "hex": "#fdc57e"}, {"name": "Light Mauve", "hex": "#9a72aa"}, {"name": "Neutral Gray", "hex": "#b6bfc1"}], "181": [{"name": "Carmine Red", "hex": "#a62c37"}, {"name": "Violet", "hex": "#4f4086"}, {"name": "Cotinga Purple", "hex": "#501345"}], "182": [{"name": "Raw Sienna", "hex": "#bb7125"}, {"name": "Vandyke Brown", "hex": "#4b3317"}, {"name": "Deep Indigo", "hex": "#051230"}], "183": [{"name": "Deep Violet / Plumbeous", "hex": "#70727c"}, {"name": "Veronia Purple", "hex": "#8c4c62"}, {"name": "Red Violet", "hex": "#59256a"}], "184": [{"name": "Spinel Red", "hex": "#f27291"}, {"name": "Ivory Buff", "hex": "#ebd3a2"}, {"name": "Light Grayish Olive", "hex": "#848061"}], "185": [{"name": "Light Brown Drab", "hex": "#b59392"}, {"name": "Etruscan Red", "hex": "#c55347"}, {"name": "Pale Lemon Yellow", "hex": "#ffefae"}], "186": [{"name": "Hay's Russet", "hex": "#793327"}, {"name": "Ochraceous Salmon", "hex": "#d8a37b"}, {"name": "Blue", "hex": "#006eb8"}], "187": [{"name": "Helvetia Blue", "hex": "#005b8d"}, {"name": "Grayish Lavender - B", "hex": "#c0a9b3"}, {"name": "Aconite Violet", "hex": "#a36aa5"}], "188": [{"name": "Rainette Green", "hex": "#8fa071"}, {"name": "Salvia Blue", "hex": "#97acc8"}, {"name": "Cobalt Green", "hex": "#96d1aa"}], "189": [{"name": "Lemon Yellow", "hex": "#f8ed43"}, {"name": "Deep Slate Olive", "hex": "#253122"}, {"name": "Venice Green", "hex": "#62c6bf"}], "190": [{"name": "Ivory Buff", "hex": "#ebd3a2"}, {"name": "English Red", "hex": "#d96629"}, {"name": "Black", "hex": "#111314"}], "191": [{"name": "Light Brown Drab", "hex": "#b59392"}, {"name": "Yellow Ocher", "hex": "#e2b540"}, {"name": "Blue", "hex": "#006eb8"}], "192": [{"name": "Cream Yellow", "hex": "#fdbf68"}, {"name": "Vandyke Brown", "hex": "#4b3317"}, {"name": "Deep Violet / Plumbeous", "hex": "#70727c"}], "193": [{"name": "Grenadine Pink", "hex": "#f48067"}, {"name": "Naples Yellow", "hex": "#fbe6a0"}, {"name": "Light Porcelain Green", "hex": "#00908a"}], "194": [{"name": "Jasper Red", "hex": "#eb5324"}, {"name": "Seashell Pink", "hex": "#fdd4bd"}, {"name": "Olympic Blue", "hex": "#5a82b3"}], "195": [{"name": "Spinel Red", "hex": "#f27291"}, {"name": "Pale Lemon Yellow", "hex": "#ffefae"}, {"name": "Neutral Gray", "hex": "#b6bfc1"}], "196": [{"name": "Citron Yellow", "hex": "#b2b73e"}, {"name": "Pale King's Blue", "hex": "#a7d4e4"}, {"name": "Blue Violet", "hex": "#6450a1"}], "197": [{"name": "Eosine Pink", "hex": "#f37f94"}, {"name": "Dark Soft Violet", "hex": "#66629c"}, {"name": "Neutral Gray", "hex": "#b6bfc1"}], "198": [{"name": "Burnt Sienna", "hex": "#ae5224"}, {"name": "Apricot Yellow", "hex": "#ffdd00"}, {"name": "Green", "hex": "#489b6e"}], "199": [{"name": "Ochre Red", "hex": "#ab544d"}, {"name": "Light Brownish Olive", "hex": "#806e4b"}, {"name": "Deep Lyons Blue", "hex": "#1c4286"}], "200": [{"name": "Carmine Red", "hex": "#a62c37"}, {"name": "Olive Buff", "hex": "#c1c494"}, {"name": "Chromium Green", "hex": "#719470"}], "201": [{"name": "Grenadine Pink", "hex": "#f48067"}, {"name": "Olive", "hex": "#837e31"}, {"name": "Cobalt Green", "hex": "#96d1aa"}], "202": [{"name": "Turquoise Green", "hex": "#b5decc"}, {"name": "Cobalt Green", "hex": "#96d1aa"}, {"name": "Slate Color", "hex": "#34454c"}], "203": [{"name": "Pale Lemon Yellow", "hex": "#ffefae"}, {"name": "Vinaceous Cinnamon", "hex": "#eea78c"}, {"name": "Lincoln Green", "hex": "#555832"}], "204": [{"name": "Rosolanc Purple", "hex": "#b73f74"}, {"name": "Cinnamon Rufous", "hex": "#c27544"}, {"name": "Light Glaucous Blue", "hex": "#a5c8d1"}], "205": [{"name": "Pale Burnt Lake", "hex": "#802626"}, {"name": "Vinaceous Cinnamon", "hex": "#eea78c"}, {"name": "Violet", "hex": "#4f4086"}], "206": [{"name": "Corinthian Pink", "hex": "#f8b6ba"}, {"name": "Golden Yellow", "hex": "#f3a257"}, {"name": "Cinnamon Rufous", "hex": "#c27544"}], "207": [{"name": "Sudan Brown", "hex": "#a36752"}, {"name": "Glaucous Green", "hex": "#b4cdc2"}, {"name": "Black", "hex": "#111314"}], "208": [{"name": "Sulpher Yellow", "hex": "#f5ecc2"}, {"name": "Green Blue", "hex": "#099197"}, {"name": "Antwarp Blue", "hex": "#007190"}], "209": [{"name": "Ivory Buff", "hex": "#ebd3a2"}, {"name": "Yellow Orange", "hex": "#f99d1b"}, {"name": "Salvia Blue", "hex": "#97acc8"}], "210": [{"name": "Cinnamon Buff", "hex": "#fdc57e"}, {"name": "Lemon Yellow", "hex": "#f8ed43"}, {"name": "Lincoln Green", "hex": "#555832"}], "211": [{"name": "Apricot Orange", "hex": "#f68c50"}, {"name": "Olive Yellow", "hex": "#a6a159"}, {"name": "Deep Indigo", "hex": "#051230"}], "212": [{"name": "Pompeian Red", "hex": "#ab2439"}, {"name": "Orange Citrine", "hex": "#986f2d"}, {"name": "Salvia Blue", "hex": "#97acc8"}], "213": [{"name": "Vinaceous Cinnamon", "hex": "#eea78c"}, {"name": "Apricot Yellow", "hex": "#ffdd00"}, {"name": "Pale King's Blue", "hex": "#a7d4e4"}], "214": [{"name": "Ivory Buff", "hex": "#ebd3a2"}, {"name": "Sudan Brown", "hex": "#a36752"}, {"name": "Violet", "hex": "#4f4086"}], "215": [{"name": "Cream Yellow", "hex": "#fdbf68"}, {"name": "Blue", "hex": "#006eb8"}, {"name": "Eupatorium Purple", "hex": "#bf5892"}], "216": [{"name": "Jasper Red", "hex": "#eb5324"}, {"name": "Green", "hex": "#489b6e"}, {"name": "Black", "hex": "#111314"}], "217": [{"name": "Pale Burnt Lake", "hex": "#802626"}, {"name": "Ochraceous Salmon", "hex": "#d8a37b"}, {"name": "Diamine Green", "hex": "#1a7444"}], "218": [{"name": "Helvetia Blue", "hex": "#005b8d"}, {"name": "Grayish Lavender - A", "hex": "#b5b1d8"}, {"name": "Deep Violet / Plumbeous", "hex": "#70727c"}], "219": [{"name": "Jasper Red", "hex": "#eb5324"}, {"name": "Chromium Green", "hex": "#719470"}, {"name": "Dusky Green", "hex": "#004f46"}], "220": [{"name": "Pomegranite Purple", "hex": "#b71f57"}, {"name": "Ochraceous Salmon", "hex": "#d8a37b"}, {"name": "Aconite Violet", "hex": "#a36aa5"}], "221": [{"name": "Carmine Red", "hex": "#a62c37"}, {"name": "Neutral Gray", "hex": "#b6bfc1"}, {"name": "Black", "hex": "#111314"}], "222": [{"name": "Yellow Ocher", "hex": "#e2b540"}, {"name": "Yellow Orange", "hex": "#f99d1b"}, {"name": "Orange Rufous", "hex": "#c16b27"}], "223": [{"name": "Light Brown Drab", "hex": "#b59392"}, {"name": "Ochraceous Salmon", "hex": "#d8a37b"}, {"name": "Turquoise Green", "hex": "#b5decc"}], "224": [{"name": "Spinel Red", "hex": "#f27291"}, {"name": "Dark Medici Blue", "hex": "#547076"}, {"name": "Taupe Brown", "hex": "#7a4456"}], "225": [{"name": "Carmine", "hex": "#cc1236"}, {"name": "Dusky Green", "hex": "#004f46"}, {"name": "Dark Slate Purple", "hex": "#704357"}], "226": [{"name": "Vistoris Lake", "hex": "#6d4145"}, {"name": "Cream Yellow", "hex": "#fdbf68"}, {"name": "Violet", "hex": "#4f4086"}], "227": [{"name": "Hermosa Pink", "hex": "#f9c1ce"}, {"name": "Light Glaucous Blue", "hex": "#a5c8d1"}, {"name": "Cerulian Blue", "hex": "#0093a5"}], "228": [{"name": "Carmine Red", "hex": "#a62c37"}, {"name": "Pale Lemon Yellow", "hex": "#ffefae"}, {"name": "Neutral Gray", "hex": "#b6bfc1"}], "229": [{"name": "Golden Yellow", "hex": "#f3a257"}, {"name": "Deep Slate Olive", "hex": "#253122"}, {"name": "Neutral Gray", "hex": "#b6bfc1"}], "230": [{"name": "Grenadine Pink", "hex": "#f48067"}, {"name": "Turquoise Green", "hex": "#b5decc"}, {"name": "Cobalt Green", "hex": "#96d1aa"}], "231": [{"name": "Cameo Pink", "hex": "#e0b3b6"}, {"name": "Hay's Russet", "hex": "#793327"}, {"name": "Olympic Blue", "hex": "#5a82b3"}], "232": [{"name": "Carmine", "hex": "#cc1236"}, {"name": "Pinkish Cinnamon", "hex": "#eeb480"}, {"name": "Deep Indigo", "hex": "#051230"}], "233": [{"name": "Carmine Red", "hex": "#a62c37"}, {"name": "Buffy Citrine", "hex": "#96874d"}, {"name": "Violet Blue", "hex": "#40456a"}], "234": [{"name": "Cinnamon Buff", "hex": "#fdc57e"}, {"name": "Pale Raw Umber", "hex": "#71502f"}, {"name": "Pale King's Blue", "hex": "#a7d4e4"}], "235": [{"name": "Ivory Buff", "hex": "#ebd3a2"}, {"name": "Yellow Orange", "hex": "#f99d1b"}, {"name": "Grayish Lavender - B", "hex": "#c0a9b3"}], "236": [{"name": "Khaki", "hex": "#bc892b"}, {"name": "Deep Lyons Blue", "hex": "#1c4286"}, {"name": "Purple Drab", "hex": "#84565b"}], "237": [{"name": "Carmine Red", "hex": "#a62c37"}, {"name": "Madder Brown", "hex": "#762c19"}, {"name": "Salvia Blue", "hex": "#97acc8"}], "238": [{"name": "Ochraceous Salmon", "hex": "#d8a37b"}, {"name": "Cotinga Purple", "hex": "#501345"}, {"name": "Warm Gray", "hex": "#a1a39a"}], "239": [{"name": "Light Brown Drab", "hex": "#b59392"}, {"name": "Pyrite Yellow", "hex": "#cab356"}, {"name": "Glaucous Green", "hex": "#b4cdc2"}], "240": [{"name": "Fresh Color", "hex": "#f6917e"}, {"name": "Yellow", "hex": "#fff200"}, {"name": "Cerulian Blue", "hex": "#0093a5"}], "241": [{"name": "Red Orange", "hex": "#dd4027"}, {"name": "Pale Lemon Yellow", "hex": "#ffefae"}, {"name": "Isabella Color", "hex": "#c5a56e"}, {"name": "Dark Medici Blue", "hex": "#547076"}], "242": [{"name": "Eosine Pink", "hex": "#f37f94"}, {"name": "Burnt Sienna", "hex": "#ae5224"}, {"name": "Diamine Green", "hex": "#1a7444"}, {"name": "Black", "hex": "#111314"}], "243": [{"name": "Raw Sienna", "hex": "#bb7125"}, {"name": "Ivory Buff", "hex": "#ebd3a2"}, {"name": "Olive Green", "hex": "#6b7140"}, {"name": "Slate Color", "hex": "#34454c"}], "244": [{"name": "Light Brown Drab", "hex": "#b59392"}, {"name": "Vinaceous Tawny", "hex": "#c56127"}, {"name": "Andover Green", "hex": "#6d7e77"}, {"name": "Antwarp Blue", "hex": "#007190"}], "245": [{"name": "Carmine Red", "hex": "#a62c37"}, {"name": "Oil Green", "hex": "#819238"}, {"name": "Dark Tyrian Blue", "hex": "#12354e"}, {"name": "Slate Color", "hex": "#34454c"}], "246": [{"name": "Corinthian Pink", "hex": "#f8b6ba"}, {"name": "Brick Red", "hex": "#a84222"}, {"name": "Sulpher Yellow", "hex": "#f5ecc2"}, {"name": "Cinnamon Buff", "hex": "#fdc57e"}], "247": [{"name": "Raw Sienna", "hex": "#bb7125"}, {"name": "Apricot Yellow", "hex": "#ffdd00"}, {"name": "Benzol Green", "hex": "#00978d"}, {"name": "Deep Lyons Blue", "hex": "#1c4286"}], "248": [{"name": "Eosine Pink", "hex": "#f37f94"}, {"name": "Khaki", "hex": "#bc892b"}, {"name": "Grayish Lavender - A", "hex": "#b5b1d8"}, {"name": "Dark Slate Purple", "hex": "#704357"}], "249": [{"name": "Hay's Russet", "hex": "#793327"}, {"name": "Ecru", "hex": "#c2ae93"}, {"name": "Olive Ocher", "hex": "#d6b43e"}, {"name": "Dark Medici Blue", "hex": "#547076"}], "250": [{"name": "Pyrite Yellow", "hex": "#cab356"}, {"name": "Peach Red", "hex": "#f15a30"}, {"name": "Sea Green", "hex": "#00b49b"}, {"name": "Nile Blue", "hex": "#bce4e5"}], "251": [{"name": "Red", "hex": "#a72144"}, {"name": "Yellow", "hex": "#fff200"}, {"name": "Diamine Green", "hex": "#1a7444"}, {"name": "Slate Color", "hex": "#34454c"}], "252": [{"name": "Eugenia Red | B", "hex": "#da525d"}, {"name": "Raw Sienna", "hex": "#bb7125"}, {"name": "Sulphine Yellow", "hex": "#c19f2c"}, {"name": "Green Blue", "hex": "#099197"}], "253": [{"name": "Lemon Yellow", "hex": "#f8ed43"}, {"name": "Apricot Orange", "hex": "#f68c50"}, {"name": "Cotinga Purple", "hex": "#501345"}, {"name": "Slate Color", "hex": "#34454c"}], "254": [{"name": "Corinthian Pink", "hex": "#f8b6ba"}, {"name": "Sulpher Yellow", "hex": "#f5ecc2"}, {"name": "Olive", "hex": "#837e31"}, {"name": "Laelia Pink", "hex": "#ca92a8"}], "255": [{"name": "Raw Sienna", "hex": "#bb7125"}, {"name": "Pyrite Yellow", "hex": "#cab356"}, {"name": "Calamine BLue", "hex": "#78cdd0"}, {"name": "Black", "hex": "#111314"}], "256": [{"name": "Vinaceous Cinnamon", "hex": "#eea78c"}, {"name": "Orange", "hex": "#f37420"}, {"name": "Dull Viridian Green", "hex": "#009465"}, {"name": "Black", "hex": "#111314"}], "257": [{"name": "Spectrum Red", "hex": "#e31f26"}, {"name": "Orange Yellow", "hex": "#fcb315"}, {"name": "Blue", "hex": "#006eb8"}, {"name": "Aconite Violet", "hex": "#a36aa5"}], "258": [{"name": "Pale Burnt Lake", "hex": "#802626"}, {"name": "Pinkish Cinnamon", "hex": "#eeb480"}, {"name": "Olive", "hex": "#837e31"}, {"name": "Antwarp Blue", "hex": "#007190"}], "259": [{"name": "Lemon Yellow", "hex": "#f8ed43"}, {"name": "Green Blue", "hex": "#099197"}, {"name": "Helvetia Blue", "hex": "#005b8d"}, {"name": "Warm Gray", "hex": "#a1a39a"}], "260": [{"name": "Old Rose", "hex": "#d46d7a"}, {"name": "Vinaceous Cinnamon", "hex": "#eea78c"}, {"name": "Glaucous Green", "hex": "#b4cdc2"}, {"name": "Sea Green", "hex": "#00b49b"}], "261": [{"name": "Red", "hex": "#a72144"}, {"name": "Pale Lemon Yellow", "hex": "#ffefae"}, {"name": "Calamine BLue", "hex": "#78cdd0"}, {"name": "Warm Gray", "hex": "#a1a39a"}], "262": [{"name": "Eugenia Red | B", "hex": "#da525d"}, {"name": "Ivory Buff", "hex": "#ebd3a2"}, {"name": "Citrine", "hex": "#b09f36"}, {"name": "Cossack Green", "hex": "#437742"}], "263": [{"name": "Burnt Sienna", "hex": "#ae5224"}, {"name": "Pinkish Cinnamon", "hex": "#eeb480"}, {"name": "Turquoise Green", "hex": "#b5decc"}, {"name": "Slate Color", "hex": "#34454c"}], "264": [{"name": "Corinthian Pink", "hex": "#f8b6ba"}, {"name": "Red Orange", "hex": "#dd4027"}, {"name": "Dark Greenish Glaucous", "hex": "#b7c2a9"}, {"name": "Cerulian Blue", "hex": "#0093a5"}], "265": [{"name": "Old Rose", "hex": "#d46d7a"}, {"name": "Apricot Yellow", "hex": "#ffdd00"}, {"name": "Olive Yellow", "hex": "#a6a159"}, {"name": "Dull Violet Black", "hex": "#1e0e3f"}], "266": [{"name": "Spectrum Red", "hex": "#e31f26"}, {"name": "Ivory Buff", "hex": "#ebd3a2"}, {"name": "Rainette Green", "hex": "#8fa071"}, {"name": "Benzol Green", "hex": "#00978d"}], "267": [{"name": "Cream Yellow", "hex": "#fdbf68"}, {"name": "Yellow Orange", "hex": "#f99d1b"}, {"name": "Benzol Green", "hex": "#00978d"}, {"name": "Blue", "hex": "#006eb8"}], "268": [{"name": "Light Brown Drab", "hex": "#b59392"}, {"name": "Raw Sienna", "hex": "#bb7125"}, {"name": "Deep Slate Olive", "hex": "#253122"}, {"name": "Nile Blue", "hex": "#bce4e5"}], "269": [{"name": "Raw Sienna", "hex": "#bb7125"}, {"name": "Pale Burnt Lake", "hex": "#802626"}, {"name": "Aconite Violet", "hex": "#a36aa5"}, {"name": "Black", "hex": "#111314"}], "270": [{"name": "Eugenia Red | B", "hex": "#da525d"}, {"name": "Sulpher Yellow", "hex": "#f5ecc2"}, {"name": "Olive Green", "hex": "#6b7140"}, {"name": "Cossack Green", "hex": "#437742"}], "271": [{"name": "Pomegranite Purple", "hex": "#b71f57"}, {"name": "Cobalt Green", "hex": "#96d1aa"}, {"name": "Green Blue", "hex": "#099197"}, {"name": "Deep Slate Green", "hex": "#112f2c"}], "272": [{"name": "Pale Lemon Yellow", "hex": "#ffefae"}, {"name": "Orange", "hex": "#f37420"}, {"name": "Turquoise Green", "hex": "#b5decc"}, {"name": "Salvia Blue", "hex": "#97acc8"}], "273": [{"name": "Hermosa Pink", "hex": "#f9c1ce"}, {"name": "Pansy Purple", "hex": "#7d133a"}, {"name": "Sudan Brown", "hex": "#a36752"}, {"name": "Neutral Gray", "hex": "#b6bfc1"}], "274": [{"name": "Peach Red", "hex": "#f15a30"}, {"name": "Dark Citrine", "hex": "#8b835b"}, {"name": "Olympic Blue", "hex": "#5a82b3"}, {"name": "Light Mauve", "hex": "#9a72aa"}], "275": [{"name": "Etruscan Red", "hex": "#c55347"}, {"name": "Ecru", "hex": "#c2ae93"}, {"name": "Madder Brown", "hex": "#762c19"}, {"name": "Taupe Brown", "hex": "#7a4456"}], "276": [{"name": "Eosine Pink", "hex": "#f37f94"}, {"name": "Seashell Pink", "hex": "#fdd4bd"}, {"name": "Yellow Green", "hex": "#afd472"}, {"name": "Black", "hex": "#111314"}], "277": [{"name": "Spinel Red", "hex": "#f27291"}, {"name": "Rosolanc Purple", "hex": "#b73f74"}, {"name": "Olive", "hex": "#837e31"}, {"name": "Dull Violet Black", "hex": "#1e0e3f"}], "278": [{"name": "Cream Yellow", "hex": "#fdbf68"}, {"name": "Olive Ocher", "hex": "#d6b43e"}, {"name": "Cossack Green", "hex": "#437742"}, {"name": "Dusky Green", "hex": "#004f46"}], "279": [{"name": "Raw Sienna", "hex": "#bb7125"}, {"name": "Vinaceous Cinnamon", "hex": "#eea78c"}, {"name": "Ecru", "hex": "#c2ae93"}, {"name": "Dark Tyrian Blue", "hex": "#12354e"}], "280": [{"name": "Eugenia Red | B", "hex": "#da525d"}, {"name": "Lincoln Green", "hex": "#555832"}, {"name": "Laelia Pink", "hex": "#ca92a8"}, {"name": "Taupe Brown", "hex": "#7a4456"}], "281": [{"name": "Pale Lemon Yellow", "hex": "#ffefae"}, {"name": "Benzol Green", "hex": "#00978d"}, {"name": "Cobalt Green", "hex": "#96d1aa"}, {"name": "Antwarp Blue", "hex": "#007190"}], "282": [{"name": "Eugenia Red | B", "hex": "#da525d"}, {"name": "Maple", "hex": "#c59f6b"}, {"name": "Cobalt Green", "hex": "#96d1aa"}, {"name": "Lilac", "hex": "#b984af"}], "283": [{"name": "Ochre Red", "hex": "#ab544d"}, {"name": "Pale Burnt Lake", "hex": "#802626"}, {"name": "Chromium Green", "hex": "#719470"}, {"name": "Venice Green", "hex": "#62c6bf"}], "284": [{"name": "Eugenia Red | A", "hex": "#e2625e"}, {"name": "Apricot Yellow", "hex": "#ffdd00"}, {"name": "Sea Green", "hex": "#00b49b"}, {"name": "Dusky Green", "hex": "#004f46"}], "285": [{"name": "Light Brown Drab", "hex": "#b59392"}, {"name": "Burnt Sienna", "hex": "#ae5224"}, {"name": "Peach Red", "hex": "#f15a30"}, {"name": "Turquoise Green", "hex": "#b5decc"}], "286": [{"name": "Burnt Sienna", "hex": "#ae5224"}, {"name": "Orange Yellow", "hex": "#fcb315"}, {"name": "Peacock Blue", "hex": "#00939b"}, {"name": "Violet Blue", "hex": "#40456a"}], "287": [{"name": "Eosine Pink", "hex": "#f37f94"}, {"name": "Pyrite Yellow", "hex": "#cab356"}, {"name": "Pale King's Blue", "hex": "#a7d4e4"}, {"name": "Calamine BLue", "hex": "#78cdd0"}], "288": [{"name": "Yellow Orange", "hex": "#f99d1b"}, {"name": "Sepia", "hex": "#644b1e"}, {"name": "Taupe Brown", "hex": "#7a4456"}, {"name": "Black", "hex": "#111314"}], "289": [{"name": "Lemon Yellow", "hex": "#f8ed43"}, {"name": "Light Green Yellow", "hex": "#c7d14f"}, {"name": "Violet Blue", "hex": "#40456a"}, {"name": "Dull Violet Black", "hex": "#1e0e3f"}], "290": [{"name": "Vistoris Lake", "hex": "#6d4145"}, {"name": "Pale Lemon Yellow", "hex": "#ffefae"}, {"name": "Lincoln Green", "hex": "#555832"}, {"name": "Cobalt Green", "hex": "#96d1aa"}], "291": [{"name": "Light Green Yellow", "hex": "#c7d14f"}, {"name": "Sea Green", "hex": "#00b49b"}, {"name": "Cobalt Green", "hex": "#96d1aa"}, {"name": "Calamine BLue", "hex": "#78cdd0"}], "292": [{"name": "Pale Lemon Yellow", "hex": "#ffefae"}, {"name": "Pinkish Cinnamon", "hex": "#eeb480"}, {"name": "Isabella Color", "hex": "#c5a56e"}, {"name": "Ecru", "hex": "#c2ae93"}], "293": [{"name": "Raw Sienna", "hex": "#bb7125"}, {"name": "Turquoise Green", "hex": "#b5decc"}, {"name": "Artemesia Green", "hex": "#709390"}, {"name": "Green", "hex": "#489b6e"}], "294": [{"name": "Sulpher Yellow", "hex": "#f5ecc2"}, {"name": "Cream Yellow", "hex": "#fdbf68"}, {"name": "Cossack Green", "hex": "#437742"}, {"name": "Salvia Blue", "hex": "#97acc8"}], "295": [{"name": "Cream Yellow", "hex": "#fdbf68"}, {"name": "Yellow", "hex": "#fff200"}, {"name": "Blue", "hex": "#006eb8"}, {"name": "Dull Violet Black", "hex": "#1e0e3f"}], "296": [{"name": "Sulpher Yellow", "hex": "#f5ecc2"}, {"name": "Ochraceous Salmon", "hex": "#d8a37b"}, {"name": "Pale Raw Umber", "hex": "#71502f"}, {"name": "Slate Color", "hex": "#34454c"}], "297": [{"name": "Burnt Sienna", "hex": "#ae5224"}, {"name": "Yellow Orange", "hex": "#f99d1b"}, {"name": "Olive Green", "hex": "#6b7140"}, {"name": "Violet Blue", "hex": "#40456a"}], "298": [{"name": "Raw Sienna", "hex": "#bb7125"}, {"name": "Lemon Yellow", "hex": "#f8ed43"}, {"name": "Peach Red", "hex": "#f15a30"}, {"name": "Black", "hex": "#111314"}], "299": [{"name": "Indian Lake", "hex": "#c53c69"}, {"name": "Vinaceous Cinnamon", "hex": "#eea78c"}, {"name": "Oil Green", "hex": "#819238"}, {"name": "Antwarp Blue", "hex": "#007190"}], "300": [{"name": "Grenadine Pink", "hex": "#f48067"}, {"name": "Cream Yellow", "hex": "#fdbf68"}, {"name": "Turquoise Green", "hex": "#b5decc"}, {"name": "Calamine BLue", "hex": "#78cdd0"}], "301": [{"name": "Spectrum Red", "hex": "#e31f26"}, {"name": "Ivory Buff", "hex": "#ebd3a2"}, {"name": "Rainette Green", "hex": "#8fa071"}, {"name": "Aconite Violet", "hex": "#a36aa5"}], "302": [{"name": "Cream Yellow", "hex": "#fdbf68"}, {"name": "Ecru", "hex": "#c2ae93"}, {"name": "Nile Blue", "hex": "#bce4e5"}, {"name": "Antwarp Blue", "hex": "#007190"}], "303": [{"name": "Naples Yellow", "hex": "#fbe6a0"}, {"name": "Peach Red", "hex": "#f15a30"}, {"name": "Deep Slate Olive", "hex": "#253122"}, {"name": "Neutral Gray", "hex": "#b6bfc1"}], "304": [{"name": "Hay's Russet", "hex": "#793327"}, {"name": "Cream Yellow", "hex": "#fdbf68"}, {"name": "Dark Citrine", "hex": "#8b835b"}, {"name": "Benzol Green", "hex": "#00978d"}], "305": [{"name": "Pinkish Cinnamon", "hex": "#eeb480"}, {"name": "Apricot Yellow", "hex": "#ffdd00"}, {"name": "Citron Yellow", "hex": "#b2b73e"}, {"name": "Turquoise Green", "hex": "#b5decc"}], "306": [{"name": "Lemon Yellow", "hex": "#f8ed43"}, {"name": "Benzol Green", "hex": "#00978d"}, {"name": "Dull Viridian Green", "hex": "#009465"}, {"name": "Nile Blue", "hex": "#bce4e5"}], "307": [{"name": "Carmine", "hex": "#cc1236"}, {"name": "Grayish Lavender - A", "hex": "#b5b1d8"}, {"name": "Aconite Violet", "hex": "#a36aa5"}, {"name": "Cotinga Purple", "hex": "#501345"}], "308": [{"name": "Fawn", "hex": "#d1b0a7"}, {"name": "Scarlet", "hex": "#cb2f43"}, {"name": "English Red", "hex": "#d96629"}, {"name": "Cobalt Green", "hex": "#96d1aa"}], "309": [{"name": "Golden Yellow", "hex": "#f3a257"}, {"name": "Apricot Orange", "hex": "#f68c50"}, {"name": "Violet Blue", "hex": "#40456a"}, {"name": "Vandar Poel's Blue", "hex": "#064f6e"}], "310": [{"name": "Sulpher Yellow", "hex": "#f5ecc2"}, {"name": "Pinkish Cinnamon", "hex": "#eeb480"}, {"name": "Olive", "hex": "#837e31"}, {"name": "Deep Slate Olive", "hex": "#253122"}], "311": [{"name": "Pompeian Red", "hex": "#ab2439"}, {"name": "Cream Yellow", "hex": "#fdbf68"}, {"name": "Dark Greenish Glaucous", "hex": "#b7c2a9"}, {"name": "Light Green Yellow", "hex": "#c7d14f"}], "312": [{"name": "Burnt Sienna", "hex": "#ae5224"}, {"name": "Yellow Orange", "hex": "#f99d1b"}, {"name": "Artemesia Green", "hex": "#709390"}, {"name": "Helvetia Blue", "hex": "#005b8d"}], "313": [{"name": "Carmine", "hex": "#cc1236"}, {"name": "Yellow", "hex": "#fff200"}, {"name": "Diamine Green", "hex": "#1a7444"}, {"name": "Black", "hex": "#111314"}], "314": [{"name": "Eosine Pink", "hex": "#f37f94"}, {"name": "Hay's Russet", "hex": "#793327"}, {"name": "Deep Lyons Blue", "hex": "#1c4286"}, {"name": "Dusky Madder Violet", "hex": "#4e1d4c"}], "315": [{"name": "Grenadine Pink", "hex": "#f48067"}, {"name": "Sulpher Yellow", "hex": "#f5ecc2"}, {"name": "Golden Yellow", "hex": "#f3a257"}, {"name": "Eupatorium Purple", "hex": "#bf5892"}], "316": [{"name": "Vandyke Red", "hex": "#82241f"}, {"name": "Dull Viridian Green", "hex": "#009465"}, {"name": "Violet", "hex": "#4f4086"}, {"name": "Red Violet", "hex": "#59256a"}], "317": [{"name": "Light Pinkish Cinnamon", "hex": "#fcc79b"}, {"name": "Ecru", "hex": "#c2ae93"}, {"name": "Lemon Yellow", "hex": "#f8ed43"}, {"name": "Turquoise Green", "hex": "#b5decc"}], "318": [{"name": "Light Brownish Olive", "hex": "#806e4b"}, {"name": "Blackish Olive", "hex": "#42533e"}, {"name": "Dusky Green", "hex": "#004f46"}, {"name": "Deep Slate Green", "hex": "#112f2c"}], "319": [{"name": "Raw Sienna", "hex": "#bb7125"}, {"name": "Apricot Yellow", "hex": "#ffdd00"}, {"name": "Yellow Orange", "hex": "#f99d1b"}, {"name": "Cossack Green", "hex": "#437742"}], "320": [{"name": "Coral Red", "hex": "#f58e84"}, {"name": "Sulpher Yellow", "hex": "#f5ecc2"}, {"name": "Oil Green", "hex": "#819238"}, {"name": "Light Glaucous Blue", "hex": "#a5c8d1"}], "321": [{"name": "Light Brown Drab", "hex": "#b59392"}, {"name": "Sulpher Yellow", "hex": "#f5ecc2"}, {"name": "Deep Slate Olive", "hex": "#253122"}, {"name": "Salvia Blue", "hex": "#97acc8"}], "322": [{"name": "Spectrum Red", "hex": "#e31f26"}, {"name": "Brick Red", "hex": "#a84222"}, {"name": "Eupatorium Purple", "hex": "#bf5892"}, {"name": "Blue Violet", "hex": "#6450a1"}], "323": [{"name": "Cinnamon Buff", "hex": "#fdc57e"}, {"name": "Citron Yellow", "hex": "#b2b73e"}, {"name": "Madder Brown", "hex": "#762c19"}, {"name": "Black", "hex": "#111314"}], "324": [{"name": "Pompeian Red", "hex": "#ab2439"}, {"name": "Olympic Blue", "hex": "#5a82b3"}, {"name": "Aconite Violet", "hex": "#a36aa5"}, {"name": "Neutral Gray", "hex": "#b6bfc1"}], "325": [{"name": "Eugenia Red | B", "hex": "#da525d"}, {"name": "Naples Yellow", "hex": "#fbe6a0"}, {"name": "Yellow Ocher", "hex": "#e2b540"}, {"name": "Deep Slate Green", "hex": "#112f2c"}], "326": [{"name": "Sulpher Yellow", "hex": "#f5ecc2"}, {"name": "Peach Red", "hex": "#f15a30"}, {"name": "Yellow Green", "hex": "#afd472"}, {"name": "Night Green", "hex": "#87c540"}], "327": [{"name": "Eosine Pink", "hex": "#f37f94"}, {"name": "Raw Sienna", "hex": "#bb7125"}, {"name": "Ecru", "hex": "#c2ae93"}, {"name": "Grayish Lavender - B", "hex": "#c0a9b3"}], "328": [{"name": "Brick Red", "hex": "#a84222"}, {"name": "Apricot Orange", "hex": "#f68c50"}, {"name": "Vandyke Brown", "hex": "#4b3317"}, {"name": "Light Porcelain Green", "hex": "#00908a"}], "329": [{"name": "Cream Yellow", "hex": "#fdbf68"}, {"name": "Grayish Lavender - B", "hex": "#c0a9b3"}, {"name": "Cotinga Purple", "hex": "#501345"}, {"name": "Slate Color", "hex": "#34454c"}], "330": [{"name": "Olive Buff", "hex": "#c1c494"}, {"name": "Nile Blue", "hex": "#bce4e5"}, {"name": "Salvia Blue", "hex": "#97acc8"}, {"name": "Green Blue", "hex": "#099197"}], "331": [{"name": "Indian Lake", "hex": "#c53c69"}, {"name": "Dull Violet Black", "hex": "#1e0e3f"}, {"name": "Light Mauve", "hex": "#9a72aa"}, {"name": "Violet", "hex": "#4f4086"}], "332": [{"name": "Coral Red", "hex": "#f58e84"}, {"name": "Scarlet", "hex": "#cb2f43"}, {"name": "Deep Slate Olive", "hex": "#253122"}, {"name": "Dusky Green", "hex": "#004f46"}], "333": [{"name": "Burnt Sienna", "hex": "#ae5224"}, {"name": "Lemon Yellow", "hex": "#f8ed43"}, {"name": "Cobalt Green", "hex": "#96d1aa"}, {"name": "Blue", "hex": "#006eb8"}], "334": [{"name": "Seashell Pink", "hex": "#fdd4bd"}, {"name": "Olive", "hex": "#837e31"}, {"name": "Yellow Green", "hex": "#afd472"}, {"name": "Antwarp Blue", "hex": "#007190"}], "335": [{"name": "Vandyke Red", "hex": "#82241f"}, {"name": "Yellow Orange", "hex": "#f99d1b"}, {"name": "Violet", "hex": "#4f4086"}, {"name": "Slate Color", "hex": "#34454c"}], "336": [{"name": "Eosine Pink", "hex": "#f37f94"}, {"name": "Hay's Russet", "hex": "#793327"}, {"name": "Pale Lemon Yellow", "hex": "#ffefae"}, {"name": "Blackish Olive", "hex": "#42533e"}], "337": [{"name": "Vistoris Lake", "hex": "#6d4145"}, {"name": "Laelia Pink", "hex": "#ca92a8"}, {"name": "Violet Carmine", "hex": "#713b4c"}, {"name": "Black", "hex": "#111314"}], "338": [{"name": "Carmine Red", "hex": "#a62c37"}, {"name": "Orange Yellow", "hex": "#fcb315"}, {"name": "Dusky Green", "hex": "#004f46"}, {"name": "Grayish Lavender - B", "hex": "#c0a9b3"}], "339": [{"name": "Ochraceous Salmon", "hex": "#d8a37b"}, {"name": "English Red", "hex": "#d96629"}, {"name": "Light Glaucous Blue", "hex": "#a5c8d1"}, {"name": "Violet Blue", "hex": "#40456a"}], "340": [{"name": "Peach Red", "hex": "#f15a30"}, {"name": "Sea Green", "hex": "#00b49b"}, {"name": "Neutral Gray", "hex": "#b6bfc1"}, {"name": "Black", "hex": "#111314"}], "341": [{"name": "Grenadine Pink", "hex": "#f48067"}, {"name": "Cossack Green", "hex": "#437742"}, {"name": "Deep Slate Olive", "hex": "#253122"}, {"name": "Light Glaucous Blue", "hex": "#a5c8d1"}], "342": [{"name": "Corinthian Pink", "hex": "#f8b6ba"}, {"name": "Cream Yellow", "hex": "#fdbf68"}, {"name": "Orange Citrine", "hex": "#986f2d"}, {"name": "Deep Slate Olive", "hex": "#253122"}], "343": [{"name": "Burnt Sienna", "hex": "#ae5224"}, {"name": "Ivory Buff", "hex": "#ebd3a2"}, {"name": "Deep Grayish Olive", "hex": "#635a3a"}, {"name": "Vandar Poel's Blue", "hex": "#064f6e"}], "344": [{"name": "Cinnamon Buff", "hex": "#fdc57e"}, {"name": "Deep Lyons Blue", "hex": "#1c4286"}, {"name": "Aconite Violet", "hex": "#a36aa5"}, {"name": "Black", "hex": "#111314"}], "345": [{"name": "Hay's Russet", "hex": "#793327"}, {"name": "Nile Blue", "hex": "#bce4e5"}, {"name": "Venice Green", "hex": "#62c6bf"}, {"name": "Blue Violet", "hex": "#6450a1"}], "346": [{"name": "Rosolanc Purple", "hex": "#b73f74"}, {"name": "Turquoise Green", "hex": "#b5decc"}, {"name": "Light Green Yellow", "hex": "#c7d14f"}, {"name": "Andover Green", "hex": "#6d7e77"}], "347": [{"name": "Olive Yellow", "hex": "#a6a159"}, {"name": "Sea Green", "hex": "#00b49b"}, {"name": "Helvetia Blue", "hex": "#005b8d"}, {"name": "Lilac", "hex": "#b984af"}], "348": [{"name": "Olive Buff", "hex": "#c1c494"}, {"name": "Cossack Green", "hex": "#437742"}, {"name": "Deep Slate Olive", "hex": "#253122"}, {"name": "Cotinga Purple", "hex": "#501345"}]};
+        const colorNames = colorsData.map(c => c.name);
+        
+        let closetData = JSON.parse(localStorage.getItem('my_closet_v2')) || [];
+        let uploadedImageBase64 = null;
+        let pickingMode = null; 
+
+        // Comprehensive Taxonomy Dataset
+        const taxonomy = {
+            "Tops": ["T-Shirt", "Polo", "Casual Button-Down", "Dress Shirt", "Cuban Collar Shirt", "Henley", "Overshirt"],
+            "Bottoms": ["Single Pleat Trousers", "Double Pleat Trousers", "Flat Front Trousers", "Jeans", "Chinos", "Shorts", "Cargo Pants"],
+            "Outerwear": ["Denim Jacket", "Leather Jacket", "Bomber Jacket", "Blazer / Sport Coat", "Suit Jacket", "Overcoat", "Cardigan", "Sweater"],
+            "Footwear": ["Suede Loafers", "Penny Loafers", "Tassel Loafers", "Oxfords", "Derbies", "Monk Straps", "Wallabee Boots", "Hiking Boots", "Chelsea Boots", "Sleek Sneakers", "Chunky Sneakers", "Running Shoes", "Sandals (e.g. Birkenstock)"],
+            "Accessories": ["Watch", "Sunglasses (Rx Insert)", "Belt", "Tie / Pocket Square"],
+            "Indian Wear": ["Kurta", "Nehru Jacket / Modi Vest", "Sherwani", "Bandhgala / Jodhpuri", "Churidar", "Dhoti", "Pyjama"]
+        };
+        
+        // Define Situations for Lookbook & Shopping List mapping
+        const appSituations = [
+            { id: "coffee", name: "Coffee Date", formalities: ["Casual", "Smart Casual"], exclude: ["Suit Jacket", "Sherwani", "Kurta"] },
+            { id: "office", name: "Office / Business", formalities: ["Business Casual", "Formal"], exclude: ["Shorts", "Sandals (e.g. Birkenstock)", "Loungewear", "Running Shoes"] },
+            { id: "evening", name: "Night Out / Evening", formalities: ["Smart Casual", "Business Casual", "Formal"], exclude: ["Running Shoes", "Shorts", "Loungewear"] },
+            { id: "summer", name: "Summer Casual", formalities: ["Casual", "Loungewear"], exclude: ["Overcoat", "Leather Jacket", "Boots", "Suit Jacket"] },
+            { id: "festive", name: "Festive / Traditional", formalities: ["Traditional", "Formal"], exclude: ["Shorts", "Running Shoes", "T-Shirt"] }
+        ];
+
+        const dom = {
+            input: document.getElementById("colorInput"), picker: document.getElementById("colorPicker"),
+            results: document.getElementById("results"), ind: document.getElementById("matched-indicator"),
+            scrollBtn: document.getElementById("scrollToTopBtn")
+        };
+
+        // UI Tabs & Modes
+        function switchTab(tabName) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabName + '-view').classList.add('active');
+            event.target.classList.add('active');
+            if(tabName === 'closet') renderCloset();
+            if(tabName === 'outfits') renderOutfitSelect();
+            if(tabName === 'lookbook') generateLookbook();
+            if(tabName === 'shopping') generateShoppingList();
+        }
+
+        function setOutfitMode(mode) {
+            document.querySelectorAll('.toggle-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('mode-' + mode).classList.add('active');
+            if(mode === 'occasion') {
+                document.getElementById('occasion-controls').style.display = 'flex';
+                document.getElementById('item-controls').style.display = 'none';
+            } else {
+                document.getElementById('occasion-controls').style.display = 'none';
+                document.getElementById('item-controls').style.display = 'flex';
+            }
+            document.getElementById('outfit-results').innerHTML = "";
+        }
+
+        function updateSubCategories() {
+            const group = document.getElementById('itemCatGroup').value;
+            const typeSelect = document.getElementById('itemType');
+            typeSelect.innerHTML = "";
+            taxonomy[group].forEach(type => typeSelect.innerHTML += `<option value="${type}">${type}</option>`);
+        }
+
+        // Color Math
+        function hexToRgb(h) {
+            var r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(h);
+            return r ? {r: parseInt(r[1], 16), g: parseInt(r[2], 16), b: parseInt(r[3], 16)} : null;
+        }
+        function findClosestColor(r, g, b) {
+            let minD = Infinity, closest = null;
+            colorsData.forEach(c => {
+                const d = ((c.rgb[0]-r)**2 * 0.3) + ((c.rgb[1]-g)**2 * 0.59) + ((c.rgb[2]-b)**2 * 0.11);
+                if (d < minD) { minD = d; closest = c; }
+            });
+            return closest;
+        }
+
+        // Dictionary Functionality
+        dom.picker.addEventListener("input", e => {
+            const rgb = hexToRgb(e.target.value);
+            if(rgb) {
+                const closest = findClosestColor(rgb.r, rgb.g, rgb.b);
+                if (closest) { dom.input.value = closest.name; displayResults(closest.name, true); }
+            }
+        });
+
+        dom.input.addEventListener("input", function() {
+            closeAllLists(); dom.ind.innerHTML = ""; 
+            if (!this.value) return false;
+            let a = document.createElement("DIV"); a.setAttribute("class", "autocomplete-items"); this.parentNode.appendChild(a);
+            let count = 0;
+            for (let i = 0; i < colorsData.length; i++) {
+                let c = colorsData[i];
+                if (c.name.toUpperCase().includes(this.value.toUpperCase()) && count < 8) {
+                    let b = document.createElement("DIV"); b.className = "autocomplete-item-wrapper";
+                    const regex = new RegExp(`(${this.value})`, "gi");
+                    b.innerHTML = `<div class="autocomplete-item-content">
+                                    <div class="autocomplete-swatch" style="background-color: ${c.hex};"></div>
+                                    <span>${c.name.replace(regex, "<strong>$1</strong>")}</span>
+                                   </div><input type='hidden' value='${c.name}'>`;
+                    b.addEventListener("click", function() { dom.input.value = this.getElementsByTagName("input")[0].value; closeAllLists(); displayResults(dom.input.value); });
+                    a.appendChild(b); count++;
+                }
+            }
+        });
+
+        function closeAllLists(elmnt) { document.querySelectorAll('.autocomplete-items').forEach(x => { if(elmnt!=x && elmnt!=dom.input) x.remove(); }); }
+        document.addEventListener("click", e => closeAllLists(e.target));
+        dom.input.addEventListener("keydown", e => { if (e.key === "Enter") { closeAllLists(); displayResults(dom.input.value); } });
+        document.getElementById("exploreBtn").addEventListener("click", function() { closeAllLists(); displayAllCombinations(); });
+
+        function displayResults(searchQuery, fromPicker = false) {
+            dom.results.innerHTML = ""; document.getElementById("toc").style.display = "none";
+            const colorObj = colorsData.find(c => c.name.toLowerCase() === searchQuery.toLowerCase());
+            if (!colorObj) { dom.results.innerHTML = `<div class="no-results">No match found.</div>`; return; }
+            dom.ind.innerHTML = fromPicker ? `Closest match: <span style="color:${colorObj.hex}; text-shadow:0 0 1px #000">${colorObj.name}</span>` : "";
+            dom.picker.value = colorObj.hex; 
+            const grouped = { 2: [], 3: [], 4: [] };
+            colorObj.combinations.forEach(id => { if (combinations[id]) grouped[combinations[id].length].push({ id: id, colors: combinations[id] }); });
+            renderGroupedCombinations(grouped, `Combinations including ${colorObj.name}`);
+        }
+
+        function displayAllCombinations() {
+            dom.input.value = ""; dom.ind.innerHTML = "Viewing all 348 palettes."; dom.results.innerHTML = ""; 
+            const t = document.getElementById("toc"); t.style.display = "block";
+            t.innerHTML = `<h3>Table of Contents</h3><div class="toc-links"><a href="#combo-category-2">2-Color Combinations</a><a href="#combo-category-3">3-Color Combinations</a><a href="#combo-category-4">4-Color Combinations</a></div>`;
+            const grouped = { 2: [], 3: [], 4: [] };
+            for (const id in combinations) { grouped[combinations[id].length].push({ id: id, colors: combinations[id] }); }
+            renderGroupedCombinations(grouped);
+        }
+
+        function renderGroupedCombinations(grouped, titlePrefix = "") {
+            [2, 3, 4].forEach(size => {
+                if (grouped[size].length > 0) {
+                    const catDiv = document.createElement('div'); catDiv.className = 'category'; catDiv.id = 'combo-category-' + size;
+                    catDiv.innerHTML = `<h2>${titlePrefix ? `${size}-Color ${titlePrefix}` : `All ${size}-Color Combinations`}</h2>`;
+                    const grid = document.createElement('div'); grid.className = 'combo-grid';
+                    grouped[size].forEach(item => grid.appendChild(createComboCard(item.id, item.colors)));
+                    catDiv.appendChild(grid); dom.results.appendChild(catDiv);
+                }
+            });
+        }
+
+        function createComboCard(id, colors) {
+            const card = document.createElement('div'); card.className = 'combo-card';
+            let swatchesHtml = '', labelsHtml = '';
+            colors.forEach(c => {
+                swatchesHtml += `<div class="v-swatch" style="background-color: ${c.hex};"></div>`;
+                labelsHtml += `<div class="v-label"><span class="color-name">${c.name}</span><span class="hex-code">${c.hex}</span></div>`;
+            });
+            card.innerHTML = `<div class="combo-id">Palette #${String(id).padStart(3, '0')}</div>
+                              <div class="palette-container"><div class="v-swatches">${swatchesHtml}</div><div class="v-labels">${labelsHtml}</div></div>`;
+            let startX, startY;
+            card.addEventListener('mousedown', e => { startX = e.clientX; startY = e.clientY; });
+            card.addEventListener('mouseup', e => { if (Math.abs(e.clientX - startX) < 5 && Math.abs(e.clientY - startY) < 5 && window.getSelection().toString().trim() === "") openPaletteModal(id); });
+            return card;
+        }
+
+        function openPaletteModal(id) {
+            const colors = combinations[id]; let swatchesHtml = '', labelsHtml = '';
+            colors.forEach(c => {
+                swatchesHtml += `<div style="height:140px;width:100%;background-color:${c.hex};"></div>`;
+                labelsHtml += `<div style="height:140px;display:flex;align-items:center;padding-left:30px;font-size:1.8rem;color:#2c3e50;font-weight:600;border-bottom:2px solid #ecf0f1;box-sizing:border-box;">
+                               <span class="color-name">${c.name}</span><span style="font-family:monospace;color:#7f8c8d;font-size:1.5rem;margin-left:auto;padding-right:30px;">${c.hex}</span></div>`;
+            });
+            document.getElementById('modal-body').innerHTML = `<h2 style="margin-top:0; color:#2c3e50; font-size:2.2rem; border-bottom:2px solid #ecf0f1; padding-bottom:15px;">Palette #${String(id).padStart(3, '0')}</h2>
+                <div style="display:flex; border-radius:12px; overflow:hidden; border:2px solid #ecf0f1; background:#fafafa; margin-top:20px;">
+                    <div style="display:flex; flex-direction:column; width:200px; flex-shrink:0;">${swatchesHtml}</div><div style="display:flex; flex-direction:column; flex:1;">${labelsHtml}</div></div>`;
+            const m = document.getElementById('paletteModal'); m.style.display = 'flex'; void m.offsetWidth; m.classList.add('show'); document.body.style.overflow = 'hidden'; 
+        }
+        function closePaletteModal() { const m = document.getElementById('paletteModal'); m.classList.remove('show'); setTimeout(() => { m.style.display = 'none'; document.body.style.overflow = 'auto'; }, 300); }
+
+        // --- Closet & Image Processing ---
+        function populateColorDropdowns() {
+            const pri = document.getElementById('primaryColorSelect'), sec = document.getElementById('secondaryColorSelect');
+            pri.innerHTML = ""; sec.innerHTML = '<option value="">None</option>';
+            [...colorsData].sort((a,b) => a.name.localeCompare(b.name)).forEach(c => {
+                pri.innerHTML += `<option value="${c.name}">${c.name}</option>`; sec.innerHTML += `<option value="${c.name}">${c.name}</option>`;
+            });
+            pri.addEventListener('change', e => document.getElementById('primaryColorPreview').style.backgroundColor = colorsData.find(x => x.name === e.target.value).hex);
+            sec.addEventListener('change', e => document.getElementById('secondaryColorPreview').style.backgroundColor = e.target.value ? colorsData.find(x => x.name === e.target.value).hex : 'transparent');
+        }
+
+        function openAddModal() {
+            populateColorDropdowns(); updateSubCategories();
+            document.getElementById('imageUpload').value = ""; document.getElementById('imageCanvas').style.display = "none";
+            document.getElementById('uploadText').style.display = "block"; document.getElementById('itemName').value = "";
+            ['btnPickPrimary', 'btnPickSecondary'].forEach(id => document.getElementById(id).classList.remove('active'));
+            ['statusPrimary', 'statusSecondary'].forEach(id => document.getElementById(id).innerHTML = "");
+            pickingMode = null; document.getElementById('imageCanvas').style.cursor = 'default';
+            document.getElementById('primaryColorSelect').selectedIndex = 0; document.getElementById('primaryColorSelect').dispatchEvent(new Event('change'));
+            const m = document.getElementById('addItemModal'); m.style.display = 'flex'; void m.offsetWidth; m.classList.add('show');
+        }
+        function closeAddModal() { const m = document.getElementById('addItemModal'); m.classList.remove('show'); setTimeout(() => { m.style.display = 'none'; }, 300); }
+
+        const uploadArea = document.getElementById('uploadArea'), fileInput = document.getElementById('imageUpload'), canvas = document.getElementById('imageCanvas'), ctx = canvas.getContext('2d');
+        uploadArea.addEventListener('click', e => { if (e.target !== canvas || !pickingMode) fileInput.click(); });
+        fileInput.addEventListener('change', function(e) {
+            if(e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const scale = 250 / img.width; canvas.width = 250; canvas.height = img.height * scale;
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        document.getElementById('uploadText').style.display = "none"; canvas.style.display = "block";
+                        uploadedImageBase64 = canvas.toDataURL('image/jpeg', 0.6); 
+                    }; img.src = e.target.result;
+                }; reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+
+        document.getElementById('btnPickPrimary').addEventListener('click', e => {
+            e.stopPropagation(); if(canvas.style.display === "none") return alert("Upload photo first.");
+            pickingMode = 'primary'; document.getElementById('btnPickPrimary').classList.add('active'); document.getElementById('btnPickSecondary').classList.remove('active');
+            document.getElementById('statusPrimary').innerHTML = ""; canvas.style.cursor = 'crosshair';
+        });
+        document.getElementById('btnPickSecondary').addEventListener('click', e => {
+            e.stopPropagation(); if(canvas.style.display === "none") return alert("Upload photo first.");
+            pickingMode = 'secondary'; document.getElementById('btnPickSecondary').classList.add('active'); document.getElementById('btnPickPrimary').classList.remove('active');
+            document.getElementById('statusSecondary').innerHTML = ""; canvas.style.cursor = 'crosshair';
+        });
+
+        canvas.addEventListener('click', e => {
+            e.stopPropagation(); if (!pickingMode) return;
+            const rect = canvas.getBoundingClientRect(), x = Math.floor((e.clientX - rect.left) * (canvas.width / rect.width)), y = Math.floor((e.clientY - rect.top) * (canvas.height / rect.height));
+            const pixel = ctx.getImageData(x, y, 1, 1).data;
+            const closest = findClosestColor(pixel[0], pixel[1], pixel[2]);
+            if(closest) {
+                const isPri = pickingMode === 'primary';
+                const sEl = document.getElementById(isPri ? 'statusPrimary' : 'statusSecondary'), selEl = document.getElementById(isPri ? 'primaryColorSelect' : 'secondaryColorSelect'), pEl = document.getElementById(isPri ? 'primaryColorPreview' : 'secondaryColorPreview'), bEl = document.getElementById(isPri ? 'btnPickPrimary' : 'btnPickSecondary');
+                sEl.innerHTML = '<div class="loader"></div>';
+                setTimeout(() => {
+                    selEl.value = closest.name; pEl.style.backgroundColor = closest.hex; sEl.innerHTML = '<span class="tick">&#10003;</span>';
+                    bEl.classList.remove('active'); pickingMode = null; canvas.style.cursor = 'default';
+                }, 600);
+            }
+        });
+
+        function saveGarment() {
+            const item = {
+                id: Date.now(), name: document.getElementById('itemName').value || "My Item", image: uploadedImageBase64 || '',
+                group: document.getElementById('itemCatGroup').value, category: document.getElementById('itemType').value,
+                formality: document.getElementById('itemFormality').value, fit: document.getElementById('itemFit').value,
+                primary: colorsData.find(c => c.name === document.getElementById('primaryColorSelect').value),
+                secondary: document.getElementById('secondaryColorSelect').value ? colorsData.find(c => c.name === document.getElementById('secondaryColorSelect').value) : null
+            };
+            closetData.push(item); localStorage.setItem('my_closet_v2', JSON.stringify(closetData));
+            closeAddModal(); renderCloset();
+        }
+
+        function renderCloset() {
+            const grid = document.getElementById('closet-grid'); grid.innerHTML = "";
+            if(closetData.length === 0) { grid.innerHTML = "<div style='grid-column:1/-1; text-align:center; color:#7f8c8d; margin-top:30px;'>Your closet is empty. Add a garment!</div>"; return; }
+            closetData.forEach((item, index) => {
+                const card = document.createElement('div'); card.className = "closet-card";
+                card.innerHTML = `
+                    <div style="font-size:0.8rem; color:#7f8c8d; margin-bottom:5px;">${item.category}</div>
+                    <img src="${item.image}" class="closet-img" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZWNmMGYxIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM3ZjhjOGQiPk5vIEltZzwvdGV4dD48L3N2Zz4='">
+                    <div class="closet-colors"><div class="c-dot" style="background-color:${item.primary.hex}" title="${item.primary.name}"></div>${item.secondary ? `<div class="c-dot" style="background-color:${item.secondary.hex}" title="${item.secondary.name}"></div>` : ''}</div>
+                    <div style="font-weight:bold; font-size:1rem; margin-bottom:5px;">${item.name}</div>
+                    <div class="tag-row"><span class="tag">${item.formality}</span><span class="tag">${item.fit}</span></div>
+                    <div class="delete-btn" onclick="deleteGarment(${index})">Delete</div>`;
+                grid.appendChild(card);
+            });
+        }
+        function deleteGarment(index) { if(confirm("Delete this garment?")) { closetData.splice(index, 1); localStorage.setItem('my_closet_v2', JSON.stringify(closetData)); renderCloset(); } }
+
+        // --- Outfit Generator Logic ---
+        function renderOutfitSelect() {
+            const select = document.getElementById('outfit-source-select');
+            select.innerHTML = '<option value="">-- Choose a garment --</option>';
+            closetData.forEach(item => select.innerHTML += `<option value="${item.id}">${item.name}</option>`);
+        }
+
+        function generateByItem() {
+            const selectedId = document.getElementById('outfit-source-select').value;
+            if(!selectedId) return;
+            runOutfitAlgorithm(closetData.find(c => c.id == selectedId), closetData, `Outfits based on: ${closetData.find(c => c.id == selectedId).name}`);
+        }
+
+        function generateByOccasion() {
+            const occ = document.getElementById('occ-event').value, weather = document.getElementById('occ-weather').value;
+            if(!occ || !weather) return alert("Select Occasion and Weather.");
+            let eligibleItems = closetData.filter(item => {
+                if (occ === "Formal Event" && (item.formality === "Casual" || item.formality === "Loungewear")) return false;
+                if (occ === "Office / Business" && item.formality === "Loungewear") return false;
+                if (occ === "Festive / Traditional" && item.group !== "Indian Wear" && item.formality !== "Formal") return false;
+                if (weather === "Hot / Sunny" && (item.category === "Overcoat" || item.category === "Sweater" || item.category === "Leather Jacket")) return false;
+                if (weather === "Cold / Winter" && (item.category === "Shorts" || item.category === "Sandals (e.g. Birkenstock)")) return false;
+                return true;
+            });
+            if (eligibleItems.length === 0) return document.getElementById('outfit-results').innerHTML = `<div class="no-results">No suitable items found in your closet for a ${weather} ${occ}.</div>`;
+            let anchorItem = eligibleItems.find(i => i.group === "Tops" || i.group === "Indian Wear") || eligibleItems[0];
+            runOutfitAlgorithm(anchorItem, eligibleItems, `Curated for: ${occ} (${weather})`);
+        }
+
+        function runOutfitAlgorithm(sourceItem, availableItems, title) {
+            const outEl = document.getElementById('outfit-results');
+            const sourceColor = sourceItem.primary.name;
+            let grouped = { 2: [], 3: [], 4: [] };
+            sourceItem.primary.combinations.forEach(id => { if(combinations[id]) grouped[combinations[id].length].push({ id: id, colors: combinations[id] }); });
+
+            outEl.innerHTML = `<h3>${title}</h3><p style="text-align:center; color:#7f8c8d; font-size:0.9rem;">Building around your ${sourceItem.name}</p>`;
+
+            [2, 3, 4].forEach(size => {
+                if(grouped[size].length > 0) {
+                    outEl.innerHTML += `<h2 style="margin-top:30px; border-bottom: 2px solid var(--green); padding-bottom:5px;">${size}-Piece Looks</h2>`;
+                    grouped[size].forEach(comboItem => {
+                        let remainingColors = comboItem.colors.map(c => c.name).filter(c => c !== sourceColor);
+                        let neededGroups = sourceItem.group === "Indian Wear" ? ["Footwear"] : ["Bottoms", "Footwear"];
+                        if(size === 4) neededGroups.push("Outerwear");
+                        neededGroups = neededGroups.filter(g => g !== sourceItem.group); 
+
+                        let htmlRow = `<div class="combo-card outfit-card" style="margin-bottom:15px; cursor:default;">
+                                       <div class="combo-id">Palette #${String(comboItem.id).padStart(3,'0')}</div>
+                                       <div class="outfit-items-row">
+                                       <div class="outfit-item" style="border: 2px solid var(--green);">
+                                            <span style="font-size:0.7rem; color:var(--green); font-weight:bold; margin-bottom:3px;">ANCHOR</span>
+                                            <img src="${sourceItem.image}">
+                                            <div style="font-size:0.8rem; text-align:center; line-height:1.1;">${sourceItem.name}</div>
+                                            <div style="font-size:0.7rem; color:#7f8c8d; margin-top:3px;">${sourceColor}</div>
+                                       </div>`;
+
+                        remainingColors.forEach(colorName => {
+                            const cObj = colorsData.find(c => c.name === colorName);
+                            let foundMatch = null;
+                            for(let i=0; i<availableItems.length; i++) {
+                                let cItem = availableItems[i];
+                                if(cItem.id !== sourceItem.id && cItem.primary.name === colorName) {
+                                    if(neededGroups.includes(cItem.group) || neededGroups.length === 0) {
+                                        foundMatch = cItem; neededGroups = neededGroups.filter(g => g !== cItem.group); break; 
+                                    }
+                                }
+                            }
+                            if(foundMatch) {
+                                htmlRow += `<div class="outfit-item"><span style="font-size:0.7rem; color:#7f8c8d; font-weight:bold; margin-bottom:3px;">MATCH</span>
+                                            <img src="${foundMatch.image}"><div style="font-size:0.8rem; text-align:center; line-height:1.1;">${foundMatch.name}</div>
+                                            <div style="font-size:0.7rem; color:#7f8c8d; margin-top:3px;">${colorName}</div></div>`;
+                            } else {
+                                let suggestGroup = neededGroups.length > 0 ? neededGroups.shift() : "Accessory";
+                                htmlRow += `<div class="outfit-item missing"><div class="missing-swatch" style="background-color:${cObj.hex};"></div>
+                                            <span class="missing-text">Missing:<br>${colorName}</span><span style="font-size:0.7rem; margin-top:5px; color:#555;">Need: ${suggestGroup}</span></div>`;
+                            }
+                        });
+                        htmlRow += `</div></div>`; outEl.innerHTML += htmlRow;
+                    });
+                }
+            });
+        }
+
+        // --- Lookbook Logic (Feature 1) ---
+        function generateLookbook() {
+            const out = document.getElementById('lookbook-results');
+            out.innerHTML = '<div class="loader" style="margin:50px auto;"></div>';
+            
+            setTimeout(() => {
+                out.innerHTML = "";
+                if(closetData.length === 0) {
+                    out.innerHTML = "<div class='no-results'>Your closet is empty. Add items to see curated situations.</div>"; return;
+                }
+
+                appSituations.forEach(sit => {
+                    let sitEligibleItems = closetData.filter(i => sit.formalities.includes(i.formality) && !sit.exclude.includes(i.category));
+                    let completeOutfits = [];
+                    let sitTops = sitEligibleItems.filter(i => i.group === "Tops" || i.group === "Indian Wear" || i.group === "Outerwear");
+
+                    sitTops.forEach(top => {
+                        top.primary.combinations.forEach(comboId => {
+                            let comboColors = combinations[comboId];
+                            if(!comboColors) return;
+                            let requiredColors = comboColors.map(c => c.name).filter(c => c !== top.primary.name);
+                            
+                            let neededGroups = top.group === "Indian Wear" ? ["Footwear"] : ["Bottoms", "Footwear"];
+                            if (comboColors.length === 4 && top.group !== "Outerwear") neededGroups.push("Outerwear");
+                            neededGroups = neededGroups.filter(g => g !== top.group);
+
+                            let matchedItems = [top];
+                            let available = [...sitEligibleItems];
+                            let matchedCount = 0;
+
+                            requiredColors.forEach(reqC => {
+                                let foundIdx = available.findIndex(a => a.id !== top.id && a.primary.name === reqC && neededGroups.includes(a.group));
+                                if (foundIdx > -1) {
+                                    matchedItems.push(available[foundIdx]);
+                                    neededGroups = neededGroups.filter(g => g !== available[foundIdx].group);
+                                    available.splice(foundIdx, 1);
+                                    matchedCount++;
+                                }
+                            });
+
+                            if (matchedCount === requiredColors.length && neededGroups.length === 0) {
+                                // Deduplicate identical combinations conceptually
+                                const uniqueSig = comboId + "_" + matchedItems.map(m=>m.id).sort().join("_");
+                                if(!completeOutfits.find(o => o.sig === uniqueSig)) {
+                                    completeOutfits.push({ sig: uniqueSig, id: comboId, items: matchedItems });
+                                }
+                            }
+                        });
+                    });
+
+                    // Render Section
+                    let html = `<div class="category" style="margin-top:20px;">
+                                <h2 style="display:flex; justify-content:space-between; align-items:baseline;">
+                                    ${sit.name} 
+                                    <span style="font-size:1rem; color:#7f8c8d; font-weight:normal;">${completeOutfits.length} combinations available</span>
+                                </h2>`;
+                    if(completeOutfits.length === 0) {
+                        html += `<p style="color:#7f8c8d;">You don't have enough color-coordinated pieces to build complete outfits for this situation.</p>`;
+                    } else {
+                        html += `<div class="combo-grid">`;
+                        completeOutfits.forEach(outfit => {
+                            let itemsHtml = outfit.items.map(i => `<div class="outfit-item"><span style="font-size:0.7rem; color:#7f8c8d; font-weight:bold;">${i.group}</span><img src="${i.image}"><div style="font-size:0.8rem; text-align:center; line-height:1.1;">${i.name}</div></div>`).join('');
+                            html += `<div class="combo-card outfit-card" style="border-left-color:#27ae60; cursor:default;">
+                                        <div class="combo-id">Palette #${String(outfit.id).padStart(3,'0')}</div>
+                                        <div class="outfit-items-row">${itemsHtml}</div>
+                                     </div>`;
+                        });
+                        html += `</div>`;
+                    }
+                    html += `</div>`;
+                    out.innerHTML += html;
+                });
+            }, 50);
+        }
+
+        // --- Shopping List Logic (Feature 2) ---
+        function generateShoppingList() {
+            const out = document.getElementById('shopping-results');
+            out.innerHTML = '<div class="loader" style="margin:50px auto;"></div>';
+            
+            setTimeout(() => {
+                out.innerHTML = "";
+                if(closetData.length === 0) {
+                    out.innerHTML = "<div class='no-results'>Your closet is empty. Add items to see recommendations.</div>"; return;
+                }
+
+                let shoppingMap = {}; 
+                
+                appSituations.forEach(sit => {
+                    let sitEligibleItems = closetData.filter(i => sit.formalities.includes(i.formality) && !sit.exclude.includes(i.category));
+                    let sitTops = sitEligibleItems.filter(i => i.group === "Tops" || i.group === "Indian Wear" || i.group === "Outerwear");
+                    
+                    sitTops.forEach(top => {
+                        top.primary.combinations.forEach(comboId => {
+                            let comboColors = combinations[comboId];
+                            if(!comboColors) return;
+                            let requiredColors = comboColors.map(c => c.name).filter(c => c !== top.primary.name);
+                            
+                            let neededGroups = top.group === "Indian Wear" ? ["Footwear"] : ["Bottoms", "Footwear"];
+                            if (comboColors.length === 4 && top.group !== "Outerwear") neededGroups.push("Outerwear");
+                            neededGroups = neededGroups.filter(g => g !== top.group);
+
+                            let available = [...sitEligibleItems];
+                            let matchedCount = 0;
+                            let missingColor = null;
+
+                            requiredColors.forEach(reqC => {
+                                let foundIdx = available.findIndex(a => a.id !== top.id && a.primary.name === reqC && neededGroups.includes(a.group));
+                                if (foundIdx > -1) {
+                                    neededGroups = neededGroups.filter(g => g !== available[foundIdx].group);
+                                    available.splice(foundIdx, 1);
+                                    matchedCount++;
+                                } else {
+                                    missingColor = reqC;
+                                }
+                            });
+
+                            // Only trigger if EXACTLY 1 piece is missing
+                            if (matchedCount === requiredColors.length - 1 && neededGroups.length === 1 && missingColor) {
+                                let missingGroup = neededGroups[0];
+                                let key = missingColor + "|" + missingGroup;
+                                if(!shoppingMap[key]) {
+                                    shoppingMap[key] = { 
+                                        colorName: missingColor, 
+                                        hex: colorsData.find(c=>c.name===missingColor).hex, 
+                                        category: missingGroup, 
+                                        situations: new Set(),
+                                        palettes: new Set()
+                                    };
+                                }
+                                shoppingMap[key].situations.add(sit.name);
+                                shoppingMap[key].palettes.add(comboId);
+                            }
+                        });
+                    });
+                });
+
+                let missingList = Object.values(shoppingMap).sort((a,b) => b.palettes.size - a.palettes.size);
+                
+                if(missingList.length === 0) {
+                    out.innerHTML = "<div class='no-results'>No missing pieces found. Your wardrobe is highly optimized!</div>"; return;
+                }
+
+                missingList.forEach(item => {
+                    let sitText = Array.from(item.situations).join(", ");
+                    let palText = Array.from(item.palettes).map(id => "#"+String(id).padStart(3,'0')).join(", ");
+                    
+                    let html = `
+                    <div class="shopping-card">
+                        <div class="shopping-swatch" style="background-color: ${item.hex};"></div>
+                        <div class="shopping-details">
+                            <h3>Buy: <span style="color:var(--green);">${item.colorName}</span> ${item.category}</h3>
+                            <p>Unlocks combinations for: <strong>${sitText}</strong></p>
+                            <p style="font-size:0.8rem; margin-top:5px; color:#bdc3c7;">Palettes unlocked: ${palText}</p>
+                        </div>
+                        <div class="unlock-badge">Unlocks ${item.palettes.size} Outfits</div>
+                    </div>`;
+                    out.innerHTML += html;
+                });
+            }, 50);
+        }
+
+        // Global listeners
+        window.onclick = function(e) {
+            const pM = document.getElementById('paletteModal'), aM = document.getElementById('addItemModal');
+            if (e.target == pM) closePaletteModal(); if (e.target == aM) closeAddModal();
+        }
+        window.addEventListener("scroll", () => { document.getElementById("scrollToTopBtn").classList.toggle("show", window.pageYOffset > 300); });
+        document.getElementById("scrollToTopBtn").addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+        document.addEventListener('keydown', e => { if(e.key === "Escape") { closePaletteModal(); closeAddModal(); }});
+        
+    </script>
+</body>
+</html>
