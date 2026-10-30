@@ -17,6 +17,18 @@ python3 -m http.server 8000
 Then visit <http://localhost:8000/wardrobe-studio.html>. Stop the server
 with Ctrl+C.
 
+## Run the tests
+
+The test suite uses Node.js built-in tools and needs no package install. Run it
+after every code change:
+
+```sh
+npm test
+```
+
+Tests check the HTML and JavaScript, stored color and outfit data, and the rules
+used to score outfit shapes and possible purchases.
+
 ## Use the product
 
 If this is your first visit, start by adding a few things you already wear,
