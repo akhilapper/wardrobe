@@ -130,7 +130,7 @@
         }
         .combo-card { cursor: pointer; }
         .combo-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
-        .combo-id { font-weight: bold; margin-bottom: 15px; color: #7f8c8d; font-size: 1.1rem; border-bottom: 1px solid #ecf0f1; padding-bottom: 8px; }
+        .combo-id { font-weight: bold; margin-bottom: 15px; color: var(--muted); font-size: 1.1rem; border-bottom: 1px solid #ecf0f1; padding-bottom: 8px; }
 
         .palette-container { display: flex; border-radius: 8px; overflow: hidden; border: 1px solid #ecf0f1; background: #fafafa; }
         .v-swatches { display: flex; flex-direction: column; width: 100px; flex-shrink: 0; }
@@ -155,7 +155,7 @@
         .shopping-swatch { width: 60px; height: 60px; border-radius: 10px; border: 1px solid #ecf0f1; flex-shrink:0;}
         .shopping-details { flex: 1; }
         .shopping-details h3 { margin: 0 0 5px 0; color: #2c3e50; }
-        .shopping-details p { margin: 0; color: #7f8c8d; font-size: 0.95rem; }
+        .shopping-details p { margin: 0; color: var(--muted); font-size: 0.95rem; }
         .unlock-badge { background: #27ae60; color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; }
 
         /* Modals */
@@ -163,7 +163,22 @@
         .modal.show { display: flex; opacity: 1; }
         .modal-content { background-color: #fff; padding: 30px; border-radius: 16px; width: 90%; max-width: 650px; max-height: 90vh; overflow-y: auto; position: relative; transform: scale(0.9); transition: transform 0.3s; }
         .modal.show .modal-content { transform: scale(1); }
-        .close-btn { position: absolute; top: 20px; right: 25px; font-size: 2.5rem; color: #bdc3c7; cursor: pointer; }
+        .close-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: grid;
+            width: 44px;
+            height: 44px;
+            place-items: center;
+            border: 0;
+            border-radius: 10px;
+            background: transparent;
+            color: var(--muted);
+            cursor: pointer;
+            font: inherit;
+            font-size: 1.75rem;
+        }
         
         .upload-area { border: 2px dashed #bdc3c7; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 20px; cursor: pointer; position: relative; }
         canvas { max-width: 100%; max-height: 300px; border-radius: 8px; display: none; }
@@ -185,7 +200,7 @@
         
         /* Two mode toggle */
         .toggle-container { display: flex; justify-content: center; margin-bottom: 20px; background: #ecf0f1; border-radius: 30px; padding: 5px; }
-        .toggle-btn { padding: 10px 20px; border: none; background: transparent; border-radius: 25px; cursor: pointer; font-weight: bold; color: #7f8c8d; transition: 0.3s; }
+        .toggle-btn { padding: 10px 20px; border: none; background: transparent; border-radius: 25px; cursor: pointer; font-weight: bold; color: var(--muted); transition: 0.3s; }
         .toggle-btn.active { background: white; color: #2c3e50; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
 
         #scrollToTopBtn { opacity: 0; position: fixed; bottom: 30px; right: 30px; z-index: 99; background-color: #2c3e50; color: white; border: none; width: 50px; height: 50px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; }
@@ -194,7 +209,7 @@
         :root {
             color-scheme: light;
             --ink: #17231d;
-            --muted: #748078;
+            --muted: #5f6c64;
             --green: #17784c;
             --green-dark: #105d3a;
             --green-soft: #e8f4ec;
@@ -244,7 +259,7 @@
         .brand-caption {
             margin: 1px 0 0;
             color: var(--muted);
-            font-size: 0.65rem;
+            font-size: 0.72rem;
             font-weight: 700;
             letter-spacing: 0.12em;
         }
@@ -406,8 +421,34 @@
             border-radius: 16px;
             box-shadow: 0 24px 80px rgba(17, 29, 22, 0.2);
         }
-        .close-btn { color: #929d95; }
-        .upload-area { border-color: #cbd6cc; background: #f8faf7; }
+        .close-btn:hover { background: var(--green-soft); color: var(--green-dark); }
+        .delete-btn {
+            min-height: 44px;
+            padding: 8px 12px;
+            border: 1px solid #e6c6c6;
+            border-radius: 8px;
+            background: #fff;
+            color: #8a2f2f;
+            cursor: pointer;
+            font: inherit;
+            font-weight: 650;
+        }
+        .delete-btn:hover { background: #fff3f1; }
+        .edit-garment-btn {
+            min-height: 44px;
+            padding: 8px 12px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: #fff;
+            color: var(--green-dark);
+            cursor: pointer;
+            font: inherit;
+            font-weight: 650;
+        }
+        .edit-garment-btn:hover { background: var(--green-soft); }
+        .closet-card .edit-garment-btn, .closet-card .delete-btn { margin-top: 16px; }
+        .upload-area { display: block; border-color: #cbd6cc; background: #f8faf7; }
+        #uploadText { display: block; margin: 0 0 1em; }
         .upload-area:hover { border-color: var(--green); background: #f2f8f3; }
         .extracted-color-box, .outfit-item {
             border-color: var(--line);
@@ -529,6 +570,9 @@
         .analyzer-fieldset { display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 0; border: 0; }
         .analyzer-fieldset + .analyzer-fieldset { padding-top: 16px; border-top: 1px solid var(--line); }
         .analyzer-fieldset legend { margin-bottom: 4px; font-size: 0.9rem; font-weight: 700; }
+        .profile-details { padding: 13px 15px; border: 1px solid var(--line); border-radius: 12px; background: rgba(255,255,255,.62); }
+        .profile-details summary { color: var(--green-dark); cursor: pointer; font-size: .9rem; font-weight: 700; }
+        .profile-details .analyzer-fields { margin-top: 14px; }
         .analyzer-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
         .analyzer-field { display: flex; min-width: 0; flex-direction: column; gap: 5px; }
         .analyzer-field label { color: var(--ink); font-size: 0.8rem; font-weight: 650; }
@@ -562,6 +606,84 @@
             color: #536157;
             font-size: 0.78rem;
         }
+        .proportion-toggle {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 5px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: #f5f7f3;
+        }
+        .proportion-toggle button {
+            min-height: 44px;
+            flex: 1 1 150px;
+            padding: 9px 12px;
+            border: 1px solid transparent;
+            border-radius: 7px;
+            background: transparent;
+            color: var(--ink);
+            cursor: pointer;
+            font: inherit;
+            font-weight: 650;
+        }
+        .proportion-toggle button[aria-pressed="true"] {
+            border-color: #bed6c3;
+            background: #fff;
+            color: var(--green-dark);
+            box-shadow: 0 1px 4px rgba(27, 44, 34, 0.1);
+        }
+        .metadata-fieldset { margin: 16px 0; padding: 14px; border: 1px solid var(--line); border-radius: 10px; }
+        .metadata-fieldset legend { padding: 0 5px; font-size: 0.9rem; font-weight: 700; }
+        .metadata-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+        .metadata-fields .form-group { min-width: 0; }
+        .metadata-fields input, .metadata-fields select {
+            width: 100%;
+            min-height: 44px;
+            padding: 9px 10px;
+            border: 1px solid #dce2dc;
+            border-radius: 8px;
+            background: #fff;
+            color: var(--ink);
+            font: inherit;
+        }
+        .styling-guidance { position: relative; margin-top: 12px; }
+        .styling-guidance-trigger {
+            min-height: 44px;
+            padding: 8px 12px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: #fff;
+            color: var(--green-dark);
+            cursor: pointer;
+            font: inherit;
+            font-weight: 650;
+        }
+        .styling-guidance-panel {
+            position: absolute;
+            z-index: 5;
+            right: 0;
+            bottom: calc(100% + 8px);
+            width: min(360px, calc(100vw - 64px));
+            padding: 16px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: #fff;
+            box-shadow: 0 12px 32px rgba(27, 44, 34, 0.18);
+        }
+        .styling-guidance-panel[hidden] { display: none; }
+        .styling-guidance-panel p { margin: 0 0 12px; color: var(--ink); font-size: 0.9rem; line-height: 1.5; }
+        .styling-guidance-dismiss {
+            min-height: 40px;
+            padding: 7px 11px;
+            border: 1px solid var(--line);
+            border-radius: 7px;
+            background: #f5f7f3;
+            color: var(--ink);
+            cursor: pointer;
+            font: inherit;
+            font-weight: 650;
+        }
         .analyzer-summary {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -569,7 +691,7 @@
             margin: 16px 0;
         }
         .analyzer-summary-card { padding: 14px; border: 1px solid var(--line); border-radius: 10px; background: #f8faf7; }
-        .analyzer-summary-label { display: block; margin-bottom: 4px; color: var(--muted); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+        .analyzer-summary-label { display: block; margin-bottom: 4px; color: var(--muted); font-size: 0.78rem; font-weight: 650; }
         .analyzer-summary-value { font-size: 1rem; font-weight: 750; line-height: 1.3; }
         .analyzer-summary-detail { margin-top: 5px; color: var(--muted); font-size: 0.78rem; }
         .silhouette-list, .tailoring-list { display: grid; gap: 9px; margin: 12px 0 0; padding: 0; list-style: none; }
@@ -596,9 +718,47 @@
             border-radius: 12px;
             background: var(--green);
             box-shadow: 0 8px 20px rgba(23, 120, 76, 0.22);
+            visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
         }
+        #scrollToTopBtn.show { visibility: visible; }
         #matched-indicator { color: var(--green-dark) !important; }
-        :focus-visible { outline: 3px solid rgba(23, 120, 76, 0.32); outline-offset: 2px; }
+        :focus-visible { outline: 3px solid var(--green-dark); outline-offset: 2px; }
+        button:not(:disabled):active { filter: brightness(0.92); }
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            clip-path: inset(50%);
+            white-space: nowrap;
+        }
+        .skip-link {
+            position: fixed;
+            z-index: 1100;
+            top: 8px;
+            left: 8px;
+            padding: 10px 14px;
+            transform: translateY(-160%);
+            border-radius: 8px;
+            background: var(--surface);
+            color: var(--green-dark);
+            box-shadow: var(--shadow);
+            font-weight: 700;
+        }
+        .skip-link:focus { transform: translateY(0); }
+        .upload-area:focus-within { outline: 3px solid var(--green-dark); outline-offset: 3px; }
+        .autocomplete-item-wrapper {
+            display: block;
+            width: 100%;
+            border: 0;
+            background: transparent;
+            color: var(--ink);
+            cursor: pointer;
+            font: inherit;
+            text-align: left;
+        }
 
         @media (max-width: 680px) {
             header { padding: 14px 16px 0; }
@@ -608,6 +768,7 @@
             .view-section { padding-top: 30px; }
             .view-heading, .controls-container, #results, #closet-grid, #outfit-results,
             #lookbook-results, #shopping-results { width: calc(100% - 32px); }
+            .utility-nav { flex-wrap: wrap; overflow: visible; gap: 0 14px; padding-inline: 4px; }
             .search-row { align-items: flex-end; gap: 10px; }
             .form-row, .extracted-colors { gap: 10px; }
             .shopping-card { align-items: flex-start; flex-wrap: wrap; padding: 16px; }
@@ -615,7 +776,11 @@
             .unlock-badge { margin-left: 78px; }
             .analyzer-layout { width: calc(100% - 32px); grid-template-columns: 1fr; gap: 16px; }
             .analyzer-panel, .analyzer-results-panel { padding: 18px; }
-            .tabs { justify-content: flex-start; }
+            .tabs { justify-content: flex-start; flex-wrap: wrap; overflow-x: visible; }
+            .tab-btn { flex: 1 0 auto; }
+            #occasion-controls, #item-controls { flex-wrap: wrap; }
+            #occasion-controls select, #item-controls .garment-picker { flex: 1 1 180px; min-width: 0; }
+            #occasion-controls .primary-btn, #item-controls .primary-btn { flex: 1 1 100%; }
             .v-swatches { width: 64px; }
             .v-label { padding-left: 12px; font-size: 0.9rem; }
             .hex-code { padding-right: 10px; font-size: 0.72rem; }
@@ -666,9 +831,7 @@
         }
 
         :root {
-            --surface: rgba(255, 255, 255, 0.78);
-            --glass-strong: rgba(255, 255, 255, 0.9);
-            --glass-line: rgba(255, 255, 255, 0.8);
+            --surface: #ffffff;
             --shadow: 0 12px 34px rgba(37, 51, 42, 0.075);
         }
         body {
@@ -678,6 +841,7 @@
                 radial-gradient(ellipse at 95% 16%, rgba(237, 230, 215, 0.68), transparent 32rem),
                 #f4f6f2;
         }
+        main { width: 100%; }
         header {
             position: sticky;
             padding: 14px max(24px, calc((100% - 1120px) / 2)) 0;
@@ -697,6 +861,7 @@
         .tabs { gap: 5px; }
         .tab-btn {
             flex: 0 0 auto;
+            min-height: 44px;
             padding: 11px 13px;
             border-bottom: 0;
             border-radius: 9px;
@@ -713,7 +878,8 @@
             padding: 3px 12px 11px;
         }
         .utility-nav button {
-            padding: 0;
+            min-height: 44px;
+            padding: 8px 0;
             border: 0;
             background: transparent;
             color: var(--muted);
@@ -725,6 +891,9 @@
         }
         .utility-nav button:hover, .utility-nav button.active { color: var(--green-dark); }
         .utility-link {
+            display: inline-flex;
+            align-items: center;
+            min-height: 44px;
             padding: 0;
             border: 0;
             background: transparent;
@@ -736,22 +905,19 @@
         }
         .view-section { padding-top: 40px; }
         .view-heading h2 { font-size: clamp(1.9rem, 4vw, 2.8rem); }
-        .controls-container { padding: 22px; border: 1px solid var(--glass-line); border-radius: 16px; background: var(--surface); box-shadow: var(--shadow); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+        .controls-container { padding: 22px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); box-shadow: var(--shadow); }
         .combo-card, .closet-card, .outfit-card, .shopping-card, .toc,
         .analyzer-panel, .analyzer-results-panel, .analyzer-summary-card,
         .home-task-card, .purchase-summary, .purchase-match-card {
-            border-color: rgba(255, 255, 255, 0.86);
+            border-color: var(--line);
             background: var(--surface);
             box-shadow: var(--shadow);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
         }
         .combo-card, .closet-card, .outfit-card, .shopping-card { border: 1px solid rgba(221, 229, 220, 0.78); }
         .primary-btn { border: 1px solid rgba(16, 93, 58, 0.26); box-shadow: 0 5px 14px rgba(23, 120, 76, .15); }
         input[type="text"], input[type="number"], select, .garment-picker-trigger {
             border-color: rgba(205, 215, 206, 0.9);
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
+            background: var(--surface);
         }
         .autocomplete-items, .garment-picker-list {
             background: rgba(255, 255, 255, 0.92);
@@ -759,9 +925,7 @@
             -webkit-backdrop-filter: saturate(160%) blur(18px);
         }
         .modal-content {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: saturate(160%) blur(22px);
-            -webkit-backdrop-filter: saturate(160%) blur(22px);
+            background: var(--surface);
         }
         .home-hero {
             display: flex;
@@ -778,8 +942,6 @@
                 radial-gradient(ellipse at 92% 18%, rgba(255,255,255,.74), transparent 22rem),
                 linear-gradient(130deg, rgba(233, 244, 235, .91), rgba(255,255,255,.74) 68%, rgba(239,234,222,.78));
             box-shadow: 0 18px 48px rgba(37, 51, 42, 0.09);
-            backdrop-filter: blur(22px);
-            -webkit-backdrop-filter: blur(22px);
         }
         .home-hero-copy { max-width: 620px; }
         .eyebrow {
@@ -811,6 +973,64 @@
         }
         .home-section-heading h3 { margin: 0; font-size: 1.05rem; letter-spacing: -.02em; }
         .home-section-heading p { margin: 0; color: var(--muted); font-size: .82rem; }
+        .home-start {
+            width: min(1120px, calc(100% - 48px));
+            margin: 0 auto 26px;
+            padding: 21px 24px;
+            border: 1px solid #d5e5d7;
+            border-radius: 17px;
+            background: #f5faf5;
+        }
+        #home-start-guide[hidden] { display: none; }
+        .home-start-heading h3 { margin: 0; font-size: 1.05rem; }
+        .home-start-heading p { margin: 5px 0 0; color: var(--muted); font-size: .88rem; }
+        .home-start ol {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+            margin: 17px 0 0;
+            padding: 0;
+            list-style: none;
+            counter-reset: home-step;
+        }
+        .home-start li { display: grid; grid-template-columns: 28px 1fr; column-gap: 9px; align-content: start; }
+        .home-start li::before {
+            display: grid;
+            width: 26px;
+            height: 26px;
+            place-items: center;
+            border-radius: 50%;
+            background: #dceee0;
+            color: var(--green-dark);
+            content: counter(home-step);
+            counter-increment: home-step;
+            font-size: .8rem;
+            font-weight: 750;
+        }
+        .home-start li strong, .home-start li span { grid-column: 2; }
+        .home-start li strong { grid-row: 1; font-size: .88rem; }
+        .home-start li span { margin-top: 4px; color: var(--muted); font-size: .8rem; line-height: 1.45; }
+        .outfit-controls { display: grid; width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: end; gap: 14px; }
+        .outfit-field { display: grid; gap: 7px; color: var(--ink); font-size: .9rem; font-weight: 650; }
+        .outfit-submit { grid-column: 1 / -1; width: 100%; }
+        .modal-intro { margin: -5px 0 18px; color: var(--muted); font-size: .9rem; line-height: 1.5; }
+        .color-details, .garment-details {
+            margin: 10px 0 16px;
+            padding: 13px 15px;
+            border: 1px solid #d9e3da;
+            border-radius: 12px;
+            background: #f8faf8;
+        }
+        .color-details summary, .garment-details summary {
+            color: var(--green-dark);
+            cursor: pointer;
+            font-size: .9rem;
+            font-weight: 700;
+        }
+        .color-details .extracted-colors { margin-top: 12px; }
+        .garment-details > .analyzer-hint { display: block; margin: 8px 0 12px; }
+        .garment-details .metadata-fieldset { margin-top: 10px; }
+        .extracted-color-box input[type="color"] { width: 52px; height: 44px; margin-top: 7px; border: 0; background: transparent; cursor: pointer; }
         .home-task-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
         .home-task-card {
             display: flex;
@@ -866,8 +1086,6 @@
             border-radius: 16px;
             background: var(--surface);
             box-shadow: var(--shadow);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
         }
         .purchase-field { display: flex; min-width: 0; flex-direction: column; gap: 6px; }
         .purchase-field label { font-size: .78rem; font-weight: 700; }
@@ -903,6 +1121,8 @@
         .load-more-btn:hover { background: #e8f4ec; }
         @media (max-width: 760px) {
             .home-task-grid { grid-template-columns: 1fr; }
+            .home-start ol { grid-template-columns: 1fr; gap: 12px; }
+            .home-start { width: calc(100% - 32px); padding: 18px; }
             .home-task-card { min-height: 0; }
             .purchase-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
             .purchase-form .primary-btn { grid-column: 1 / -1; }
@@ -915,14 +1135,38 @@
             .purchase-form { grid-template-columns: 1fr; }
             .purchase-form .primary-btn { grid-column: auto; }
             .home-section-heading { align-items: flex-start; flex-direction: column; }
+            .outfit-controls { grid-template-columns: 1fr; }
+            .outfit-submit { grid-column: auto; }
         }
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+        }
+        @media (prefers-reduced-transparency: reduce) {
+            header, .controls-container, .combo-card, .closet-card, .outfit-card, .shopping-card,
+            .toc, .analyzer-panel, .analyzer-results-panel, .analyzer-summary-card,
+            .home-task-card, .home-context, .purchase-summary, .purchase-match-card, .home-hero,
+            .purchase-form, .modal-content {
+                background: #fff;
+                backdrop-filter: none;
+                -webkit-backdrop-filter: none;
+            }
+            .autocomplete-items, .garment-picker-list {
+                background: #fff;
+                backdrop-filter: none;
+                -webkit-backdrop-filter: none;
+            }
+            .modal { background: #17231d; backdrop-filter: none; -webkit-backdrop-filter: none; }
+        }
+        @media (prefers-contrast: more) {
+            :root { --muted: #4b5850; --line: #77847b; }
+            :focus-visible, .upload-area:focus-within { outline-color: #06472b; }
+            .tab-btn.active { box-shadow: inset 0 0 0 2px var(--green-dark); }
         }
     </style>
 </head>
 <body>
 
+    <a class="skip-link" href="#main-content">Skip to content</a>
     <header>
         <div class="brand-row">
             <span class="brand-mark" aria-hidden="true">W</span>
@@ -932,60 +1176,72 @@
             </div>
         </div>
         <nav class="tabs" aria-label="Main tasks">
-            <button class="tab-btn active" data-view="home" onclick="switchTab('home', this)">Home</button>
+            <button class="tab-btn active" data-view="home" aria-current="page" onclick="switchTab('home', this)">Home</button>
             <button class="tab-btn" data-view="outfits" onclick="switchTab('outfits', this)">Plan an outfit</button>
-            <button class="tab-btn" data-view="shopping" onclick="switchTab('shopping', this)">Buy next</button>
-            <button class="tab-btn" data-view="purchase" onclick="switchTab('purchase', this)">Check a purchase</button>
-            <button class="tab-btn" data-view="closet" onclick="switchTab('closet', this)">My closet</button>
+            <button class="tab-btn" data-view="shopping" onclick="switchTab('shopping', this)">What to buy</button>
+            <button class="tab-btn" data-view="purchase" onclick="switchTab('purchase', this)">Check before buying</button>
+            <button class="tab-btn" data-view="closet" onclick="switchTab('closet', this)">My clothes</button>
         </nav>
         <nav class="utility-nav" aria-label="More tools">
-            <button onclick="switchTab('lookbook', this)">Lookbook</button>
-            <button onclick="switchTab('dictionary', this)">Color library</button>
-            <button onclick="switchTab('analyzer', this)">Style profile</button>
+            <button onclick="switchTab('lookbook', this)">Style ideas</button>
+            <button onclick="switchTab('dictionary', this)">Color guide</button>
+            <button onclick="switchTab('analyzer', this)">Your preferences</button>
         </nav>
     </header>
 
+    <main id="main-content" tabindex="-1">
     <!-- HOME / TASK DASHBOARD -->
     <div id="home-view" class="view-section active">
         <section class="home-hero">
             <div class="home-hero-copy">
-                <p class="eyebrow">A little more intention. A lot less guesswork.</p>
-                <h2>Get dressed for what’s next.</h2>
-                <p>Plan a look for your day, find the next piece worth buying, or make sure something new works with what you already own.</p>
+                <p class="eyebrow">Wardrobe Studio</p>
+                <h2 id="home-hero-title">Start with clothes you already own.</h2>
+                <p id="home-hero-copy">Add a few pieces, then choose where you’re going. We’ll suggest outfits from your clothes.</p>
             </div>
-            <button class="primary-btn" onclick="switchTab('outfits', document.querySelector('.tabs [data-view=outfits]'))">Plan a look <span aria-hidden="true">→</span></button>
+            <button id="home-primary-action" class="primary-btn" onclick="openPrimaryHomeAction()">Add your first clothing item</button>
+        </section>
+        <section id="home-start-guide" class="home-start" aria-labelledby="home-start-title">
+            <div class="home-start-heading">
+                <h3 id="home-start-title">Your first outfit is three simple steps</h3>
+                <p>No photos, measurements, or special fashion knowledge needed.</p>
+            </div>
+            <ol>
+                <li><strong>Add a few clothes</strong><span>Start with a top, pants or skirt, and shoes.</span></li>
+                <li><strong>Choose your plans</strong><span>Tell us where you’re going and what the weather is like.</span></li>
+                <li><strong>Get outfit ideas</strong><span>We’ll use the clothes you added and show what goes together.</span></li>
+            </ol>
         </section>
         <section class="home-section" aria-labelledby="home-tasks-title">
             <div class="home-section-heading">
-                <h3 id="home-tasks-title">What are you here to do?</h3>
-                <p>Start with the decision you need to make.</p>
+                <h3 id="home-tasks-title">How can I help today?</h3>
+                <p>Choose what you’d like help with.</p>
             </div>
             <div class="home-task-grid">
                 <button class="home-task-card" onclick="switchTab('outfits', document.querySelector('.tabs [data-view=outfits]'))">
                     <span class="home-task-icon" aria-hidden="true">✦</span>
                     <strong>Plan an outfit</strong>
-                    <span>Pick an occasion and weather. See complete looks, plus the one piece you might be missing.</span>
-                    <span class="home-task-cta">Find a look <span aria-hidden="true">→</span></span>
+                    <span>Choose where you’re going and the weather. Get ideas from clothes you own.</span>
+                    <span class="home-task-cta">See outfit ideas</span>
                 </button>
                 <button class="home-task-card" onclick="switchTab('shopping', document.querySelector('.tabs [data-view=shopping]'))">
                     <span class="home-task-icon" aria-hidden="true">↗</span>
-                    <strong>Buy next</strong>
-                    <span>See which missing colors and categories could unlock more outfits in your closet.</span>
-                    <span class="home-task-cta">See wardrobe gaps <span aria-hidden="true">→</span></span>
+                    <strong>What should I buy?</strong>
+                    <span>See which new pieces could work with clothes you already own.</span>
+                    <span class="home-task-cta">Find ideas for what to buy</span>
                 </button>
                 <button class="home-task-card" onclick="switchTab('purchase', document.querySelector('.tabs [data-view=purchase]'))">
                     <span class="home-task-icon" aria-hidden="true">◉</span>
-                    <strong>Check a purchase</strong>
-                    <span>Enter the type and color of a piece you’re considering. See what it pairs with—and what it completes.</span>
-                    <span class="home-task-cta">Check the match <span aria-hidden="true">→</span></span>
+                    <strong>Check before I buy</strong>
+                    <span>See how a piece you’re considering could work with your clothes.</span>
+                    <span class="home-task-cta">Check an item</span>
                 </button>
             </div>
         </section>
         <section class="home-section" aria-label="Closet overview">
-            <div class="home-context">
+            <div class="home-context" aria-live="polite">
                 <span><strong id="home-closet-count">0 pieces</strong> in your closet</span>
                 <span id="home-next-step">Add a few pieces to get personal outfit ideas.</span>
-                <button class="utility-link" onclick="switchTab('closet', document.querySelector('.tabs [data-view=closet]'))">Manage closet →</button>
+                <button class="utility-link" onclick="switchTab('closet', document.querySelector('.tabs [data-view=closet]'))">See my clothes</button>
             </div>
         </section>
     </div>
@@ -993,20 +1249,21 @@
     <!-- 1. DICTIONARY VIEW -->
     <div id="dictionary-view" class="view-section">
         <div class="view-heading">
-            <h2>Find your next favorite combination.</h2>
-            <p>Explore color pairings and build a wardrobe that works together.</p>
+            <h2>Explore colors that go together</h2>
+            <p>Search a color or choose one to see combinations you might like.</p>
         </div>
         <div class="controls-container">
             <div class="search-row">
                 <div class="input-wrapper">
-                    <input type="text" id="colorInput" placeholder="Search a color..." autocomplete="off">
+                    <label class="visually-hidden" for="colorInput">Search colors</label>
+                    <input type="text" id="colorInput" placeholder="Search a color..." autocomplete="off" aria-controls="color-suggestions" aria-expanded="false">
                 </div>
                 <div class="color-picker-wrapper">
                     <input type="color" id="colorPicker" value="#f9c1ce">
-                    <label class="picker-label">Pick Color</label>
+                    <label class="picker-label" for="colorPicker">Pick Color</label>
                 </div>
             </div>
-            <button id="exploreBtn" class="primary-btn">Explore All 348 Palettes</button>
+            <button id="exploreBtn" class="primary-btn">Explore all color combinations</button>
         </div>
         <div id="matched-indicator" style="color:#27ae60; font-weight:bold; margin-bottom:15px;"></div>
         <div id="toc" class="toc" style="display:none;"></div>
@@ -1016,11 +1273,11 @@
     <!-- 2. CLOSET VIEW -->
     <div id="closet-view" class="view-section">
         <div class="view-heading">
-            <h2>Your closet, at a glance.</h2>
-            <p>Keep track of the pieces you love and the colors you wear.</p>
+            <h2>Clothes I own</h2>
+            <p>Add the pieces you wear most. A photo is helpful, but not required.</p>
         </div>
         <div class="controls-container">
-            <button class="primary-btn" onclick="openAddModal()">+ Add New Garment</button>
+            <button class="primary-btn" onclick="openAddModal()">Add a clothing item</button>
         </div>
         <div id="closet-grid" class="closet-grid-container"></div>
     </div>
@@ -1028,58 +1285,62 @@
     <!-- 3. OUTFIT / OCCASION STYLIST VIEW -->
     <div id="outfits-view" class="view-section">
         <div class="view-heading">
-            <h2>What’s on your calendar?</h2>
-            <p>Choose the occasion and weather to see what works from your closet. One-piece-away looks include a clear suggestion.</p>
+            <h2>What are you getting dressed for?</h2>
+            <p>Choose where you’re going and the weather. We’ll suggest outfit ideas using clothes you’ve added.</p>
         </div>
         <div class="controls-container">
-            <div class="toggle-container">
-                <button class="toggle-btn active" id="mode-occasion" onclick="setOutfitMode('occasion')">By Occasion</button>
-                <button class="toggle-btn" id="mode-item" onclick="setOutfitMode('item')">By Item</button>
+            <div class="toggle-container" role="group" aria-label="Choose outfit planning mode">
+                <button class="toggle-btn active" id="mode-occasion" aria-pressed="true" onclick="setOutfitMode('occasion')">Choose plans</button>
+                <button class="toggle-btn" id="mode-item" aria-pressed="false" onclick="setOutfitMode('item')">Start with one item</button>
             </div>
             
             <!-- Occasion Mode Controls -->
-            <div id="occasion-controls" style="width:100%; display:flex; gap:15px;">
+            <div id="occasion-controls" class="outfit-controls">
+                <label class="outfit-field" for="occ-event">Where are you going?
                 <select id="occ-event">
-                    <option value="">-- Select Occasion --</option>
-                    <option value="Casual Hangout">Casual Hangout</option>
-                    <option value="Date">Date / Evening Out</option>
-                    <option value="Office / Business">Office / Business</option>
-                    <option value="Formal Event">Formal Event</option>
-                    <option value="Festive / Traditional">Festive / Traditional</option>
+                    <option value="">Choose one</option>
+                    <option value="Casual Hangout">Everyday or casual</option>
+                    <option value="Date">Dinner or evening out</option>
+                    <option value="Office / Business">Work</option>
+                    <option value="Formal Event">A formal event</option>
+                    <option value="Festive / Traditional">A celebration</option>
                 </select>
+                </label>
+                <label class="outfit-field" for="occ-weather">What will the weather be?
                 <select id="occ-weather">
-                    <option value="">-- Select Weather --</option>
-                    <option value="Hot / Sunny">Sunny & Hot</option>
-                    <option value="Mild / Breezy">Mild & Breezy</option>
-                    <option value="Cold / Winter">Cold / Winter</option>
+                    <option value="">Choose one</option>
+                    <option value="Hot / Sunny">Hot or sunny</option>
+                    <option value="Mild / Breezy">Mild or breezy</option>
+                    <option value="Cold / Winter">Cold</option>
                 </select>
-                <button class="primary-btn" style="flex-shrink:0;" onclick="generateByOccasion()">Style Me</button>
+                </label>
+                <button class="primary-btn outfit-submit" onclick="generateByOccasion()">Show outfit ideas</button>
             </div>
 
             <!-- Item Mode Controls -->
-            <div id="item-controls" style="width:100%; display:none; gap:15px;">
+            <div id="item-controls" class="outfit-controls" style="display:none;">
                 <div class="garment-picker" id="garment-picker">
                     <select id="outfit-source-select" aria-hidden="true" tabindex="-1" style="display:none;">
-                        <option value="">-- Choose a garment --</option>
+                        <option value="">Choose one of my clothes</option>
                     </select>
                     <button class="garment-picker-trigger" id="garment-picker-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="garment-picker-list">
                         <span class="garment-art" id="garment-picker-art" aria-hidden="true"></span>
-                        <span class="garment-picker-copy" id="garment-picker-copy">-- Choose a garment --</span>
+                        <span class="garment-picker-copy" id="garment-picker-copy">Choose one of my clothes</span>
                         <span class="garment-picker-chevron" aria-hidden="true">▾</span>
                     </button>
                     <div class="garment-picker-list" id="garment-picker-list" role="listbox" aria-label="Choose a garment" hidden></div>
                 </div>
-                <button class="primary-btn" style="flex-shrink:0;" onclick="generateByItem()">Match Item</button>
+                <button class="primary-btn outfit-submit" onclick="generateByItem()">Show outfit ideas</button>
             </div>
         </div>
-        <div id="outfit-results"></div>
+        <div id="outfit-results" aria-live="polite"></div>
     </div>
 
     <!-- 4. LOOKBOOK VIEW (New Feature 1) -->
     <div id="lookbook-view" class="view-section">
         <div class="controls-container" style="text-align:center;">
-            <h2>Curated Situations</h2>
-            <p style="color:#7f8c8d; margin-top:-10px;">Complete outfits and looks that are one piece away, built from your closet</p>
+            <h2>Outfit ideas for different occasions</h2>
+            <p style="color:var(--muted); margin-top:-10px;">See looks made from clothes you own, and ideas for what could complete them.</p>
         </div>
         <div id="lookbook-results"></div>
     </div>
@@ -1087,8 +1348,8 @@
     <!-- 5. SHOPPING LIST VIEW (New Feature 2) -->
     <div id="shopping-view" class="view-section">
         <div class="controls-container" style="text-align:center;">
-            <h2>Buy the piece that does more.</h2>
-            <p style="color:#7f8c8d; margin-top:-10px;">Prioritized by the number of outfit combinations each missing piece can unlock.</p>
+            <h2>What could work with my clothes?</h2>
+            <p style="color:var(--muted); margin-top:-10px;">Find ideas for pieces that could go with more of what you already own.</p>
         </div>
         <div id="shopping-results"></div>
     </div>
@@ -1096,33 +1357,35 @@
     <!-- CHECK A PURCHASE -->
     <div id="purchase-view" class="view-section">
         <div class="view-heading">
-            <h2>Will it work with what you own?</h2>
-            <p>Check a color and garment before you buy. We’ll show the closet matches and the looks it could help complete.</p>
+            <h2>Will it work with what I own?</h2>
+            <p>Choose the kind of clothing and its color. We’ll show how it could work with clothes you already own.</p>
         </div>
         <section class="purchase-layout">
             <form id="purchase-check-form" class="purchase-form">
                 <div class="purchase-field">
-                    <label for="purchase-group">What are you considering?</label>
+                    <label for="purchase-group">What kind of clothing is it?</label>
                     <select id="purchase-group">
                         <option value="Tops">Top</option>
                         <option value="Bottoms">Bottoms</option>
                         <option value="Outerwear">Outerwear</option>
                         <option value="Footwear">Footwear</option>
                         <option value="Accessories">Accessory</option>
-                        <option value="Indian Wear">Indian wear</option>
+                        <option value="Indian Wear">Traditional clothing</option>
                     </select>
                 </div>
                 <div class="purchase-field">
-                    <label for="purchase-type">Garment type</label>
+                    <label for="purchase-type">Which kind?</label>
                     <select id="purchase-type"></select>
                 </div>
                 <div class="purchase-field">
-                    <label for="purchase-color">Color</label>
-                    <select id="purchase-color" required></select>
+                    <label for="purchase-color-picker">What color is it?</label>
+                    <input type="color" id="purchase-color-picker" value="#395b45" aria-describedby="purchase-color-hint">
+                    <span id="purchase-color-hint" class="analyzer-hint">Tap the color square to choose a close match.</span>
+                    <select id="purchase-color" class="visually-hidden" aria-hidden="true" tabindex="-1"></select>
                 </div>
-                <button class="primary-btn" type="submit">Check my closet</button>
+                <button class="primary-btn" type="submit">See if it matches</button>
             </form>
-            <p class="purchase-help">A match means you already own a piece in a complementary color. A “could complete” suggestion means buying this item would make another palette wearable with pieces you already have. Results use the closet’s primary color tags.</p>
+            <p class="purchase-help">You’ll see clothes you own that go with it, plus other pieces it could work with.</p>
             <div id="purchase-results" aria-live="polite">
                 <div class="analyzer-empty">Choose the piece you’re considering to see how it fits into your wardrobe.</div>
             </div>
@@ -1132,27 +1395,27 @@
     <!-- 6. STYLE ANALYZER -->
     <div id="analyzer-view" class="view-section">
         <div class="view-heading">
-            <h2>Make your proportions work for you.</h2>
-            <p>A Kibbe-inspired styling lens and closet-first outfit ideas for a modern athletic, old-money look.</p>
+            <h2>Choose the look you like</h2>
+            <p>Set a few optional preferences for outfit shape, fit, and color. You can skip this and still use the outfit planner.</p>
         </div>
         <div class="analyzer-layout">
             <section class="analyzer-panel" aria-labelledby="analyzer-form-title">
-                <h3 id="analyzer-form-title">Your style profile</h3>
-                <p class="analyzer-intro">Measurements help tune fit and proportions. Only the shoulder, chest, and waist measurements are required.</p>
+                <h3 id="analyzer-form-title">Your preferences</h3>
+                <p class="analyzer-intro">This is optional. Choose the look you like, then open extra details only if you want more specific suggestions.</p>
                 <form id="style-analyzer-form" class="analyzer-form">
-                    <fieldset class="analyzer-fieldset">
-                        <legend>Complexion & hair</legend>
+                    <details class="profile-details">
+                        <summary>Color and hair preferences (optional)</summary>
                         <div class="analyzer-fields">
                             <div class="analyzer-field">
-                                <label for="analyzer-skin-color">Skin color</label>
+                                <label for="analyzer-skin-color">Skin tone</label>
                                 <input id="analyzer-skin-color" type="color" value="#c68f6a">
                             </div>
                             <div class="analyzer-field">
-                                <label for="analyzer-undertone">Undertone</label>
+                                <label for="analyzer-undertone">Color preference</label>
                                 <select id="analyzer-undertone">
-                                    <option value="warm">Warm</option>
-                                    <option value="neutral" selected>Neutral</option>
-                                    <option value="cool">Cool</option>
+                                    <option value="warm">Warm colors</option>
+                                    <option value="neutral" selected>Neutral colors</option>
+                                    <option value="cool">Cool colors</option>
                                 </select>
                             </div>
                             <div class="analyzer-field">
@@ -1187,7 +1450,7 @@
                             <div class="analyzer-field">
                                 <label for="analyzer-face-shape">Face shape</label>
                                 <select id="analyzer-face-shape">
-                                    <option value="columnar-oval">Columnar oval</option>
+                                    <option value="columnar-oval">Long oval</option>
                                     <option value="oblong">Oblong</option>
                                     <option value="oval">Oval</option>
                                     <option value="square">Square</option>
@@ -1196,34 +1459,48 @@
                                 </select>
                             </div>
                         </div>
-                    </fieldset>
-                    <fieldset class="analyzer-fieldset">
-                        <legend>Body measurements</legend>
+                    </details>
+                    <details class="profile-details">
+                        <summary>Measurements and fit preferences (optional)</summary>
                         <div class="analyzer-fields">
                             <div class="analyzer-field analyzer-full">
-                                <label for="analyzer-units">Measurement units</label>
+                                <label for="analyzer-units">Use these units</label>
                                 <select id="analyzer-units">
                                     <option value="in">Inches</option>
                                     <option value="cm">Centimeters</option>
                                 </select>
-                                <span class="analyzer-hint">Changing units converts values already entered.</span>
+                                <span class="analyzer-hint">Choose inches or centimeters. Existing numbers convert when you switch.</span>
                             </div>
                             <div class="analyzer-field">
                                 <label for="analyzer-height">Height</label>
-                                <input id="analyzer-height" type="number" min="1" step="0.1" placeholder="e.g. 70">
+                                <input id="analyzer-height" type="number" min="1" step="0.1" placeholder="For example, 66">
                             </div>
                             <div class="analyzer-field">
-                                <label for="analyzer-shoulders">Shoulder line</label>
-                                <input id="analyzer-shoulders" type="number" min="1" step="0.1" placeholder="e.g. 43.5" required>
-                                <span class="analyzer-hint">Use the same shoulder measurement method consistently.</span>
+                                <label for="analyzer-build-type">How would you describe your frame?</label>
+                                <select id="analyzer-build-type">
+                                    <option value="AVERAGE">Balanced</option>
+                                    <option value="INVERTED_TRIANGLE">Broader shoulders</option>
+                                    <option value="LEAN_MUSCLE">Lean or defined</option>
+                                </select>
+                            </div>
+                            <div class="analyzer-field">
+                                <label for="analyzer-head-volume">Top structure preference</label>
+                                <select id="analyzer-head-volume">
+                                    <option value="AVERAGE">Everyday structure</option>
+                                    <option value="HIGH">More structure at the shoulders</option>
+                                </select>
+                            </div>
+                            <div class="analyzer-field">
+                                <label for="analyzer-shoulders">Shoulder width</label>
+                                <input id="analyzer-shoulders" type="number" min="1" step="0.1" placeholder="Optional">
                             </div>
                             <div class="analyzer-field">
                                 <label for="analyzer-chest">Chest circumference</label>
-                                <input id="analyzer-chest" type="number" min="1" step="0.1" placeholder="e.g. 38" required>
+                                <input id="analyzer-chest" type="number" min="1" step="0.1" placeholder="Optional">
                             </div>
                             <div class="analyzer-field">
                                 <label for="analyzer-waist">Waist circumference</label>
-                                <input id="analyzer-waist" type="number" min="1" step="0.1" placeholder="e.g. 31.5" required>
+                                <input id="analyzer-waist" type="number" min="1" step="0.1" placeholder="Optional">
                             </div>
                             <div class="analyzer-field">
                                 <label for="analyzer-hips">Hip circumference <span class="analyzer-hint">(optional)</span></label>
@@ -1234,117 +1511,204 @@
                                 <input id="analyzer-inseam" type="number" min="1" step="0.1" placeholder="e.g. 30">
                             </div>
                             <div class="analyzer-field">
-                                <label for="analyzer-rise">Body rise (perineum to navel)</label>
+                                <label for="analyzer-rise">Body rise</label>
                                 <input id="analyzer-rise" type="number" min="1" step="0.1" placeholder="e.g. 10.5">
-                                <span class="analyzer-hint">Measure from the perineum to the navel.</span>
+                                <span class="analyzer-hint">Optional. Skip this if you are unsure how to measure it.</span>
                             </div>
                         </div>
+                    </details>
+                    <fieldset class="analyzer-fieldset">
+                        <legend>How would you like your outfits to look?</legend>
+                        <p class="analyzer-intro">Choose one. You can change it whenever you like.</p>
+                        <div class="proportion-toggle" role="group" aria-label="Target outfit silhouette">
+                            <button type="button" class="silhouette-target active" data-silhouette="V_SILHOUETTE" aria-pressed="true">More shape at the shoulders</button>
+                            <button type="button" class="silhouette-target" data-silhouette="I_SILHOUETTE" aria-pressed="false">A long, clean line</button>
+                        </div>
                     </fieldset>
-                    <button class="primary-btn analyzer-submit" type="submit">Analyze & Style My Closet</button>
+                    <button class="primary-btn analyzer-submit" type="submit">Show my outfit ideas</button>
                 </form>
-                <p class="analyzer-disclaimer">This is a non-scientific styling heuristic, not an official Kibbe typing or body assessment. Your measurements are used in this page only and are not saved to your closet.</p>
+                <p class="analyzer-disclaimer">Your preferences stay in this browser. You do not need to enter measurements to use the outfit planner.</p>
             </section>
             <section id="analyzer-results" class="analyzer-results-panel" aria-live="polite">
                 <h3>Your recommendations</h3>
-                <p class="analyzer-intro">Enter your measurements and select <strong>Analyze & Style My Closet</strong> to get a proportion profile, color direction, and outfit ideas from your saved garments.</p>
+                <p class="analyzer-intro">Choose “Show my outfit ideas” to get clothing and color suggestions. You can leave measurements blank.</p>
             </section>
         </div>
     </div>
 
+    </main>
+
     <!-- ADD GARMENT MODAL -->
-    <div id="addItemModal" class="modal">
+    <div id="addItemModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="addItemModalTitle" aria-hidden="true">
         <div class="modal-content">
-            <span class="close-btn" onclick="closeAddModal()">&times;</span>
-            <h2 style="margin-top:0; color:#2c3e50;">Add Garment</h2>
+            <button type="button" class="close-btn" aria-label="Close dialog" onclick="closeAddModal()">&times;</button>
+            <h2 id="addItemModalTitle" style="margin-top:0; color:#2c3e50;">Add clothing you own</h2>
+            <input type="hidden" id="editingGarmentId">
+            <p class="modal-intro">Start with the clothes you wear most. Add the type and main color; a photo and the other details are optional.</p>
             
-            <div class="upload-area" id="uploadArea">
-                <p id="uploadText">Click to upload photo (or skip and manually assign colors below)</p>
-                <input type="file" id="imageUpload" accept="image/*" style="display:none;">
+            <label class="upload-area" id="uploadArea" for="imageUpload">
+                <span id="uploadText">Add a photo (optional). You can also skip this.</span>
+                <input class="visually-hidden" type="file" id="imageUpload" accept="image/*">
                 <canvas id="imageCanvas"></canvas>
-            </div>
+            </label>
             
             <div class="extracted-colors">
                 <div class="extracted-color-box">
-                    <label>Primary Color</label>
-                    <div style="display: flex; align-items: center; margin-top: 5px;">
-                        <button type="button" id="btnPickPrimary" class="picker-btn">Pick</button>
-                        <div id="statusPrimary" class="status-indicator"></div>
-                    </div>
-                    <div id="primaryColorPreview" class="color-preview"></div>
-                    <select id="primaryColorSelect" style="width: 100%;"></select>
-                </div>
-                <div class="extracted-color-box">
-                    <label>Secondary Color</label>
-                    <div style="display: flex; align-items: center; margin-top: 5px;">
-                        <button type="button" id="btnPickSecondary" class="picker-btn">Pick</button>
-                        <div id="statusSecondary" class="status-indicator"></div>
-                    </div>
-                    <div id="secondaryColorPreview" class="color-preview"></div>
-                    <select id="secondaryColorSelect" style="width: 100%;"><option value="">None</option></select>
+                    <label for="primaryColorPicker">Main color</label>
+                    <input type="color" id="primaryColorPicker" value="#395b45" aria-describedby="primary-color-hint">
+                    <span id="primary-color-hint" class="analyzer-hint">Choose the closest color. It does not need to be exact.</span>
+                    <div id="primaryColorPreview" class="visually-hidden" aria-hidden="true"></div>
                 </div>
             </div>
+            <details class="color-details">
+                <summary>Choose a color name or pick a color from your photo</summary>
+                <div class="extracted-colors">
+                    <div class="extracted-color-box">
+                        <label for="primaryColorSelect">Choose a color name</label>
+                    <div style="display: flex; align-items: center; margin-top: 5px;">
+                        <button type="button" id="btnPickPrimary" class="picker-btn">Pick main color from photo</button>
+                        <span id="statusPrimary" class="status-indicator" role="status" aria-live="polite"></span>
+                    </div>
+                    <select id="primaryColorSelect" style="width: 100%;"></select>
+                    </div>
+                    <div class="extracted-color-box">
+                        <label for="secondaryColorSelect">Another color (optional)</label>
+                        <select id="secondaryColorSelect" style="width: 100%;"><option value="">None</option></select>
+                        <div id="secondaryColorPreview" class="color-preview"></div>
+                    </div>
+                    <div class="extracted-color-box">
+                        <button type="button" id="btnPickSecondary" class="picker-btn">Pick another color from photo</button>
+                        <span id="statusSecondary" class="status-indicator" role="status" aria-live="polite"></span>
+                    </div>
+                </div>
+                <p class="analyzer-hint">To sample a photo, add one above, choose “Pick main color from photo,” then click the item’s main color in the picture.</p>
+            </details>
 
             <div class="form-group">
-                <label>Item Name</label>
-                <input type="text" id="itemName" placeholder="e.g., Navy Pleated Trousers">
+                <label for="itemName">Name (optional)</label>
+                <input type="text" id="itemName" placeholder="For example, blue jeans">
             </div>
             
             <div class="form-row">
                 <div class="form-group">
-                    <label>Category</label>
+                    <label for="itemCatGroup">What kind of clothing is it?</label>
                     <select id="itemCatGroup" onchange="updateSubCategories()">
-                        <option value="Tops">Tops / Shirts</option>
-                        <option value="Bottoms">Bottoms / Pants</option>
-                        <option value="Outerwear">Outerwear / Jackets</option>
-                        <option value="Footwear">Footwear / Shoes</option>
+                        <option value="Tops">Top or shirt</option>
+                        <option value="Bottoms">Pants, skirt, or shorts</option>
+                        <option value="Outerwear">Jacket or coat</option>
+                        <option value="Footwear">Shoes</option>
                         <option value="Accessories">Accessories</option>
-                        <option value="Indian Wear">Indian Wear</option>
+                        <option value="Indian Wear">Traditional clothing</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Type</label>
+                    <label for="itemType">Which kind?</label>
                     <select id="itemType"></select>
                 </div>
             </div>
 
-            <div class="form-row">
+            <details class="garment-details">
+                <summary>Extra details (optional)</summary>
+                <p class="analyzer-hint">Skip anything you’re unsure about. These details can make outfit ideas more specific.</p>
+                <div class="form-row">
                 <div class="form-group">
-                    <label>Formality</label>
+                    <label for="itemFormality">When would you wear it?</label>
                     <select id="itemFormality">
-                        <option value="Casual">Casual</option>
-                        <option value="Smart Casual">Smart Casual</option>
-                        <option value="Business Casual">Business Casual</option>
-                        <option value="Formal">Formal</option>
-                        <option value="Loungewear">Loungewear / Athleisure</option>
-                        <option value="Traditional">Festive / Traditional</option>
+                            <option value="Casual">Everyday</option>
+                        <option value="Smart Casual">A little dressy</option>
+                        <option value="Business Casual">Work</option>
+                        <option value="Formal">A formal event</option>
+                        <option value="Loungewear">Relaxing or exercise</option>
+                        <option value="Traditional">A celebration</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Fit / Silhouette</label>
+                    <label for="itemFit">How does it fit?</label>
                     <select id="itemFit">
-                        <option value="Straight Fit">Straight Fit</option>
-                        <option value="High-Rise Straight">High-Rise Straight</option>
-                        <option value="Slim Fit">Slim Fit</option>
-                        <option value="Regular Fit">Regular Fit</option>
-                        <option value="Relaxed">Relaxed / Flowy</option>
+                        <option value="Straight Fit">Straight</option>
+                        <option value="High-Rise Straight">High-waisted and straight</option>
+                        <option value="Slim Fit">Slim</option>
+                        <option value="Regular Fit">Regular</option>
+                        <option value="Relaxed">Loose or flowy</option>
                         <option value="Oversized">Oversized</option>
                     </select>
                 </div>
-            </div>
+                </div>
+
+            <fieldset class="metadata-fieldset">
+                <legend>Fit and fabric details</legend>
+                <div class="metadata-fields">
+                    <div class="form-group">
+                        <label for="item-rise-height">Trouser rise</label>
+                        <select id="item-rise-height">
+                            <option value="">Not recorded</option>
+                            <option value="LOW">Low</option>
+                            <option value="MID">Mid</option>
+                            <option value="HIGH">High</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-hem-break">Hem break</label>
+                        <select id="item-hem-break">
+                            <option value="">Not recorded</option>
+                            <option value="NONE">No break</option>
+                            <option value="SLIGHT">Slight</option>
+                            <option value="FULL">Full</option>
+                            <option value="POOLING">Pooling</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-cut">Cut</label>
+                        <select id="item-cut">
+                            <option value="">Not recorded</option>
+                            <option value="SKINNY">Skinny</option>
+                            <option value="TAPERED">Tapered</option>
+                            <option value="STRAIGHT">Straight</option>
+                            <option value="RELAXED">Relaxed</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-fabric-weight">Fabric weight (optional)</label>
+                        <input id="item-fabric-weight" type="number" min="1" step="1" placeholder="Only enter a number shown on the label">
+                    </div>
+                    <div class="form-group">
+                        <label for="item-top-length">Top length</label>
+                        <select id="item-top-length">
+                            <option value="">Not recorded</option>
+                            <option value="CROPPED">Cropped</option>
+                            <option value="MID_FLY">Mid-fly</option>
+                            <option value="LONG">Long</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-fabric-type">Fabric type</label>
+                        <select id="item-fabric-type">
+                            <option value="">Not recorded</option>
+                            <option value="THIN_SYNTHETIC">Thin synthetic / stretchy</option>
+                            <option value="CORDUROY">Corduroy</option>
+                            <option value="HEAVY_PIQUE">Heavy piqué</option>
+                            <option value="WAFFLE">Waffle weave</option>
+                            <option value="OTHER">Other / unknown weave</option>
+                        </select>
+                    </div>
+                </div>
+                <p class="analyzer-hint">Only enter details you know. It’s fine to leave these blank.</p>
+            </fieldset>
+            </details>
             
-            <button class="primary-btn" style="width:100%; max-width:100%;" onclick="saveGarment()">Save to Closet</button>
+            <button id="save-garment-button" class="primary-btn" style="width:100%; max-width:100%;" onclick="saveGarment()">Save to Closet</button>
         </div>
     </div>
 
     <!-- Detail Palette Modal (Dictionary) -->
-    <div id="paletteModal" class="modal">
+    <div id="paletteModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="paletteModalTitle" aria-hidden="true">
         <div class="modal-content" style="max-width:900px;">
-            <span class="close-btn" onclick="closePaletteModal()">&times;</span>
+            <button type="button" class="close-btn" aria-label="Close dialog" onclick="closePaletteModal()">&times;</button>
             <div id="modal-body"></div>
         </div>
     </div>
 
-    <button id="scrollToTopBtn" title="Go to top">&#8679;</button>
+    <button id="scrollToTopBtn" aria-label="Back to top" title="Go to top" aria-hidden="true" tabindex="-1">&#8679;</button>
     <div id="colorMagnifier" class="color-magnifier" aria-hidden="true">
         <canvas id="colorMagnifierCanvas" width="144" height="144"></canvas>
     </div>
@@ -1357,6 +1721,19 @@
         let closetData = JSON.parse(localStorage.getItem('my_closet_v2')) || [];
         let uploadedImageBase64 = null;
         let pickingMode = null; 
+        const profileStorageKey = 'style_profile_v1';
+        const profileEnums = {
+            Build_Type: ['INVERTED_TRIANGLE', 'LEAN_MUSCLE', 'AVERAGE'],
+            Head_Volume: ['HIGH', 'AVERAGE'],
+            Target_Silhouette: ['V_SILHOUETTE', 'I_SILHOUETTE']
+        };
+        const storedProfile = JSON.parse(localStorage.getItem(profileStorageKey) || 'null');
+        const proportionProfile = {
+            Height_cm: Number.isFinite(storedProfile?.Height_cm) && storedProfile.Height_cm > 0 ? storedProfile.Height_cm : null,
+            Build_Type: profileEnums.Build_Type.includes(storedProfile?.Build_Type) ? storedProfile.Build_Type : 'AVERAGE',
+            Head_Volume: profileEnums.Head_Volume.includes(storedProfile?.Head_Volume) ? storedProfile.Head_Volume : 'AVERAGE',
+            Target_Silhouette: profileEnums.Target_Silhouette.includes(storedProfile?.Target_Silhouette) ? storedProfile.Target_Silhouette : 'V_SILHOUETTE'
+        };
 
         // Comprehensive Taxonomy Dataset
         const taxonomy = {
@@ -1450,9 +1827,15 @@
         // UI Tabs & Modes
         function switchTab(tabName, triggerButton = document.querySelector(`[data-view="${tabName}"]`)) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn, .utility-nav button').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn, .utility-nav button').forEach(el => {
+                el.classList.remove('active');
+                el.removeAttribute('aria-current');
+            });
             document.getElementById(tabName + '-view').classList.add('active');
-            triggerButton?.classList.add('active');
+            if (triggerButton) {
+                triggerButton.classList.add('active');
+                triggerButton.setAttribute('aria-current', 'page');
+            }
             if(tabName === 'home') updateHomeOverview();
             if(tabName === 'closet') renderCloset();
             if(tabName === 'outfits') renderOutfitSelect();
@@ -1462,14 +1845,18 @@
         }
 
         function setOutfitMode(mode) {
-            document.querySelectorAll('.toggle-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.toggle-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-pressed', 'false');
+            });
             document.getElementById('mode-' + mode).classList.add('active');
+            document.getElementById('mode-' + mode).setAttribute('aria-pressed', 'true');
             if(mode === 'occasion') {
-                document.getElementById('occasion-controls').style.display = 'flex';
+                document.getElementById('occasion-controls').style.display = 'grid';
                 document.getElementById('item-controls').style.display = 'none';
             } else {
                 document.getElementById('occasion-controls').style.display = 'none';
-                document.getElementById('item-controls').style.display = 'flex';
+                document.getElementById('item-controls').style.display = 'grid';
             }
             document.getElementById('outfit-results').innerHTML = "";
         }
@@ -1483,10 +1870,29 @@
 
         function updateHomeOverview() {
             const count = closetData.length;
+            const firstVisit = count === 0;
             document.getElementById('home-closet-count').textContent = `${count} ${count === 1 ? 'piece' : 'pieces'}`;
+            document.getElementById('home-hero-title').textContent = firstVisit
+                ? 'Start with clothes you already own.'
+                : 'Get dressed for what’s next.';
+            document.getElementById('home-hero-copy').textContent = firstVisit
+                ? 'Add a few pieces, then choose where you’re going. We’ll suggest outfits from your clothes.'
+                : 'Choose where you’re going and the weather. Get outfit suggestions from your clothes.';
+            document.getElementById('home-primary-action').textContent = firstVisit
+                ? 'Add your first clothing item'
+                : 'Plan an outfit';
+            document.getElementById('home-start-guide').hidden = !firstVisit;
             document.getElementById('home-next-step').textContent = count
-                ? 'Your closet is ready for outfit ideas and purchase checks.'
-                : 'Add a few pieces to get personal outfit ideas.';
+                ? 'Your clothes are saved in this browser. Add or remove them anytime.'
+                : 'Start with a top, pants or skirt, and shoes. Add only what you want.';
+        }
+
+        function openPrimaryHomeAction() {
+            if (closetData.length === 0) {
+                openAddModal();
+                return;
+            }
+            switchTab('outfits', document.querySelector('.tabs [data-view="outfits"]'));
         }
 
         function populatePurchaseTypeOptions() {
@@ -1500,6 +1906,45 @@
         function hexToRgb(h) {
             var r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(h);
             return r ? {r: parseInt(r[1], 16), g: parseInt(r[2], 16), b: parseInt(r[3], 16)} : null;
+        }
+        function plainColorName(hex) {
+            const rgb = hexToRgb(hex);
+            if (!rgb) return 'color';
+            const r = rgb.r / 255, g = rgb.g / 255, b = rgb.b / 255;
+            const max = Math.max(r, g, b), min = Math.min(r, g, b);
+            const lightness = (max + min) / 2;
+            const delta = max - min;
+            const saturation = delta === 0 ? 0 : delta / (1 - Math.abs(2 * lightness - 1));
+            if (saturation < 0.16) {
+                if (lightness < 0.12) return 'black';
+                if (lightness > 0.9) return 'white';
+                if (lightness < 0.32) return 'charcoal';
+                if (lightness > 0.7) return 'light gray';
+                return 'gray';
+            }
+            let hue;
+            if (max === r) hue = ((g - b) / delta) % 6;
+            else if (max === g) hue = (b - r) / delta + 2;
+            else hue = (r - g) / delta + 4;
+            hue = (hue * 60 + 360) % 360;
+            if (hue < 15 || hue >= 345) return lightness < 0.28 ? 'dark red' : 'red';
+            if (hue < 45) return 'orange';
+            if (hue < 70) return 'yellow';
+            if (hue < 155) return 'green';
+            if (hue < 195) return 'teal';
+            if (hue < 255) return lightness < 0.26 ? 'navy' : 'blue';
+            if (hue < 290) return 'purple';
+            return 'pink';
+        }
+        function plainClothingGroup(group) {
+            return {
+                Tops: 'top',
+                Bottoms: 'pants or a skirt',
+                Footwear: 'shoes',
+                Outerwear: 'jacket or coat',
+                Accessories: 'accessory',
+                'Indian Wear': 'traditional clothing'
+            }[group] || group;
         }
         function findClosestColor(r, g, b) {
             let minD = Infinity, closest = null;
@@ -1522,24 +1967,38 @@
         dom.input.addEventListener("input", function() {
             closeAllLists(); dom.ind.innerHTML = ""; 
             if (!this.value) return false;
-            let a = document.createElement("DIV"); a.setAttribute("class", "autocomplete-items"); this.parentNode.appendChild(a);
+            let a = document.createElement("DIV");
+            a.id = "color-suggestions";
+            a.setAttribute("class", "autocomplete-items");
+            a.setAttribute("role", "group");
+            a.setAttribute("aria-label", "Color suggestions");
+            this.parentNode.appendChild(a);
             let count = 0;
             for (let i = 0; i < colorsData.length; i++) {
                 let c = colorsData[i];
                 if (c.name.toUpperCase().includes(this.value.toUpperCase()) && count < 8) {
-                    let b = document.createElement("DIV"); b.className = "autocomplete-item-wrapper";
+                    let b = document.createElement("button");
+                    b.type = "button";
+                    b.className = "autocomplete-item-wrapper";
                     const regex = new RegExp(`(${this.value})`, "gi");
                     b.innerHTML = `<div class="autocomplete-item-content">
                                     <div class="autocomplete-swatch" style="background-color: ${c.hex};"></div>
                                     <span>${c.name.replace(regex, "<strong>$1</strong>")}</span>
-                                   </div><input type='hidden' value='${c.name}'>`;
-                    b.addEventListener("click", function() { dom.input.value = this.getElementsByTagName("input")[0].value; closeAllLists(); displayResults(dom.input.value); });
+                                   </div>`;
+                    b.addEventListener("click", function() { dom.input.value = c.name; closeAllLists(); displayResults(dom.input.value); });
                     a.appendChild(b); count++;
                 }
             }
+            this.setAttribute("aria-expanded", String(count > 0));
+            if (count === 0) a.remove();
         });
 
-        function closeAllLists(elmnt) { document.querySelectorAll('.autocomplete-items').forEach(x => { if(elmnt!=x && elmnt!=dom.input) x.remove(); }); }
+        function closeAllLists(elmnt) {
+            document.querySelectorAll('.autocomplete-items').forEach(x => {
+                if(elmnt!=x && elmnt!=dom.input) x.remove();
+            });
+            dom.input.setAttribute("aria-expanded", "false");
+        }
         document.addEventListener("click", e => closeAllLists(e.target));
         dom.input.addEventListener("keydown", e => { if (e.key === "Enter") { closeAllLists(); displayResults(dom.input.value); } });
         document.getElementById("exploreBtn").addEventListener("click", function() { closeAllLists(); displayAllCombinations(); });
@@ -1556,7 +2015,7 @@
         }
 
         function displayAllCombinations() {
-            dom.input.value = ""; dom.ind.innerHTML = "Viewing all 348 palettes."; dom.results.innerHTML = ""; 
+            dom.input.value = ""; dom.ind.innerHTML = "Showing all color combinations."; dom.results.innerHTML = "";
             const t = document.getElementById("toc"); t.style.display = "block";
             t.innerHTML = `<h3>Table of Contents</h3><div class="toc-links"><a href="#combo-category-2">2-Color Combinations</a><a href="#combo-category-3">3-Color Combinations</a><a href="#combo-category-4">4-Color Combinations</a></div>`;
             const grouped = { 2: [], 3: [], 4: [] };
@@ -1585,8 +2044,8 @@
                         grid.appendChild(fragment);
                         visibleCount = nextCount;
                         const remaining = grouped[size].length - visibleCount;
-                        loadMore.textContent = `Show 24 more palettes · ${remaining} remaining`;
-                        loadMore.setAttribute('aria-label', `Show more ${size}-color palettes`);
+                        loadMore.textContent = `Show 24 more color combinations · ${remaining} remaining`;
+                        loadMore.setAttribute('aria-label', `Show more ${size}-color combinations`);
                         loadMoreWrap.hidden = remaining === 0;
                     };
                     loadMore.addEventListener('click', renderNextBatch);
@@ -1597,18 +2056,65 @@
         }
 
         function createComboCard(id, colors) {
-            const card = document.createElement('div'); card.className = 'combo-card';
+            const card = document.createElement('div');
+            card.className = 'combo-card';
+            card.setAttribute('role', 'button');
+            card.tabIndex = 0;
+            card.setAttribute('aria-label', `See these colors together: ${colors.map(color => plainColorName(color.hex)).join(', ')}`);
             let swatchesHtml = '', labelsHtml = '';
             colors.forEach(c => {
                 swatchesHtml += `<div class="v-swatch" style="background-color: ${c.hex};"></div>`;
                 labelsHtml += `<div class="v-label"><span class="color-name">${c.name}</span><span class="hex-code">${c.hex}</span></div>`;
             });
-            card.innerHTML = `<div class="combo-id">Palette #${String(id).padStart(3, '0')}</div>
+            card.innerHTML = `<div class="combo-id">Color combination</div>
                               <div class="palette-container"><div class="v-swatches">${swatchesHtml}</div><div class="v-labels">${labelsHtml}</div></div>`;
-            let startX, startY;
-            card.addEventListener('mousedown', e => { startX = e.clientX; startY = e.clientY; });
-            card.addEventListener('mouseup', e => { if (Math.abs(e.clientX - startX) < 5 && Math.abs(e.clientY - startY) < 5 && window.getSelection().toString().trim() === "") openPaletteModal(id); });
+            let pointerOrigin = null;
+            let pointerMoved = false;
+            card.addEventListener('pointerdown', e => {
+                pointerOrigin = { x: e.clientX, y: e.clientY };
+                pointerMoved = false;
+            });
+            card.addEventListener('pointermove', e => {
+                if (pointerOrigin && Math.hypot(e.clientX - pointerOrigin.x, e.clientY - pointerOrigin.y) >= 5) pointerMoved = true;
+            });
+            card.addEventListener('pointerup', () => { pointerOrigin = null; });
+            card.addEventListener('pointercancel', () => { pointerOrigin = null; pointerMoved = false; });
+            card.addEventListener('click', e => {
+                const dragged = e.detail > 0 && pointerMoved;
+                pointerMoved = false;
+                if (!dragged && window.getSelection().toString().trim() === "") openPaletteModal(id);
+            });
+            card.addEventListener('keydown', e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    openPaletteModal(id);
+                }
+            });
             return card;
+        }
+
+        let modalOpener = null;
+        let bodyOverflowBeforeModal = '';
+        let modalCloseTimer;
+        function showModal(modal, focusTarget) {
+            if (modalCloseTimer) clearTimeout(modalCloseTimer);
+            if (!document.querySelector('.modal.show')) bodyOverflowBeforeModal = document.body.style.overflow;
+            modalOpener = document.activeElement;
+            modal.setAttribute('aria-hidden', 'false');
+            modal.style.display = 'flex';
+            void modal.offsetWidth;
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+            focusTarget.focus();
+        }
+        function hideModal(modal) {
+            if (!modal.classList.contains('show')) return;
+            if (modalOpener?.isConnected && typeof modalOpener.focus === 'function') modalOpener.focus();
+            modalOpener = null;
+            modal.setAttribute('aria-hidden', 'true');
+            modal.classList.remove('show');
+            document.body.style.overflow = bodyOverflowBeforeModal;
+            modalCloseTimer = setTimeout(() => { modal.style.display = 'none'; }, 300);
         }
 
         function openPaletteModal(id) {
@@ -1616,14 +2122,15 @@
             colors.forEach(c => {
                 swatchesHtml += `<div style="height:140px;width:100%;background-color:${c.hex};"></div>`;
                 labelsHtml += `<div style="height:140px;display:flex;align-items:center;padding-left:30px;font-size:1.8rem;color:#2c3e50;font-weight:600;border-bottom:2px solid #ecf0f1;box-sizing:border-box;">
-                               <span class="color-name">${c.name}</span><span style="font-family:monospace;color:#7f8c8d;font-size:1.5rem;margin-left:auto;padding-right:30px;">${c.hex}</span></div>`;
+                               <span class="color-name">${c.name}</span><span style="font-family:monospace;color:var(--muted);font-size:1.5rem;margin-left:auto;padding-right:30px;">${c.hex}</span></div>`;
             });
-            document.getElementById('modal-body').innerHTML = `<h2 style="margin-top:0; color:#2c3e50; font-size:2.2rem; border-bottom:2px solid #ecf0f1; padding-bottom:15px;">Palette #${String(id).padStart(3, '0')}</h2>
+            document.getElementById('modal-body').innerHTML = `<h2 id="paletteModalTitle" style="margin-top:0; color:#2c3e50; font-size:2.2rem; border-bottom:2px solid #ecf0f1; padding-bottom:15px;">Colors that go together</h2>
                 <div style="display:flex; border-radius:12px; overflow:hidden; border:2px solid #ecf0f1; background:#fafafa; margin-top:20px;">
                     <div style="display:flex; flex-direction:column; width:200px; flex-shrink:0;">${swatchesHtml}</div><div style="display:flex; flex-direction:column; flex:1;">${labelsHtml}</div></div>`;
-            const m = document.getElementById('paletteModal'); m.style.display = 'flex'; void m.offsetWidth; m.classList.add('show'); document.body.style.overflow = 'hidden'; 
+            const m = document.getElementById('paletteModal');
+            showModal(m, m.querySelector('.close-btn'));
         }
-        function closePaletteModal() { const m = document.getElementById('paletteModal'); m.classList.remove('show'); setTimeout(() => { m.style.display = 'none'; document.body.style.overflow = 'auto'; }, 300); }
+        function closePaletteModal() { hideModal(document.getElementById('paletteModal')); }
 
         // --- Closet & Image Processing ---
         function populateColorDropdowns() {
@@ -1632,21 +2139,74 @@
             [...colorsData].sort((a,b) => a.name.localeCompare(b.name)).forEach(c => {
                 pri.innerHTML += `<option value="${c.name}">${c.name}</option>`; sec.innerHTML += `<option value="${c.name}">${c.name}</option>`;
             });
-            pri.addEventListener('change', e => document.getElementById('primaryColorPreview').style.backgroundColor = colorsData.find(x => x.name === e.target.value).hex);
-            sec.addEventListener('change', e => document.getElementById('secondaryColorPreview').style.backgroundColor = e.target.value ? colorsData.find(x => x.name === e.target.value).hex : 'transparent');
+            pri.onchange = e => {
+                const color = colorsData.find(x => x.name === e.target.value);
+                document.getElementById('primaryColorPreview').style.backgroundColor = color?.hex || 'transparent';
+                document.getElementById('primaryColorPicker').value = color?.hex || '#395b45';
+            };
+            document.getElementById('primaryColorPicker').oninput = e => {
+                const rgb = hexToRgb(e.target.value);
+                const closest = rgb && findClosestColor(rgb.r, rgb.g, rgb.b);
+                if (!closest) return;
+                pri.value = closest.name;
+                document.getElementById('primaryColorPreview').style.backgroundColor = e.target.value;
+            };
+            sec.onchange = e => {
+                const color = colorsData.find(x => x.name === e.target.value);
+                document.getElementById('secondaryColorPreview').style.backgroundColor = color?.hex || 'transparent';
+            };
         }
 
-        function openAddModal() {
+        function openAddModal(garmentId = null) {
             populateColorDropdowns(); updateSubCategories();
-            document.getElementById('imageUpload').value = ""; document.getElementById('imageCanvas').style.display = "none";
-            document.getElementById('uploadText').style.display = "block"; document.getElementById('itemName').value = "";
+            const garment = garmentId === null ? null : closetData.find(item => String(item.id) === String(garmentId));
+            const setValue = (id, value) => { document.getElementById(id).value = value ?? ''; };
+            document.getElementById('editingGarmentId').value = garment ? String(garment.id) : '';
+            document.getElementById('addItemModalTitle').textContent = garment ? 'Edit clothing item' : 'Add clothing you own';
+            document.getElementById('save-garment-button').textContent = garment ? 'Save changes' : 'Add to my clothes';
+            document.getElementById('imageUpload').value = "";
+            document.getElementById('imageCanvas').style.display = "none";
+            document.getElementById('uploadText').style.display = "block";
+            setValue('itemName', garment?.name || '');
+            setValue('itemCatGroup', garment?.group || 'Tops');
+            updateSubCategories();
+            setValue('itemType', garment?.category || document.getElementById('itemType').value);
+            setValue('itemFormality', garment?.formality || 'Casual');
+            setValue('itemFit', garment?.fit || 'Straight Fit');
+            setValue('item-rise-height', garment?.Rise_Height);
+            setValue('item-hem-break', garment?.Hem_Break);
+            setValue('item-cut', garment?.Cut);
+            setValue('item-fabric-weight', garment?.Fabric_Weight);
+            setValue('item-top-length', garment?.Top_Length);
+            setValue('item-fabric-type', garment?.Fabric_Type);
+            uploadedImageBase64 = garment?.image || null;
+            if (garment?.image) {
+                const image = new Image();
+                image.onload = () => {
+                    if (document.getElementById('editingGarmentId').value !== String(garment.id)) return;
+                    const canvas = document.getElementById('imageCanvas');
+                    const scale = 250 / image.width;
+                    canvas.width = 250;
+                    canvas.height = image.height * scale;
+                    canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
+                    document.getElementById('uploadText').style.display = 'none';
+                    canvas.style.display = 'block';
+                };
+                image.src = garment.image;
+            }
             ['btnPickPrimary', 'btnPickSecondary'].forEach(id => document.getElementById(id).classList.remove('active'));
             ['statusPrimary', 'statusSecondary'].forEach(id => document.getElementById(id).innerHTML = "");
             pickingMode = null; document.getElementById('imageCanvas').style.cursor = 'default';
-            document.getElementById('primaryColorSelect').selectedIndex = 0; document.getElementById('primaryColorSelect').dispatchEvent(new Event('change'));
-            const m = document.getElementById('addItemModal'); m.style.display = 'flex'; void m.offsetWidth; m.classList.add('show');
+            const startingColor = garment?.primary || findClosestColor(57, 91, 69);
+            setValue('primaryColorSelect', startingColor?.name || document.getElementById('primaryColorSelect').options[0]?.value);
+            setValue('primaryColorPicker', startingColor?.hex || '#395b45');
+            setValue('secondaryColorSelect', garment?.secondary?.name || '');
+            document.getElementById('primaryColorSelect').dispatchEvent(new Event('change'));
+            document.getElementById('secondaryColorSelect').dispatchEvent(new Event('change'));
+            const m = document.getElementById('addItemModal');
+            showModal(m, document.getElementById('itemCatGroup'));
         }
-        function closeAddModal() { const m = document.getElementById('addItemModal'); m.classList.remove('show'); hideColorMagnifier(); setTimeout(() => { m.style.display = 'none'; }, 300); }
+        function closeAddModal() { hideModal(document.getElementById('addItemModal')); hideColorMagnifier(); }
 
         const uploadArea = document.getElementById('uploadArea'), fileInput = document.getElementById('imageUpload'), canvas = document.getElementById('imageCanvas'), ctx = canvas.getContext('2d');
         const magnifier = document.getElementById('colorMagnifier');
@@ -1685,7 +2245,9 @@
 
         canvas.addEventListener('pointermove', updateColorMagnifier);
         canvas.addEventListener('pointerleave', hideColorMagnifier);
-        uploadArea.addEventListener('click', e => { if (e.target !== canvas || !pickingMode) fileInput.click(); });
+        uploadArea.addEventListener('click', e => {
+            if (e.target === canvas && pickingMode) e.preventDefault();
+        });
         fileInput.addEventListener('change', function(e) {
             if(e.target.files && e.target.files[0]) {
                 const reader = new FileReader();
@@ -1702,12 +2264,20 @@
         });
 
         document.getElementById('btnPickPrimary').addEventListener('click', e => {
-            e.stopPropagation(); if(canvas.style.display === "none") return alert("Upload photo first.");
+            e.stopPropagation();
+            if(canvas.style.display === "none") {
+                document.getElementById('statusPrimary').textContent = 'Add a photo above first.';
+                return;
+            }
             pickingMode = 'primary'; document.getElementById('btnPickPrimary').classList.add('active'); document.getElementById('btnPickSecondary').classList.remove('active');
             document.getElementById('statusPrimary').innerHTML = ""; canvas.style.cursor = 'crosshair'; hideColorMagnifier();
         });
         document.getElementById('btnPickSecondary').addEventListener('click', e => {
-            e.stopPropagation(); if(canvas.style.display === "none") return alert("Upload photo first.");
+            e.stopPropagation();
+            if(canvas.style.display === "none") {
+                document.getElementById('statusSecondary').textContent = 'Add a photo above first.';
+                return;
+            }
             pickingMode = 'secondary'; document.getElementById('btnPickSecondary').classList.add('active'); document.getElementById('btnPickPrimary').classList.remove('active');
             document.getElementById('statusSecondary').innerHTML = ""; canvas.style.cursor = 'crosshair'; hideColorMagnifier();
         });
@@ -1723,35 +2293,75 @@
                 sEl.innerHTML = '<div class="loader"></div>';
                 setTimeout(() => {
                     selEl.value = closest.name; pEl.style.backgroundColor = closest.hex; sEl.innerHTML = '<span class="tick">&#10003;</span>';
+                    if (isPri) document.getElementById('primaryColorPicker').value = closest.hex;
                     bEl.classList.remove('active'); pickingMode = null; canvas.style.cursor = 'default'; hideColorMagnifier();
                 }, 600);
             }
         });
 
         function saveGarment() {
+            const editingId = document.getElementById('editingGarmentId').value;
+            const existing = editingId ? closetData.find(item => String(item.id) === editingId) : null;
+            const weightValue = document.getElementById('item-fabric-weight').value;
             const item = {
-                id: Date.now(), name: document.getElementById('itemName').value || "My Item", image: uploadedImageBase64 || '',
+                ...existing,
+                id: existing?.id || Date.now(), name: document.getElementById('itemName').value || document.getElementById('itemType').value || "Clothing item", image: uploadedImageBase64 || '',
                 group: document.getElementById('itemCatGroup').value, category: document.getElementById('itemType').value,
                 formality: document.getElementById('itemFormality').value, fit: document.getElementById('itemFit').value,
                 primary: colorsData.find(c => c.name === document.getElementById('primaryColorSelect').value),
-                secondary: document.getElementById('secondaryColorSelect').value ? colorsData.find(c => c.name === document.getElementById('secondaryColorSelect').value) : null
+                secondary: document.getElementById('secondaryColorSelect').value ? colorsData.find(c => c.name === document.getElementById('secondaryColorSelect').value) : null,
+                Rise_Height: document.getElementById('item-rise-height').value || null,
+                Hem_Break: document.getElementById('item-hem-break').value || null,
+                Cut: document.getElementById('item-cut').value || null,
+                Fabric_Weight: weightValue === '' ? null : Number(weightValue),
+                Top_Length: document.getElementById('item-top-length').value || null,
+                Fabric_Type: document.getElementById('item-fabric-type').value || null
             };
-            closetData.push(item); localStorage.setItem('my_closet_v2', JSON.stringify(closetData));
+            if (existing) {
+                closetData = closetData.map(saved => String(saved.id) === editingId ? item : saved);
+            } else {
+                closetData.push(item);
+            }
+            localStorage.setItem('my_closet_v2', JSON.stringify(closetData));
             closeAddModal(); renderCloset(); updateHomeOverview();
         }
 
         function renderCloset() {
             const grid = document.getElementById('closet-grid'); grid.innerHTML = "";
-            if(closetData.length === 0) { grid.innerHTML = "<div style='grid-column:1/-1; text-align:center; color:#7f8c8d; margin-top:30px;'>Your closet is empty. Add a garment!</div>"; return; }
+            if(closetData.length === 0) { grid.innerHTML = "<div style='grid-column:1/-1; text-align:center; color:var(--muted); margin-top:30px;'>Nothing here yet. Add a clothing item when you’re ready.</div>"; return; }
             closetData.forEach((item, index) => {
                 const card = document.createElement('div'); card.className = "closet-card";
                 card.innerHTML = `
-                    <div style="font-size:0.8rem; color:#7f8c8d; margin-bottom:5px;">${item.category}</div>
+                    <div style="font-size:0.8rem; color:var(--muted); margin-bottom:5px;">${item.category}</div>
                     <img src="${item.image}" class="closet-img" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZWNmMGYxIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM3ZjhjOGQiPk5vIEltZzwvdGV4dD48L3N2Zz4='">
-                    <div class="closet-colors"><div class="c-dot" style="background-color:${item.primary.hex}" title="${item.primary.name}"></div>${item.secondary ? `<div class="c-dot" style="background-color:${item.secondary.hex}" title="${item.secondary.name}"></div>` : ''}</div>
+                    <div class="closet-colors"><div class="c-dot" style="background-color:${item.primary.hex}" title="${plainColorName(item.primary.hex)}"></div>${item.secondary ? `<div class="c-dot" style="background-color:${item.secondary.hex}" title="${plainColorName(item.secondary.hex)}"></div>` : ''}</div>
                     <div style="font-weight:bold; font-size:1rem; margin-bottom:5px;">${item.name}</div>
-                    <div class="tag-row"><span class="tag">${item.formality}</span><span class="tag">${item.fit}</span></div>
-                    <div class="delete-btn" onclick="deleteGarment(${index})">Delete</div>`;
+                    <div class="tag-row">
+                        <span class="tag">${item.formality}</span><span class="tag">${item.fit}</span>
+                        ${item.Rise_Height ? `<span class="tag">${item.Rise_Height} rise</span>` : ''}
+                        ${item.Cut ? `<span class="tag">${item.Cut.toLowerCase()} cut</span>` : ''}
+                        ${item.Fabric_Weight ? `<span class="tag">${item.Fabric_Weight >= 240 ? 'Heavier fabric' : item.Fabric_Weight < 180 ? 'Lighter fabric' : 'Medium-weight fabric'}</span>` : ''}
+                    </div>`;
+                card.querySelector('.closet-img').alt = item.name;
+                card.querySelectorAll('.c-dot').forEach((dot, colorIndex) => {
+                    const color = colorIndex === 0 ? item.primary : item.secondary;
+                    dot.setAttribute('role', 'img');
+                    dot.setAttribute('aria-label', `${colorIndex === 0 ? 'Main' : 'Another'} color: ${plainColorName(color.hex)}`);
+                });
+                const editButton = document.createElement('button');
+                editButton.type = 'button';
+                editButton.className = 'edit-garment-btn';
+                editButton.textContent = 'Edit details';
+                editButton.setAttribute('aria-label', `Edit ${item.name}`);
+                editButton.addEventListener('click', () => openAddModal(item.id));
+                card.appendChild(editButton);
+                const deleteButton = document.createElement('button');
+                deleteButton.type = 'button';
+                deleteButton.className = 'delete-btn';
+                deleteButton.textContent = 'Delete';
+                deleteButton.setAttribute('aria-label', `Delete ${item.name}`);
+                deleteButton.addEventListener('click', () => deleteGarment(index));
+                card.appendChild(deleteButton);
                 grid.appendChild(card);
             });
         }
@@ -1882,15 +2492,51 @@
 
         function generateByItem() {
             const selectedId = document.getElementById('outfit-source-select').value;
-            if(!selectedId) return;
+            if (!selectedId) {
+                if (closetData.length === 0) {
+                    showOutfitMessage('Add a few clothes first, then you can start with one of them.', 'Add clothes', openAddModal);
+                } else {
+                    showOutfitMessage('Choose one of your clothes to build outfit ideas around it.');
+                }
+                return;
+            }
             const sourceItem = closetData.find(item => String(item.id) === selectedId);
-            if (!sourceItem) return;
+            if (!sourceItem) {
+                showOutfitMessage('That clothing item is no longer in your closet. Choose another one.');
+                return;
+            }
             runOutfitAlgorithm(sourceItem, closetData, `Outfits based on: ${sourceItem.name}`);
+        }
+
+        function showOutfitMessage(message, actionLabel, action) {
+            const outEl = document.getElementById('outfit-results');
+            const card = document.createElement('div');
+            card.className = 'no-results';
+            const text = document.createElement('p');
+            text.textContent = message;
+            card.appendChild(text);
+            if (actionLabel && action) {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'primary-btn';
+                button.textContent = actionLabel;
+                button.addEventListener('click', action);
+                card.appendChild(button);
+            }
+            outEl.replaceChildren(card);
         }
 
         function generateByOccasion() {
             const occ = document.getElementById('occ-event').value, weather = document.getElementById('occ-weather').value;
-            if(!occ || !weather) return alert("Select Occasion and Weather.");
+            if (closetData.length === 0) {
+                showOutfitMessage('Add a few clothes first. We’ll use them to suggest outfit ideas.', 'Add clothes', openAddModal);
+                return;
+            }
+            if (!occ || !weather) {
+                showOutfitMessage('Choose where you’re going and what the weather will be, then select “Show outfit ideas.”');
+                document.getElementById(!occ ? 'occ-event' : 'occ-weather').focus();
+                return;
+            }
             let eligibleItems = closetData.filter(item => {
                 if (occ === "Formal Event" && (item.formality === "Casual" || item.formality === "Loungewear")) return false;
                 if (occ === "Office / Business" && item.formality === "Loungewear") return false;
@@ -1899,22 +2545,28 @@
                 if (weather === "Cold / Winter" && (item.category === "Shorts" || item.category === "Sandals (e.g. Birkenstock)")) return false;
                 return true;
             });
-            if (eligibleItems.length === 0) return document.getElementById('outfit-results').innerHTML = `<div class="no-results">No suitable items found in your closet for a ${weather} ${occ}.</div>`;
+            if (eligibleItems.length === 0) {
+                showOutfitMessage('No clothes in your closet match both choices yet. Try another occasion or weather.');
+                return;
+            }
             let anchorItem = eligibleItems.find(i => i.group === "Tops" || i.group === "Indian Wear") || eligibleItems[0];
-            runOutfitAlgorithm(anchorItem, eligibleItems, `Curated for: ${occ} (${weather})`, { eventName: occ, weather });
+            const occasionLabel = document.getElementById('occ-event').selectedOptions[0].textContent;
+            const weatherLabel = document.getElementById('occ-weather').selectedOptions[0].textContent;
+            runOutfitAlgorithm(anchorItem, eligibleItems, `${occasionLabel} · ${weatherLabel}`, { eventName: occ, weather });
         }
 
         function runOutfitAlgorithm(sourceItem, availableItems, title, context = {}) {
             const outEl = document.getElementById('outfit-results');
             const sourceColor = sourceItem.primary.name;
+            const sourceColorLabel = plainColorName(sourceItem.primary.hex);
             let grouped = { 2: [], 3: [], 4: [] };
             sourceItem.primary.combinations.forEach(id => { if(combinations[id]) grouped[combinations[id].length].push({ id: id, colors: combinations[id] }); });
 
-            outEl.innerHTML = `<h3>${title}</h3><p style="text-align:center; color:#7f8c8d; font-size:0.9rem;">Building around your ${sourceItem.name}</p>`;
+            outEl.innerHTML = `<h3>${title}</h3><p style="text-align:center; color:var(--muted); font-size:0.9rem;">Outfit ideas with your ${sourceItem.name}</p>`;
 
             [2, 3, 4].forEach(size => {
                 if(grouped[size].length > 0) {
-                    outEl.innerHTML += `<h2 style="margin-top:30px; border-bottom: 2px solid var(--green); padding-bottom:5px;">${size}-Piece Looks</h2>`;
+                    outEl.innerHTML += `<h2 style="margin-top:30px; border-bottom: 2px solid var(--green); padding-bottom:5px;">${size}-piece outfits</h2>`;
                     grouped[size].forEach(comboItem => {
                         let remainingColors = comboItem.colors.map(c => c.name).filter(c => c !== sourceColor);
                         let neededGroups = sourceItem.group === "Indian Wear" ? ["Footwear"] : ["Bottoms", "Footwear"];
@@ -1922,13 +2574,13 @@
                         neededGroups = neededGroups.filter(g => g !== sourceItem.group); 
 
                         let htmlRow = `<div class="combo-card outfit-card" style="margin-bottom:15px; cursor:default;">
-                                       <div class="combo-id">Palette #${String(comboItem.id).padStart(3,'0')}</div>
+                                       <div class="combo-id">Color match</div>
                                        <div class="outfit-items-row">
                                        <div class="outfit-item" style="border: 2px solid var(--green);">
-                                            <span style="font-size:0.7rem; color:var(--green); font-weight:bold; margin-bottom:3px;">ANCHOR</span>
+                                            <span style="font-size:0.7rem; color:var(--green); font-weight:bold; margin-bottom:3px;">Start with</span>
                                                            ${sourceItem.image ? `<img src="${sourceItem.image}" alt="">` : `<span class="garment-art">${garmentIconMarkup(sourceItem.category, sourceItem.group, sourceItem.primary.hex)}</span>`}
                                             <div style="font-size:0.8rem; text-align:center; line-height:1.1;">${sourceItem.name}</div>
-                                            <div style="font-size:0.7rem; color:#7f8c8d; margin-top:3px;">${sourceColor}</div>
+                                            <div style="font-size:0.7rem; color:var(--muted); margin-top:3px;">${sourceColorLabel}</div>
                                        </div>`;
 
                         remainingColors.forEach(colorName => {
@@ -1943,15 +2595,15 @@
                                 }
                             }
                             if(foundMatch) {
-                                htmlRow += `<div class="outfit-item"><span style="font-size:0.7rem; color:#7f8c8d; font-weight:bold; margin-bottom:3px;">MATCH</span>
+                                htmlRow += `<div class="outfit-item"><span style="font-size:0.7rem; color:var(--muted); font-weight:bold; margin-bottom:3px;">You own</span>
                                             ${foundMatch.image ? `<img src="${foundMatch.image}" alt="">` : `<span class="garment-art">${garmentIconMarkup(foundMatch.category, foundMatch.group, foundMatch.primary.hex)}</span>`}<div style="font-size:0.8rem; text-align:center; line-height:1.1;">${foundMatch.name}</div>
-                                            <div style="font-size:0.7rem; color:#7f8c8d; margin-top:3px;">${colorName}</div></div>`;
+                                            <div style="font-size:0.7rem; color:var(--muted); margin-top:3px;">${plainColorName(foundMatch.primary.hex)}</div></div>`;
                             } else {
                                 let suggestGroup = neededGroups.length > 0 ? neededGroups.shift() : "Accessory";
                                 const suggestType = suggestGarmentCategory(suggestGroup, sourceItem, context, availableItems);
                                 htmlRow += `<div class="outfit-item missing" style="--missing-color:${cObj.hex};">
                                             <span class="garment-art missing-art">${garmentIconMarkup(suggestType, suggestGroup, cObj.hex)}</span>
-                                            <span class="missing-text">${colorName}</span>
+                                            <span class="missing-text">${plainColorName(cObj.hex)}</span>
                                             <span class="missing-category">Suggested: ${suggestType}</span></div>`;
                             }
                         });
@@ -1969,7 +2621,17 @@
             setTimeout(() => {
                 out.innerHTML = "";
                 if(closetData.length === 0) {
-                    out.innerHTML = "<div class='no-results'>Your closet is empty. Add items to see curated situations.</div>"; return;
+                    const empty = document.createElement('div');
+                    empty.className = 'no-results';
+                    empty.textContent = 'Add a few clothes to see outfit ideas for different occasions.';
+                    const addButton = document.createElement('button');
+                    addButton.type = 'button';
+                    addButton.className = 'primary-btn';
+                    addButton.textContent = 'Add clothes';
+                    addButton.addEventListener('click', openAddModal);
+                    empty.appendChild(addButton);
+                    out.appendChild(empty);
+                    return;
                 }
 
                 appSituations.forEach(sit => {
@@ -2024,23 +2686,23 @@
                     let html = `<div class="category" style="margin-top:20px;">
                                 <h2 style="display:flex; justify-content:space-between; align-items:baseline;">
                                     ${sit.name} 
-                                    <span style="font-size:1rem; color:#7f8c8d; font-weight:normal;">${completeCount} complete · ${almostCount} one piece away</span>
+                                    <span style="font-size:1rem; color:var(--muted); font-weight:normal;">${completeCount} complete · ${almostCount} one piece away</span>
                                 </h2>`;
                     if(suggestedOutfits.length === 0) {
-                        html += `<p style="color:#7f8c8d;">You don't have enough color-coordinated pieces to build a complete or nearly complete outfit for this situation.</p>`;
+                        html += `<p style="color:var(--muted);">Add a few more clothes to see a complete outfit for this occasion.</p>`;
                     } else {
                         html += `<div class="combo-grid">`;
                         suggestedOutfits.forEach(outfit => {
-                            let itemsHtml = outfit.items.map(i => `<div class="outfit-item"><span style="font-size:0.7rem; color:#7f8c8d; font-weight:bold;">${i.group}</span><img src="${i.image}"><div style="font-size:0.8rem; text-align:center; line-height:1.1;">${i.name}</div></div>`).join('');
+                            let itemsHtml = outfit.items.map(i => `<div class="outfit-item"><span style="font-size:0.7rem; color:var(--muted); font-weight:bold;">${plainClothingGroup(i.group)}</span><img src="${i.image}"><div style="font-size:0.8rem; text-align:center; line-height:1.1;">${i.name}</div></div>`).join('');
                             if (outfit.missing) {
                                 const missingColor = colorsData.find(c => c.name === outfit.missing.color);
                                 itemsHtml += `<div class="outfit-item missing">
                                     <div class="missing-swatch" style="background-color:${missingColor.hex};"></div>
-                                    <span class="missing-text">Try adding a ${missingColor.name} ${outfit.missing.group}</span>
+                                    <span class="missing-text">Try adding ${plainColorName(missingColor.hex)} ${plainClothingGroup(outfit.missing.group)}</span>
                                 </div>`;
                             }
                             html += `<div class="combo-card outfit-card" style="border-left-color:#27ae60; cursor:default;">
-                                        <div class="combo-id">Palette #${String(outfit.id).padStart(3,'0')}</div>
+                                        <div class="combo-id">Outfit idea</div>
                                         ${outfit.missing ? '<p class="lookbook-status"><strong>One piece away</strong> · Suggested addition to complete this look</p>' : ''}
                                         <div class="outfit-items-row">${itemsHtml}</div>
                                      </div>`;
@@ -2061,7 +2723,17 @@
             setTimeout(() => {
                 out.innerHTML = "";
                 if(closetData.length === 0) {
-                    out.innerHTML = "<div class='no-results'>Your closet is empty. Add items to see recommendations.</div>"; return;
+                    const empty = document.createElement('div');
+                    empty.className = 'no-results';
+                    empty.textContent = 'Add a few clothes to get ideas for what to buy next.';
+                    const addButton = document.createElement('button');
+                    addButton.type = 'button';
+                    addButton.className = 'primary-btn';
+                    addButton.textContent = 'Add clothes';
+                    addButton.addEventListener('click', openAddModal);
+                    empty.appendChild(addButton);
+                    out.appendChild(empty);
+                    return;
                 }
 
                 let shoppingMap = {}; 
@@ -2118,22 +2790,20 @@
                 let missingList = Object.values(shoppingMap).sort((a,b) => b.palettes.size - a.palettes.size);
                 
                 if(missingList.length === 0) {
-                    out.innerHTML = "<div class='no-results'>No missing pieces found. Your wardrobe is highly optimized!</div>"; return;
+                    out.innerHTML = "<div class='no-results'>No new ideas yet. Add more of your clothes to get suggestions.</div>"; return;
                 }
 
                 missingList.forEach(item => {
                     let sitText = Array.from(item.situations).join(", ");
-                    let palText = Array.from(item.palettes).map(id => "#"+String(id).padStart(3,'0')).join(", ");
-                    
+                    const clothingName = plainClothingGroup(item.category);
                     let html = `
                     <div class="shopping-card">
                         <div class="shopping-swatch" style="background-color: ${item.hex};"></div>
                         <div class="shopping-details">
-                            <h3>Buy: <span style="color:var(--green);">${item.colorName}</span> ${item.category}</h3>
-                            <p>Unlocks combinations for: <strong>${sitText}</strong></p>
-                            <p style="font-size:0.8rem; margin-top:5px; color:#bdc3c7;">Palettes unlocked: ${palText}</p>
+                            <h3>Consider <span style="color:var(--green);">${plainColorName(item.hex)}</span> ${clothingName}</h3>
+                            <p>This could work for: <strong>${sitText}</strong></p>
                         </div>
-                        <div class="unlock-badge">Unlocks ${item.palettes.size} Outfits</div>
+                        <div class="unlock-badge">Could add to ${item.palettes.size} outfit ideas</div>
                     </div>`;
                     out.innerHTML += html;
                 });
@@ -2145,6 +2815,13 @@
         purchaseColorSelect.add(new Option('Choose a color', ''));
         colorsData.slice().sort((a, b) => a.name.localeCompare(b.name)).forEach(color => {
             purchaseColorSelect.add(new Option(color.name, color.name));
+        });
+        const startingPurchaseColor = findClosestColor(57, 91, 69);
+        purchaseColorSelect.value = startingPurchaseColor?.name || '';
+        document.getElementById('purchase-color-picker').addEventListener('input', e => {
+            const rgb = hexToRgb(e.target.value);
+            const closest = rgb && findClosestColor(rgb.r, rgb.g, rgb.b);
+            if (closest) purchaseColorSelect.value = closest.name;
         });
         document.getElementById('purchase-group').addEventListener('change', populatePurchaseTypeOptions);
         populatePurchaseTypeOptions();
@@ -2187,6 +2864,20 @@
 
         function renderPurchaseCheck() {
             const results = document.getElementById('purchase-results');
+            if (closetData.length === 0) {
+                results.replaceChildren();
+                const empty = document.createElement('div');
+                empty.className = 'analyzer-empty';
+                empty.textContent = 'Add a few clothes first. Then we can show how something new might work with them.';
+                const addButton = document.createElement('button');
+                addButton.type = 'button';
+                addButton.className = 'primary-btn';
+                addButton.textContent = 'Add clothes';
+                addButton.addEventListener('click', openAddModal);
+                empty.appendChild(addButton);
+                results.appendChild(empty);
+                return;
+            }
             const group = document.getElementById('purchase-group').value;
             const category = document.getElementById('purchase-type').value;
             const color = colorsData.find(item => item.name === purchaseColorSelect.value);
@@ -2208,11 +2899,19 @@
             summary.appendChild(makeGarmentArt(purchaseItem, true, color.hex));
             const summaryCopy = document.createElement('div');
             const summaryTitle = document.createElement('strong');
-            summaryTitle.textContent = `Considering: ${color.name} ${category}`;
+            summaryTitle.textContent = `Considering: ${category}`;
             const summaryText = document.createElement('div');
             summaryText.className = 'analyzer-summary-detail';
-            summaryText.textContent = `Checked against your saved closet and ${candidates.length ? 'ranked compatible palettes.' : 'found no exact-color closet matches yet.'}`;
+            summaryText.textContent = candidates.length
+                ? 'We found clothes in your closet that could go with this color.'
+                : 'We could not find a match for this shade yet. Try another color.';
             summaryCopy.append(summaryTitle, summaryText);
+            const colorSwatch = document.createElement('span');
+            colorSwatch.className = 'c-dot';
+            colorSwatch.style.backgroundColor = document.getElementById('purchase-color-picker').value;
+            colorSwatch.setAttribute('role', 'img');
+            colorSwatch.setAttribute('aria-label', 'Color you are considering');
+            summaryCopy.appendChild(colorSwatch);
             summary.appendChild(summaryCopy);
             results.appendChild(summary);
 
@@ -2221,8 +2920,8 @@
                 empty.className = 'analyzer-empty';
                 empty.style.marginTop = '12px';
                 empty.textContent = closetData.length
-                    ? `No saved closet piece matches a color paired with ${color.name} in the current palette library. Try another shade, or use Color Library to explore nearby colors.`
-                    : 'Add garments to My Closet first. Once your wardrobe has color-tagged pieces, this check can show what the new item would work with.';
+                    ? 'We could not find a match for this shade yet. Try another color or add more clothes.'
+                    : 'Add a few clothes first. Then we can show what this item might go with.';
                 results.appendChild(empty);
                 return;
             }
@@ -2236,7 +2935,7 @@
                 const heading = document.createElement('div');
                 heading.className = 'purchase-card-heading';
                 const title = document.createElement('h3');
-                title.textContent = `Palette #${String(candidate.id).padStart(3, '0')}`;
+                title.textContent = 'Possible outfit';
                 const matchCount = document.createElement('span');
                 matchCount.textContent = `${candidate.matches.length} closet ${candidate.matches.length === 1 ? 'match' : 'matches'}`;
                 heading.append(title, matchCount);
@@ -2272,26 +2971,25 @@
                     const name = document.createElement('strong');
                     name.textContent = match.item.name;
                     const detail = document.createElement('span');
-                    detail.textContent = `${match.item.category} · ${match.paletteColor.name}`;
+                    detail.textContent = match.item.category;
                     copy.append(name, detail);
                     tile.appendChild(copy);
                     pieces.appendChild(tile);
                 });
                 card.appendChild(pieces);
 
-                const missing = candidate.gaps.map(gap => `${gap.color.name} ${gap.group}`);
-                if (candidate.remainingRoles.length) {
-                    missing.push(...candidate.remainingRoles.map(role => `${role} (not represented in this palette)`));
-                }
+                const plainGroup = { Tops: 'a top', Bottoms: 'pants or a skirt', Footwear: 'shoes', Outerwear: 'a jacket or coat', Accessories: 'an accessory', 'Indian Wear': 'traditional clothing' };
+                const missing = [...new Set([...candidate.gaps.map(gap => gap.group), ...candidate.remainingRoles])]
+                    .map(role => plainGroup[role] || 'another clothing item');
                 if (missing.length) {
                     const gap = document.createElement('p');
                     gap.className = 'purchase-gap';
-                    gap.textContent = `To complete a full look: consider ${missing.join(', ')}.`;
+                    gap.textContent = `To make a complete outfit, you could add ${missing.join(' and ')}.`;
                     card.appendChild(gap);
                 } else {
                     const ready = document.createElement('p');
                     ready.className = 'purchase-score';
-                    ready.textContent = 'This purchase would complete a full color-coordinated outfit from pieces already in your closet.';
+                    ready.textContent = 'This item could make a complete outfit with clothes you already own.';
                     card.appendChild(ready);
                 }
                 grid.appendChild(card);
@@ -2300,6 +2998,43 @@
         }
 
         const styleAnalyzerForm = document.getElementById('style-analyzer-form');
+        const heightInput = document.getElementById('analyzer-height');
+        const unitsSelect = document.getElementById('analyzer-units');
+        document.getElementById('analyzer-build-type').value = proportionProfile.Build_Type;
+        document.getElementById('analyzer-head-volume').value = proportionProfile.Head_Volume;
+        if (proportionProfile.Height_cm !== null) {
+            heightInput.value = (unitsSelect.value === 'cm' ? proportionProfile.Height_cm : proportionProfile.Height_cm / 2.54).toFixed(1);
+        }
+        function persistProportionProfile() {
+            const enteredHeight = heightInput.value === '' ? null : Number(heightInput.value);
+            proportionProfile.Height_cm = enteredHeight === null
+                ? proportionProfile.Height_cm
+                : Number((unitsSelect.value === 'cm' ? enteredHeight : enteredHeight * 2.54).toFixed(1));
+            proportionProfile.Build_Type = document.getElementById('analyzer-build-type').value;
+            proportionProfile.Head_Volume = document.getElementById('analyzer-head-volume').value;
+            localStorage.setItem(profileStorageKey, JSON.stringify(proportionProfile));
+        }
+        function setTargetSilhouette(target) {
+            if (!profileEnums.Target_Silhouette.includes(target)) return;
+            proportionProfile.Target_Silhouette = target;
+            document.querySelectorAll('.silhouette-target').forEach(button => {
+                const active = button.dataset.silhouette === target;
+                button.classList.toggle('active', active);
+                button.setAttribute('aria-pressed', String(active));
+            });
+            persistProportionProfile();
+            if (styleAnalyzerForm.dataset.analyzed === 'true' && styleAnalyzerForm.checkValidity()) analyzeStyleProfile();
+        }
+        document.querySelectorAll('.silhouette-target').forEach(button => {
+            button.addEventListener('click', () => setTargetSilhouette(button.dataset.silhouette));
+        });
+        document.getElementById('analyzer-build-type').addEventListener('change', persistProportionProfile);
+        document.getElementById('analyzer-head-volume').addEventListener('change', persistProportionProfile);
+        document.querySelectorAll('.silhouette-target').forEach(button => {
+            const active = button.dataset.silhouette === proportionProfile.Target_Silhouette;
+            button.classList.toggle('active', active);
+            button.setAttribute('aria-pressed', String(active));
+        });
         const analyzerMeasurementIds = [
             'analyzer-height', 'analyzer-shoulders', 'analyzer-chest', 'analyzer-waist',
             'analyzer-hips', 'analyzer-inseam', 'analyzer-rise'
@@ -2319,11 +3054,15 @@
         styleAnalyzerForm.addEventListener('submit', e => {
             e.preventDefault();
             if (!styleAnalyzerForm.reportValidity()) return;
+            persistProportionProfile();
+            styleAnalyzerForm.dataset.analyzed = 'true';
             analyzeStyleProfile();
         });
 
         function analyzerMeasurementInches(id) {
-            const value = Number(document.getElementById(id).value);
+            const rawValue = document.getElementById(id).value;
+            if (rawValue === '') return null;
+            const value = Number(rawValue);
             return document.getElementById('analyzer-units').value === 'cm' ? value / 2.54 : value;
         }
 
@@ -2333,41 +3072,14 @@
             const shoulder = analyzerMeasurementInches('analyzer-shoulders');
             const chest = analyzerMeasurementInches('analyzer-chest');
             const waist = analyzerMeasurementInches('analyzer-waist');
-            const hipsValue = document.getElementById('analyzer-hips').value;
-            const hips = hipsValue === '' ? null : analyzerMeasurementInches('analyzer-hips');
-            const upperMeasure = Math.max(shoulder, chest);
-            const upperWaistRatio = upperMeasure / waist;
-            const heightValue = document.getElementById('analyzer-height').value;
-            const inseamValue = document.getElementById('analyzer-inseam').value;
-            const riseValue = document.getElementById('analyzer-rise').value;
-            const height = heightValue === '' ? null : analyzerMeasurementInches('analyzer-height');
-            const inseam = inseamValue === '' ? null : analyzerMeasurementInches('analyzer-inseam');
-            const rise = riseValue === '' ? null : analyzerMeasurementInches('analyzer-rise');
+            const hips = analyzerMeasurementInches('analyzer-hips');
+            const height = analyzerMeasurementInches('analyzer-height');
+            const inseam = analyzerMeasurementInches('analyzer-inseam');
+            const rise = analyzerMeasurementInches('analyzer-rise');
             const verticalRatio = height && inseam ? inseam / height : null;
 
-            let shape;
-            if (hips && hips > upperMeasure * 1.05 && hips > waist * 1.02) {
-                shape = 'Triangle';
-            } else if (waist >= upperMeasure * 1.03 && (!hips || waist >= hips)) {
-                shape = 'Oval';
-            } else if (upperWaistRatio >= 1.15) {
-                shape = 'Inverted Triangle (V-shape)';
-            } else if (upperWaistRatio >= 1.07) {
-                shape = 'Trapezoid';
-            } else {
-                shape = 'Rectangle';
-            }
-
-            const kibbeStyles = {
-                'Inverted Triangle (V-shape)': 'Natural family · Blunt Yang-inspired lines',
-                Trapezoid: 'Natural / Classic · balanced structure',
-                Rectangle: 'Classic / Dramatic · clean vertical lines',
-                Triangle: 'Natural / Classic · structured upper balance',
-                Oval: 'Relaxed Classic · soft, open structure'
-            };
-            const kibbeStyle = kibbeStyles[shape];
             const longVertical = verticalRatio !== null && verticalRatio >= 0.47;
-            const hairVolume = document.getElementById('analyzer-hair-volume').value;
+            const headVolume = proportionProfile.Head_Volume;
             const hairTexture = document.getElementById('analyzer-hair-texture').selectedOptions[0].textContent;
             const hairColor = document.getElementById('analyzer-hair-color').selectedOptions[0].textContent;
             const faceShape = document.getElementById('analyzer-face-shape').selectedOptions[0].textContent;
@@ -2376,10 +3088,10 @@
             const skinRgb = hexToRgb(skinColor);
             const skinValue = (0.2126 * skinRgb.r + 0.7152 * skinRgb.g + 0.0722 * skinRgb.b) / 255;
             const contrastNote = skinValue > 0.62
-                ? 'Your selected skin swatch is lighter in value; rich dark colors can create clear contrast near the face.'
+                ? 'The skin tone you chose is lighter; deeper colors may stand out near your face.'
                 : skinValue < 0.32
-                    ? 'Your selected skin swatch is deeper in value; cream and other lighter accents can create clear contrast.'
-                    : 'Your selected skin swatch sits in a medium value range; mix rich colors with grounded neutrals for contrast.';
+                    ? 'The skin tone you chose is deeper; lighter colors may stand out near your face.'
+                    : 'The skin tone you chose is in the middle; try both light and deep colors.';
 
             const paletteTargets = [
                 { label: 'Navy', hex: '#233550', area: 'bottom' },
@@ -2397,48 +3109,52 @@
                 return { ...target, colorName: closest.color.name, colorHex: closest.color.hex };
             });
 
-            const shapeReason = shape === 'Inverted Triangle (V-shape)'
-                ? 'The upper-body measure is notably larger than the waist, so a clean shoulder line with straight, balanced legs works with the natural V.'
-                : shape === 'Trapezoid'
-                    ? 'The upper-to-waist difference is moderate; lightly structured tops and straight lines keep the proportions balanced.'
-                    : shape === 'Triangle'
-                        ? 'The optional hip measure is broader than the upper-body measure; adding structure above and keeping the lower half clean can balance the line.'
-                        : shape === 'Oval'
-                            ? 'The waist is the fullest measure in this estimate; open layers and uninterrupted vertical lines can create a relaxed, balanced silhouette.'
-                            : 'The shoulder, chest, and waist measures are relatively close; clean, parallel lines and controlled ease preserve a balanced frame.';
+            const buildLabel = {
+                INVERTED_TRIANGLE: 'Broader shoulders',
+                LEAN_MUSCLE: 'Lean or defined frame',
+                AVERAGE: 'Balanced frame'
+            }[proportionProfile.Build_Type];
+            const targetLabel = proportionProfile.Target_Silhouette === 'V_SILHOUETTE'
+                ? 'More shape at the shoulders'
+                : 'A long, clean line';
+            const shapeReason = proportionProfile.Build_Type === 'INVERTED_TRIANGLE'
+                ? 'A straight or tapered pair of pants can balance a broader shoulder line.'
+                : proportionProfile.Build_Type === 'LEAN_MUSCLE'
+                    ? 'Textured, structured tops can add visual interest to a lean frame.'
+                    : 'Keep the top and bottom in balance for an easy, pulled-together look.';
             const silhouetteDetails = [
-                { name: 'V silhouette · primary', detail: `${shapeReason} Keep the shoulder seam on the deltoid and use a straight diagonal taper rather than a cinched waist.` },
-                { name: `I silhouette · ${longVertical ? 'strong secondary' : 'secondary'}`, detail: `${longVertical ? 'Your height-to-inseam ratio suggests a longer vertical line; ' : ''}use uninterrupted color and straight-leg trousers from waist to shoe, without inward cinching.` },
-                { name: 'A silhouette · use with care', detail: `Avoid pairing a thin, clingy top with very relaxed bottoms; ${hairVolume === 'high' ? 'with high-volume hair, balanced structure through the shoulders helps keep the overall look in proportion.' : 'keep top and bottom volume in balance.'}` }
+                { name: targetLabel, detail: `${shapeReason} ${proportionProfile.Target_Silhouette === 'V_SILHOUETTE' ? 'A jacket or a more structured top can add shape at the shoulders.' : 'Similar colors from top to bottom can create a longer-looking line.'}` },
+                { name: 'Keep your outfit balanced', detail: `Avoid pairing a very short top with especially loose pants. ${headVolume === 'HIGH' ? 'A structured top can help the outfit feel balanced; fabric weight is optional to record.' : 'Choose top and bottom shapes that feel comfortable together.'}` }
             ];
-            const riseTarget = units === 'cm' ? '25.4–27.9 cm (10–11 in)' : '10–11 in';
             const riseAdvice = rise === null
-                ? `For trousers, aim for a mid-to-high rise around ${riseTarget}, sitting just below the navel.`
-                : `Your body rise is ${units === 'cm' ? (rise * 2.54).toFixed(1) : rise.toFixed(1)} ${units}; for trousers, aim around ${riseTarget}, sitting just below the navel.`;
+                ? 'Mid- or high-rise pants paired with a tucked-in or mid-length top can help create a longer-looking line.'
+                : `Based on the measurements you entered, try pants that sit near your natural waist.`;
             const selectedUndertone = undertone[0].toUpperCase() + undertone.slice(1);
-            const paletteExplanation = `${contrastNote} ${selectedUndertone} undertone is a user-selected styling preference, not inferred from the swatch. Try navy, forest green, deep burgundy, charcoal, espresso, and cream; avoid neon and washed-out pastels if you want the requested high-contrast old-money direction.`;
+            const paletteExplanation = `${contrastNote} Your ${selectedUndertone.toLowerCase()} color choice is a preference, not something the app tests. These are starting points; wear the colors you love.`;
             const validClosetItems = closetData.filter(item =>
                 item && item.primary && item.primary.name && item.primary.hex && item.group
             );
-            const outfits = generateAnalyzerOutfits(validClosetItems, paletteTargets);
+            const heightCm = height === null ? null : height * 2.54;
+            proportionProfile.Height_cm = heightCm === null ? null : Number(heightCm.toFixed(1));
+            const outfits = generateAnalyzerOutfits(validClosetItems, paletteTargets, proportionProfile);
             const metric = value => value === null ? 'Not provided' : `${(units === 'cm' ? value * 2.54 : value).toFixed(1)} ${units}`;
 
             results.replaceChildren();
             const heading = document.createElement('h3');
-            heading.textContent = 'Your styling profile';
+            heading.textContent = 'Your outfit suggestions';
             results.appendChild(heading);
             const intro = document.createElement('p');
             intro.className = 'analyzer-intro';
-            intro.textContent = `A proportion-based style suggestion using your measurements, ${hairColor.toLowerCase()} ${hairTexture.toLowerCase()} hair, ${faceShape.toLowerCase()} face shape, and selected complexion preferences.`;
+            intro.textContent = `Suggestions use your ${targetLabel.toLowerCase()} preference and the clothes you saved.`;
             results.appendChild(intro);
 
             const summary = document.createElement('div');
             summary.className = 'analyzer-summary';
             const summaryCards = [
-                ['Geometric shape', shape, `Upper-to-waist measure ratio: ${upperWaistRatio.toFixed(2)}`],
-                ['Kibbe-inspired styling lens', kibbeStyle, 'A line-language reference, not an official type'],
-                ['Vertical line', longVertical ? 'Longer I-line' : 'Balanced I-line', verticalRatio === null ? 'Height/inseam not entered' : `Inseam / height: ${(verticalRatio * 100).toFixed(0)}%`],
-                ['Hair & face framing', `${hairTexture} · ${faceShape}`, `${hairVolume === 'high' ? 'High-volume hair' : `${hairVolume[0].toUpperCase()}${hairVolume.slice(1)}-volume hair`} · ${hairColor}`]
+                ['Your outfit shape', targetLabel, `Frame preference: ${buildLabel}`],
+                ['Top structure', headVolume === 'HIGH' ? 'More structure' : 'Everyday structure', headVolume === 'HIGH' ? 'Structured tops can balance the outfit' : 'Choose what feels comfortable'],
+                ['Outfit line', verticalRatio === null ? 'Personalized to your choices' : longVertical ? 'Longer-looking line' : 'Balanced line', verticalRatio === null ? (heightCm === null ? 'Add your height for more specific suggestions, or leave it blank.' : `Height: ${heightCm.toFixed(1)} cm`) : 'Based on the measurements you chose to share'],
+                ['Color and hair', `${hairTexture} · ${faceShape}`, `${hairColor} · based on your preferences`]
             ];
             summaryCards.forEach(([label, value, detail]) => {
                 const card = document.createElement('div');
@@ -2453,12 +3169,18 @@
 
             const measurements = document.createElement('p');
             measurements.className = 'analyzer-intro';
-            measurements.textContent = `Height ${metric(height)} · Shoulder ${metric(shoulder)} · Chest ${metric(chest)} · Waist ${metric(waist)} · Hips ${metric(hips)} · Inseam ${metric(inseam)} · Rise ${metric(rise)}.`;
-            results.appendChild(measurements);
+            const sharedMeasurements = [
+                ['Height', height], ['Shoulders', shoulder], ['Chest', chest], ['Waist', waist],
+                ['Hips', hips], ['Inseam', inseam], ['Rise', rise]
+            ].filter(([, value]) => value !== null);
+            if (sharedMeasurements.length) {
+                measurements.textContent = `Measurements you shared: ${sharedMeasurements.map(([label, value]) => `${label} ${metric(value)}`).join(' · ')}.`;
+                results.appendChild(measurements);
+            }
 
             const silhouetteTitle = document.createElement('h4');
             silhouetteTitle.className = 'analyzer-section-title';
-            silhouetteTitle.textContent = 'Silhouette direction';
+            silhouetteTitle.textContent = 'Why these suggestions may work';
             results.appendChild(silhouetteTitle);
             const silhouetteList = document.createElement('ul');
             silhouetteList.className = 'silhouette-list';
@@ -2473,15 +3195,15 @@
 
             const tailoringTitle = document.createElement('h4');
             tailoringTitle.className = 'analyzer-section-title';
-            tailoringTitle.textContent = 'Athletic old-money fit notes';
+            tailoringTitle.textContent = 'Simple ways to finish the look';
             results.appendChild(tailoringTitle);
             const tailoringList = document.createElement('ul');
             tailoringList.className = 'tailoring-list';
             [
-                'Tops: anchor shoulder seams on the deltoid, taper diagonally from the armpit, and retain about 1.5–2 in of waist ease. Untucked hems should end around mid-fly.',
-                'Favor structured, substantial fabrics such as heavyweight cotton (240+ GSM), piqué, or waffle knits. Fabric weight is not recorded for closet items, so verify it on the garment.',
-                `Bottoms: choose straight-leg or single-pleat cuts with a slight or no break. ${riseAdvice} This supports a 1/3 top to 2/3 bottom visual proportion.`,
-                `Face framing: an open collar or a neat, balanced neckline can work with a ${faceShape.toLowerCase()} face shape.`
+                'A top that ends near the middle of your pants, or a tucked-in shirt, can make your legs look longer.',
+                'If you want more shape at the shoulders, try a jacket or a thicker, more structured top.',
+                `${riseAdvice} Choose pants that do not drag on the ground.`,
+                `For your ${faceShape.toLowerCase()} face shape, try an open collar if that feels comfortable.`
             ].forEach(text => {
                 const entry = document.createElement('li');
                 entry.textContent = text;
@@ -2491,7 +3213,7 @@
 
             const paletteTitle = document.createElement('h4');
             paletteTitle.className = 'analyzer-section-title';
-            paletteTitle.textContent = 'Color direction · high contrast, grounded neutrals';
+            paletteTitle.textContent = 'Easy colors to pair';
             results.appendChild(paletteTitle);
             const paletteDescription = document.createElement('p');
             paletteDescription.className = 'analyzer-intro';
@@ -2505,28 +3227,36 @@
                 const dot = document.createElement('span');
                 dot.className = 'analyzer-color-dot';
                 dot.style.backgroundColor = target.colorHex;
-                chip.append(dot, document.createTextNode(target.colorName));
+                chip.append(dot, document.createTextNode(target.label));
                 palette.appendChild(chip);
             });
             results.appendChild(palette);
 
             const outfitTitle = document.createElement('h4');
             outfitTitle.className = 'analyzer-section-title';
-            outfitTitle.textContent = 'Looks from your closet';
+            outfitTitle.textContent = 'Outfit ideas from my clothes';
             results.appendChild(outfitTitle);
             if (outfits.length === 0) {
                 const empty = document.createElement('div');
                 empty.className = 'analyzer-empty';
                 empty.textContent = validClosetItems.length === 0
-                    ? 'Your closet is empty. Add tops, bottoms, and footwear to My Closet, then run the analyzer again.'
-                    : 'No complete top, bottom, and footwear combination from your closet matches one of the built-in color palettes yet. Add more color-coordinated pieces to get a look recommendation.';
+                    ? 'Add a top, pants or skirt, and shoes to your clothes. Then come back for outfit ideas.'
+                    : 'We could not find a complete color match yet. Try adding another top, pants or skirt, or pair of shoes.';
+                if (validClosetItems.length === 0) {
+                    const addButton = document.createElement('button');
+                    addButton.type = 'button';
+                    addButton.className = 'primary-btn';
+                    addButton.textContent = 'Add clothes';
+                    addButton.addEventListener('click', openAddModal);
+                    empty.appendChild(addButton);
+                }
                 results.appendChild(empty);
                 return;
             }
 
             const outfitList = document.createElement('div');
             outfitList.className = 'analyzer-outfits';
-            outfits.forEach(outfit => outfitList.appendChild(renderAnalyzerOutfit(outfit, shape, longVertical, rise, units)));
+            outfits.forEach(outfit => outfitList.appendChild(renderAnalyzerOutfit(outfit, proportionProfile, longVertical, rise, units)));
             results.appendChild(outfitList);
         }
 
@@ -2540,12 +3270,6 @@
             if (!item.primary?.hex) return 0;
             const nearest = Math.min(...targets.map(target => colorDistance(item.primary.hex, target.hex)));
             return Math.max(0, 1 - nearest / 441.7);
-        }
-
-        function findAnalyzerGarment(items, group, colorName, targets) {
-            return items
-                .filter(item => item.group === group && item.primary.name === colorName)
-                .sort((a, b) => scoreAnalyzerColor(b, targets) - scoreAnalyzerColor(a, targets))[0] || null;
         }
 
         function analyzerFitBonus(item, group) {
@@ -2563,7 +3287,97 @@
             return 0;
         }
 
-        function generateAnalyzerOutfits(items, targets) {
+        function evaluateProportionalConstraint(top, bottom, profile) {
+            let score = 0;
+            const modifiers = [];
+            const exclusions = [];
+            const shortVertical = profile.Height_cm !== null && profile.Height_cm <= 170;
+            const build = profile.Build_Type;
+            const target = profile.Target_Silhouette;
+            const highHeadVolume = profile.Head_Volume === 'HIGH';
+            const rise = bottom.Rise_Height;
+            const cut = bottom.Cut;
+            const hem = bottom.Hem_Break;
+            const topLength = top.Top_Length;
+            const fabricType = top.Fabric_Type;
+            const fabricWeight = top.Fabric_Weight;
+
+            if (build === 'INVERTED_TRIANGLE') {
+                if (cut === 'SKINNY' || cut === 'RELAXED') exclusions.push('This outfit works better with straight or slightly tapered pants.');
+                else if (!cut) modifiers.push('Straight or slightly tapered pants can help balance broader shoulders.');
+                else score += 0.16;
+                if (rise && rise !== 'MID') exclusions.push('The inverted-triangle rule requires a mid-rise trouser.');
+                else if (!rise) modifiers.push('Prioritize a mid-rise trouser for the inverted-triangle fit rule.');
+            }
+
+            if (shortVertical) {
+                if (rise === 'LOW') exclusions.push('For a longer-looking line, try pants that sit at your waist or just below it.');
+                if (hem === 'POOLING' || hem === 'FULL') exclusions.push('Choose pants that stop near the top of your shoes instead of gathering on the ground.');
+                else if (!hem) modifiers.push('Pants that stop near the top of your shoes can help keep the line neat.');
+                if (!topLength) modifiers.push('If you wear the top untucked, aim for it to end around your waistband.');
+                else if (topLength === 'LONG' || topLength === 'CROPPED') modifiers.push('For an untucked look, choose a top that ends near your waistband, or tuck it in.');
+            }
+
+            if (rise === 'LOW' && topLength === 'LONG') {
+                score -= 0.85;
+                modifiers.push('Tuck this shirt into mid-rise pants to make your legs look longer.');
+            } else if (rise === 'LOW' && !topLength) {
+                score -= 0.15;
+                modifiers.push('Tuck in a longer shirt with these low-rise pants to make the outfit look more balanced.');
+            } else if (rise === 'MID' || rise === 'HIGH') {
+                score += 0.12;
+                if (topLength === 'LONG') {
+                    modifiers.push(`Tuck this shirt into your ${rise.toLowerCase()}-rise pants to make your legs look longer.`);
+                } else if (topLength === 'MID_FLY') {
+                    score += 0.12;
+                } else if (!topLength) {
+                    modifiers.push('A top that ends near the middle of your pants, or a tucked-in shirt, can make your legs look longer.');
+                }
+            } else if (!rise) {
+                modifiers.push('If you know whether these pants sit low, mid, or high, add it in their details. Otherwise, try mid- or high-rise pants.');
+            }
+
+            if (target === 'I_SILHOUETTE') {
+                if (cut === 'STRAIGHT' || cut === 'TAPERED') score += 0.12;
+                if (hem === 'NONE' || hem === 'SLIGHT') score += 0.1;
+            } else if (cut === 'STRAIGHT' || cut === 'TAPERED') {
+                score += 0.1;
+            }
+
+            if (highHeadVolume || build === 'LEAN_MUSCLE') {
+                if (fabricType === 'THIN_SYNTHETIC') {
+                    exclusions.push('Try a thicker top with more shape at the shoulders.');
+                } else if (fabricWeight !== null && fabricWeight !== undefined && fabricWeight < 240) {
+                    score -= 0.2;
+                    modifiers.push('Try a thicker, more structured top to add shape at the shoulders.');
+                } else if (!fabricWeight) {
+                    modifiers.push('If you know the fabric weight, choose a thicker, more structured top. Otherwise, skip this detail.');
+                } else {
+                    score += 0.18;
+                }
+            }
+            if (build === 'LEAN_MUSCLE') {
+                if (['CORDUROY', 'HEAVY_PIQUE', 'WAFFLE'].includes(fabricType)) score += 0.16;
+                else modifiers.push('Try a textured top, such as corduroy or a waffle knit, and push up the sleeves to show your forearms.');
+            }
+
+            const relaxedBottom = cut === 'RELAXED' || /relaxed|oversized/i.test(bottom.fit || '');
+            const compactTop = topLength === 'CROPPED' || topLength === 'MID_FLY';
+            if (relaxedBottom && compactTop) {
+                score -= 0.45;
+                modifiers.push('Avoid pairing this compact top with wide, relaxed trousers; a straight cut keeps the outline balanced.');
+            }
+
+            return { score, modifiers: [...new Set(modifiers)], exclusions };
+        }
+
+        function findAnalyzerGarments(items, group, colorName, targets) {
+            return items
+                .filter(item => item.group === group && item.primary.name === colorName)
+                .sort((a, b) => scoreAnalyzerColor(b, targets) - scoreAnalyzerColor(a, targets));
+        }
+
+        function generateAnalyzerOutfits(items, targets, profile) {
             const tops = items.filter(item => item.group === 'Tops' || item.group === 'Indian Wear');
             const bottoms = items.filter(item => item.group === 'Bottoms');
             const footwear = items.filter(item => item.group === 'Footwear');
@@ -2576,24 +3390,30 @@
                     if (!palette || palette.length < 3) return;
                     const colors = palette.filter(color => color.name !== top.primary.name);
                     colors.forEach(bottomColor => {
-                        const bottom = findAnalyzerGarment(bottoms, 'Bottoms', bottomColor.name, targets);
-                        if (!bottom) return;
+                        const matchingBottoms = findAnalyzerGarments(bottoms, 'Bottoms', bottomColor.name, targets);
+                        if (!matchingBottoms.length) return;
                         colors.filter(color => color.name !== bottomColor.name).forEach(shoeColor => {
-                            const shoes = findAnalyzerGarment(footwear, 'Footwear', shoeColor.name, targets);
-                            if (!shoes) return;
+                            const matchingShoes = findAnalyzerGarments(footwear, 'Footwear', shoeColor.name, targets);
+                            if (!matchingShoes.length) return;
                             const extraColor = colors.find(color => color.name !== bottomColor.name && color.name !== shoeColor.name);
-                            const layer = extraColor ? findAnalyzerGarment(outerwear, 'Outerwear', extraColor.name, targets) : null;
-                            const signature = `${id}_${top.id}_${bottom.id}_${shoes.id}_${layer?.id || ''}`;
-                            if (outfits.has(signature)) return;
-                            const score = scoreAnalyzerColor(bottom, targets) * 0.6
-                                + scoreAnalyzerColor(top, targets) * 0.3
-                                + scoreAnalyzerColor(shoes, targets) * 0.1
-                                + analyzerFitBonus(bottom, 'Bottoms')
-                                + analyzerFitBonus(top, 'Tops')
-                                + analyzerFitBonus(shoes, 'Footwear')
-                                - (/(relaxed|oversized)/i.test(bottom.fit || '') && /(slim|skinny)/i.test(top.fit || '') ? 0.2 : 0)
-                                + (layer ? 0.04 : 0);
-                            outfits.set(signature, { id, palette, top, bottom, shoes, layer, score });
+                            const matchingLayers = extraColor ? findAnalyzerGarments(outerwear, 'Outerwear', extraColor.name, targets) : [];
+                            matchingBottoms.forEach(bottom => matchingShoes.forEach(shoes => {
+                                const proportional = evaluateProportionalConstraint(top, bottom, profile);
+                                if (proportional.exclusions.length) return;
+                                const layer = matchingLayers[0] || null;
+                                const signature = `${id}_${top.id}_${bottom.id}_${shoes.id}_${layer?.id || ''}`;
+                                if (outfits.has(signature)) return;
+                                const colorScore = scoreAnalyzerColor(bottom, targets) * 0.6
+                                    + scoreAnalyzerColor(top, targets) * 0.3
+                                    + scoreAnalyzerColor(shoes, targets) * 0.1;
+                                const score = colorScore
+                                    + analyzerFitBonus(bottom, 'Bottoms')
+                                    + analyzerFitBonus(top, 'Tops')
+                                    + analyzerFitBonus(shoes, 'Footwear')
+                                    + proportional.score
+                                    + (layer ? 0.04 : 0);
+                                outfits.set(signature, { id, palette, top, bottom, shoes, layer, score, modifiers: proportional.modifiers });
+                            }));
                         });
                     });
                 });
@@ -2621,44 +3441,108 @@
             name.textContent = item.name;
             const label = document.createElement('span');
             label.className = 'analyzer-outfit-item-area';
-            label.textContent = `${areaLabel} · ${item.primary.name}`;
+            const garmentTags = [
+                item.Rise_Height && `${item.Rise_Height.toLowerCase()} rise`,
+                item.Cut && `${item.Cut.toLowerCase()} cut`,
+                item.Hem_Break && `${item.Hem_Break.toLowerCase()} break`,
+                item.Fabric_Weight && (item.Fabric_Weight >= 240 ? 'heavier fabric' : item.Fabric_Weight < 180 ? 'lighter fabric' : 'medium-weight fabric')
+            ].filter(Boolean);
+            label.textContent = `${areaLabel} · ${item.primary.name}${garmentTags.length ? ` · ${garmentTags.join(' · ')}` : ''}`;
             tile.append(name, label);
             return tile;
         }
 
-        function renderAnalyzerOutfit(outfit, shape, longVertical, rise, units) {
+        function renderAnalyzerOutfit(outfit, profile, longVertical, rise, units) {
             const card = document.createElement('article');
             card.className = 'analyzer-outfit-card outfit-card';
             const paletteId = document.createElement('div');
             paletteId.className = 'combo-id';
-            paletteId.textContent = `Palette #${String(outfit.id).padStart(3, '0')}`;
+            const silhouetteName = profile.Target_Silhouette === 'V_SILHOUETTE' ? 'More shoulder shape' : 'A long, clean line';
+            paletteId.textContent = `Outfit idea · ${silhouetteName}`;
             card.appendChild(paletteId);
             const items = document.createElement('div');
             items.className = 'analyzer-outfit-items outfit-items-row';
             items.append(
-                createAnalyzerOutfitItem(outfit.bottom, 'Big area · 60%'),
-                createAnalyzerOutfitItem(outfit.top, 'Medium area · 30%'),
-                createAnalyzerOutfitItem(outfit.shoes, 'Small area · 10%')
+                createAnalyzerOutfitItem(outfit.bottom, 'Pants or skirt'),
+                createAnalyzerOutfitItem(outfit.top, 'Top'),
+                createAnalyzerOutfitItem(outfit.shoes, 'Shoes')
             );
             if (outfit.layer) items.appendChild(createAnalyzerOutfitItem(outfit.layer, 'Optional layer'));
             card.appendChild(items);
             const explanation = document.createElement('p');
             explanation.className = 'analyzer-explanation';
-            const shapeNote = shape === 'Inverted Triangle (V-shape)'
-                ? 'The structured top respects the broader shoulder line while the straight-leg bottom balances the taper.'
-                : shape === 'Triangle'
-                    ? 'The structured upper layer adds visual balance while the straight-leg bottom keeps the lower line clean.'
-                    : shape === 'Oval'
-                        ? 'The open, uninterrupted outfit line avoids pinching and keeps the silhouette relaxed.'
-                        : 'The structured top and straight-leg bottom preserve a clean, balanced vertical line.';
-            const verticalNote = longVertical ? ' Repeating the palette vertically reinforces your longer line.' : ' The palette keeps a clear, balanced top-to-bottom line.';
+            const verticalNote = longVertical ? ' Similar colors from top to bottom can create a longer-looking line.' : ' The colors give the outfit an easy, pulled-together look.';
             const riseNote = rise === null
-                ? ` Pair with a mid-to-high ${units === 'cm' ? '25.4–27.9 cm' : '10–11 in'} trouser rise.`
-                : ' Pair with a mid-to-high rise near the navel for the 1/3-to-2/3 proportion.';
-            explanation.textContent = `${shapeNote}${verticalNote}${riseNote} Color placement follows the Big–Medium–Small rule: trousers 60%, shirt 30%, shoes 10%. Choose substantial, structured fabric for the top; garment fabric weight is not stored, so check the label.`;
+                ? ' Mid- or high-rise pants can help create a longer-looking line.'
+                : ' The measurements you chose to share help personalize these suggestions.';
+            const outlineNote = profile.Target_Silhouette === 'V_SILHOUETTE'
+                ? ' This outfit adds shape at the shoulders and balances it with a clean pant leg.'
+                : ' This outfit uses a simple top-to-bottom line and a clean pant hem.';
+            explanation.textContent = `The colors work together from top to bottom.${outlineNote}${verticalNote}${riseNote}`;
             card.appendChild(explanation);
+            if (outfit.modifiers.length) {
+                const guidance = document.createElement('div');
+                guidance.className = 'styling-guidance';
+                const trigger = document.createElement('button');
+                trigger.type = 'button';
+                trigger.className = 'styling-guidance-trigger';
+                trigger.textContent = `Styling tips (${outfit.modifiers.length})`;
+                trigger.setAttribute('aria-expanded', 'false');
+                const panelId = `styling-guidance-${outfit.id}-${outfit.top.id}-${outfit.bottom.id}`;
+                trigger.setAttribute('aria-controls', panelId);
+                const panel = document.createElement('div');
+                panel.id = panelId;
+                panel.className = 'styling-guidance-panel';
+                panel.setAttribute('role', 'region');
+                panel.setAttribute('aria-label', 'Styling modifiers');
+                panel.hidden = true;
+                const list = document.createElement('ul');
+                outfit.modifiers.forEach(modifier => {
+                    const item = document.createElement('li');
+                    item.textContent = modifier;
+                    list.appendChild(item);
+                });
+                const dismiss = document.createElement('button');
+                dismiss.type = 'button';
+                dismiss.className = 'styling-guidance-dismiss';
+                dismiss.textContent = 'Dismiss';
+                const close = () => {
+                    panel.hidden = true;
+                    trigger.setAttribute('aria-expanded', 'false');
+                };
+                trigger.addEventListener('click', () => {
+                    const open = panel.hidden;
+                    document.querySelectorAll('.styling-guidance-panel:not([hidden])').forEach(openPanel => {
+                        openPanel.hidden = true;
+                        openPanel.previousElementSibling?.setAttribute('aria-expanded', 'false');
+                    });
+                    panel.hidden = !open;
+                    trigger.setAttribute('aria-expanded', String(open));
+                });
+                dismiss.addEventListener('click', () => { close(); trigger.focus(); });
+                panel.append(list, dismiss);
+                guidance.append(trigger, panel);
+                card.appendChild(guidance);
+            }
             return card;
         }
+
+        document.addEventListener('click', e => {
+            if (e.target.closest('.styling-guidance')) return;
+            document.querySelectorAll('.styling-guidance-panel:not([hidden])').forEach(panel => {
+                panel.hidden = true;
+                panel.previousElementSibling?.setAttribute('aria-expanded', 'false');
+            });
+        });
+        document.addEventListener('keydown', e => {
+            if (e.key !== 'Escape') return;
+            const panel = document.querySelector('.styling-guidance-panel:not([hidden])');
+            if (!panel) return;
+            const trigger = panel.previousElementSibling;
+            panel.hidden = true;
+            trigger?.setAttribute('aria-expanded', 'false');
+            trigger?.focus();
+        });
 
         updateHomeOverview();
 
@@ -2667,9 +3551,45 @@
             const pM = document.getElementById('paletteModal'), aM = document.getElementById('addItemModal');
             if (e.target == pM) closePaletteModal(); if (e.target == aM) closeAddModal();
         }
-        window.addEventListener("scroll", () => { document.getElementById("scrollToTopBtn").classList.toggle("show", window.pageYOffset > 300); });
-        document.getElementById("scrollToTopBtn").addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
-        document.addEventListener('keydown', e => { if(e.key === "Escape") { closePaletteModal(); closeAddModal(); }});
+        const scrollToTopButton = document.getElementById("scrollToTopBtn");
+        function updateScrollToTopButton() {
+            const visible = window.pageYOffset > 300;
+            scrollToTopButton.classList.toggle("show", visible);
+            scrollToTopButton.setAttribute("aria-hidden", String(!visible));
+            scrollToTopButton.tabIndex = visible ? 0 : -1;
+        }
+        window.addEventListener("scroll", updateScrollToTopButton);
+        updateScrollToTopButton();
+        scrollToTopButton.addEventListener("click", () => window.scrollTo({
+            top: 0,
+            behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"
+        }));
+        document.addEventListener('keydown', e => {
+            const modal = document.querySelector('.modal.show');
+            if (!modal) return;
+            if (e.key === "Escape") {
+                e.preventDefault();
+                if (modal.id === 'paletteModal') closePaletteModal();
+                else closeAddModal();
+                return;
+            }
+            if (e.key !== 'Tab') return;
+            const focusable = [...modal.querySelectorAll('button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])')]
+                .filter(element => element.getClientRects().length > 0);
+            if (!focusable.length) {
+                e.preventDefault();
+                return;
+            }
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+            }
+        });
         
     </script>
 </body>
